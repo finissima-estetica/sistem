@@ -893,13 +893,13 @@ function generateBodyVisualization() {
 </g>
 <path id="zone-thigh-r" d="M194 566H235V527L241 490L250 425L184 385H179V418V453V490L184 527L194 566Z" fill="${getSafeColor('zone-thigh-r')}"/>
 <path id="zone-shin-r" d="M194 659V595H241V626V656L237 681L231 714V739H202V714L194 659Z" fill="${getSafeColor('zone-shin-r')}"/>
-<path id="zone-shin-l" d="M253 632L258 598H304V632V659L295 696V736H264V722V691L258 665L253 632Z" stroke="black" fill="${getSafeColor('zone-shin-l')}"/>
+<path id="zone-shin-l" d="M253 632L258 598H304V632V659L295 696V736H264V722V691L258 665L253 632Z" fill="${getSafeColor('zone-shin-l')}"/>
 <path id="zone-thigh-l" d="M314 382L251 425L255 489L262 536V567H304L309 536L321 486V441V416L314 382Z" fill="${getSafeColor('zone-thigh-l')}"/>
-<path id="zone-ab-upper" d="M194 316V294H296L302 316L316 367H183L194 316Z" stroke="black" fill="${getSafeColor('zone-ab-upper')}"/>
-<path id="zone-arm-r-upper" d="M151 291L156 215L189 239L178 302L151 291Z" stroke="black" fill="${getSafeColor('zone-arm-r-upper')}"/>
-<path id="zone-arm-l-upper" d="M320 311L310 239H343L349 299L320 311Z" stroke="black" fill="${getSafeColor('zone-arm-l-upper')}"/>
-<path id="zone-chest" d="M186 214L194 286H305L315 214H186Z" stroke="black" fill="${getSafeColor('zone-chest')}"/>
-<path id="zone-pelvis" d="M183 384V369H315V384L251 425L183 384Z" stroke="black" fill="${getSafeColor('zone-pelvis')}"/>
+<path id="zone-ab-upper" d="M194 316V294H296L302 316L316 367H183L194 316Z" fill="${getSafeColor('zone-ab-upper')}"/>
+<path id="zone-arm-r-upper" d="M151 291L156 215L189 239L178 302L151 291Z" fill="${getSafeColor('zone-arm-r-upper')}"/>
+<path id="zone-arm-l-upper" d="M320 311L310 239H343L349 299L320 311Z" fill="${getSafeColor('zone-arm-l-upper')}"/>
+<path id="zone-chest" d="M186 214L194 286H305L315 214H186Z" fill="${getSafeColor('zone-chest')}"/>
+<path id="zone-pelvis" d="M183 384V369H315V384L251 425L183 384Z" fill="${getSafeColor('zone-pelvis')}"/>
 </g>
 <defs>
 <clipPath id="clip0_0_1">
