@@ -76,37 +76,57 @@
                     <div class="tab-pane" id="desempenho">
                         <div class="tab-header">
                             <h3>Análise de Desempenho</h3>
-                            <div class="period-selector">
-                                <select id="periodoAnalise">
-                                    <option value="30">Últimos 30 dias</option>
-                                    <option value="90">Últimos 90 dias</option>
-                                    <option value="180">Últimos 6 meses</option>
-                                    <option value="365">Último ano</option>
-                                    <option value="all">Todo o período</option>
-                                </select>
-                            </div>
                         </div>
                         
                         <div class="desempenho-content">
-                            <div class="charts-grid">
-                                <div class="chart-card">
-                                    <h4>Evolução do Peso</h4>
-                                    <div class="chart-placeholder" id="pesoChart">
-                                        <p>Gráfico de evolução do peso</p>
+                            <div class="body-analysis-container">
+                                <div class="body-visualization">
+                                    <h3>Análise Visual Corporal</h3>
+                                    <div class="body-svg-container" id="bodyVisualization">
+                                        <!-- SVG do corpo humano será gerado via JavaScript -->
+                                    </div>
+                                    <div class="zones-legend">
+                                        <div class="legend-item">
+                                            <span class="legend-color green"></span>
+                                            <span>Redução/Melhoria</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-color red"></span>
+                                            <span>Aumento/Atenção</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-color gray"></span>
+                                            <span>Sem alteração</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="chart-card">
-                                    <h4>Evolução da Cintura</h4>
-                                    <div class="chart-placeholder" id="cinturaChart">
-                                        <p>Gráfico de evolução da cintura</p>
+                                
+                                <div class="zones-details">
+                                    <h3>Detalhes por Zona</h3>
+                                    <div class="zones-grid" id="zonesDetails">
+                                        <!-- Detalhes das zonas serão gerados via JavaScript -->
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="medidas-summary">
-                                <h4>Resumo de Medidas</h4>
-                                <div class="medidas-table" id="medidasTable">
-                                    <p>Selecione um período para ver as estatísticas.</p>
+                            <div class="metrics-overview">
+                                <h3>Visão Geral de Métricas</h3>
+                                <div class="metrics-grid">
+                                    <div class="metric-card" id="pesoMetric">
+                                        <h4>Peso</h4>
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-change">--</div>
+                                    </div>
+                                    <div class="metric-card" id="alturaMetric">
+                                        <h4>Altura</h4>
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-change">--</div>
+                                    </div>
+                                    <div class="metric-card" id="imcMetric">
+                                        <h4>IMC</h4>
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-change">--</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

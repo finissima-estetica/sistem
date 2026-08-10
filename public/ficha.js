@@ -381,26 +381,36 @@ function loadDadosCompletos() {
 }
 
 // Carregar desempenho
-function loadDesempenho() {
-    const periodo = document.getElementById('periodoAnalise').value;
-    const hoje = new Date();
-    let dataInicio = new Date();
-    
-    if (periodo !== 'all') {
-        dataInicio.setDate(hoje.getDate() - parseInt(periodo));
-    } else {
-        dataInicio = new Date(0); // Data mais antiga possível
+// Função para carregar aba de desempenho
+async function loadDesempenho() {
+    try {
+        // Buscar dados do cliente
+        if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
+            const clienteData = await clientesAPI.buscar(currentClientId);
+            const atendimentosData = await clientesAPI.buscarAtendimentos(currentClientId);
+            currentClient = clienteData;
+            currentAtendimentos = atendimentosData;
+        } else {
+            // Fallback para localStorage
+            const clients = JSON.parse(localStorage.getItem('clients') || '[]');
+            const atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
+            currentClient = clients.find(c => c.id == currentClientId);
+            currentAtendimentos = atendimentos.filter(a => a.clienteId == currentClientId);
+        }
+        
+        // Gerar visualização do corpo
+        generateBodyVisualization();
+        
+        // Gerar detalhes das zonas
+        generateZonesDetails();
+        
+        // Calcular métricas gerais
+        calculateMetrics();
+        
+    } catch (error) {
+        console.error('Erro ao carregar aba de desempenho:', error);
     }
-    
-    // Filtrar atendimentos do período
-    const atendimentosPeriodo = currentClientAtendimentos.filter(a => 
-        new Date(a.data) >= dataInicio
-    );
-    
-    // Atualizar gráficos (placeholder por enquanto)
-    updateCharts(atendimentosPeriodo);
-    
-    // Atualizar tabela de medidas
+}
     updateMedidasTable(atendimentosPeriodo);
 }
 
@@ -727,8 +737,205 @@ async function deleteClient() {
     }
 }
 
-// Event listener para mudança de período
-document.getElementById('periodoAnalise').addEventListener('change', loadDesempenho);
+// Função para gerar visualização do corpo
+function generateBodyVisualization() {
+    const container = document.getElementById('bodyVisualization');
+    if (!container) return;
+    
+    // Zonas do corpo com suas coordenadas no SVG
+    const bodyZones = {
+        'braco_direito': { path: 'M80,50 L85,120 L90,120 L85,50 Z', label: 'Braço Direito' },
+        'braco_esquerdo': { path: 'M120,50 L115,120 L110,120 L115,50 Z', label: 'Braço Esquerdo' },
+        'torax': { path: 'M85,120 L90,120 L90,180 L85,180 Z', label: 'Tórax' },
+        'cintura': { path: 'M85,180 L90,180 L90,220 L85,220 Z', label: 'Cintura' },
+        'abdomen': { path: 'M85,220 L90,220 L90,260 L85,260 Z', label: 'Abdômen' },
+        'quadril': { path: 'M85,260 L90,260 L90,300 L85,300 Z', label: 'Quadril' },
+        'coxa_direita': { path: 'M85,300 L90,300 L92,360 L87,360 Z', label: 'Coxa Direita' },
+        'coxa_esquerda': { path: 'M83,300 L88,300 L90,360 L85,360 Z', label: 'Coxa Esquerda' },
+        'panturrilha_direita': { path: 'M87,360 L92,360 L92,400 L87,400 Z', label: 'Panturrilha Direita' },
+        'panturrilha_esquerda': { path: 'M85,360 L90,360 L90,400 L85,400 Z', label: 'Panturrilha Esquerda' }
+    };
+    
+    // Criar SVG do corpo
+    let svg = `
+        <svg viewBox="0 0 200 450" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+            <!-- Cabeça -->
+            <ellipse cx="100" cy="35" rx="20" ry="25" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+            
+            <!-- Pescoço -->
+            <rect x="90" y="55" width="20" height="15" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+            
+            <!-- Ombros -->
+            <line x1="70" y1="70" x2="130" y2="70" stroke="#6c757d" stroke-width="3"/>
+    `;
+    
+    // Adicionar zonas com cores baseadas na análise
+    Object.keys(bodyZones).forEach(zoneKey => {
+        const zone = bodyZones[zoneKey];
+        const analysis = analyzeZone(zoneKey);
+        const color = analysis.color;
+        
+        svg += `
+            <path d="${zone.path}" fill="${color}" stroke="#6c757d" stroke-width="1" opacity="0.7"/>
+            <text x="100" y="${zone.label === 'Tórax' ? 150 : zone.label === 'Cintura' ? 200 : zone.label === 'Abdômen' ? 240 : zone.label === 'Quadril' ? 280 : 100}" 
+                  text-anchor="middle" font-size="8" fill="#333">${zone.label}</text>
+        `;
+    });
+    
+    svg += '</svg>';
+    container.innerHTML = svg;
+}
+
+// Função para analisar uma zona específica
+function analyzeZone(zoneKey) {
+    if (!currentAtendimentos || currentAtendimentos.length < 2) {
+        return { color: '#6c757d', change: 0, percentage: 0, current: '--', previous: '--' };
+    }
+    
+    // Pegar primeiro e último atendimento
+    const firstAtendimento = currentAtendimentos[currentAtendimentos.length - 1];
+    const lastAtendimento = currentAtendimentos[0];
+    
+    // Mapear zona para o campo correto
+    const zoneMapping = {
+        'braco_direito': 'bracoDireito',
+        'braco_esquerdo': 'bracoEsquerdo',
+        'torax': 'torax',
+        'cintura': 'cintura',
+        'abdomen': 'abdomen',
+        'quadril': 'quadril',
+        'coxa_direita': 'coxaDireito',
+        'coxa_esquerda': 'coxaEsquerdo',
+        'panturrilha_direita': 'panturrilhaDireita',
+        'panturrilha_esquerda': 'panturrilhaEsquerda'
+    };
+    
+    const field = zoneMapping[zoneKey];
+    const current = parseFloat(lastAtendimento[field]) || 0;
+    const previous = parseFloat(firstAtendimento[field]) || 0;
+    
+    if (current === 0 || previous === 0) {
+        return { color: '#6c757d', change: 0, percentage: 0, current: '--', previous: '--' };
+    }
+    
+    const change = current - previous;
+    const percentage = ((change / previous) * 100).toFixed(1);
+    
+    // Lógica de cores: verde para redução, vermelho para aumento
+    // (para tratamentos estéticos, geralmente queremos redução)
+    let color = '#6c757d';
+    if (change < 0) {
+        color = '#28a745'; // Verde - redução
+    } else if (change > 0) {
+        color = '#dc3545'; // Vermelho - aumento
+    }
+    
+    return {
+        color,
+        change: change.toFixed(1),
+        percentage,
+        current: current.toFixed(1),
+        previous: previous.toFixed(1)
+    };
+}
+
+// Função para gerar detalhes das zonas
+function generateZonesDetails() {
+    const container = document.getElementById('zonesDetails');
+    if (!container) return;
+    
+    const zones = [
+        { key: 'braco_direito', label: 'Braço Direito' },
+        { key: 'braco_esquerdo', label: 'Braço Esquerdo' },
+        { key: 'torax', label: 'Tórax' },
+        { key: 'cintura', label: 'Cintura' },
+        { key: 'abdomen', label: 'Abdômen' },
+        { key: 'quadril', label: 'Quadril' },
+        { key: 'coxa_direita', label: 'Coxa Direita' },
+        { key: 'coxa_esquerda', label: 'Coxa Esquerda' },
+        { key: 'panturrilha_direita', label: 'Panturrilha Direita' },
+        { key: 'panturrilha_esquerda', label: 'Panturrilha Esquerda' }
+    ];
+    
+    let html = '';
+    zones.forEach(zone => {
+        const analysis = analyzeZone(zone.key);
+        const changeClass = analysis.change < 0 ? 'green' : analysis.change > 0 ? 'red' : '';
+        const changeText = analysis.change !== 0 ? `${analysis.change > 0 ? '+' : ''}${analysis.change} cm (${analysis.percentage}%)` : 'Sem alteração';
+        
+        html += `
+            <div class="zone-card ${changeClass}">
+                <h4>${zone.label}</h4>
+                <div class="zone-measurements">
+                    <span>Inicial: ${analysis.previous} cm</span>
+                    <span>Atual: ${analysis.current} cm</span>
+                </div>
+                <div class="zone-change ${changeClass}">${changeText}</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// Função para calcular métricas gerais
+function calculateMetrics() {
+    if (!currentAtendimentos || currentAtendimentos.length < 1) return;
+    
+    const firstAtendimento = currentAtendimentos[currentAtendimentos.length - 1];
+    const lastAtendimento = currentAtendimentos[0];
+    
+    // Peso
+    const pesoAtual = parseFloat(lastAtendimento.peso) || 0;
+    const pesoInicial = parseFloat(firstAtendimento.peso) || 0;
+    const pesoChange = pesoAtual - pesoInicial;
+    const pesoPercentage = pesoInicial > 0 ? ((pesoChange / pesoInicial) * 100).toFixed(1) : 0;
+    
+    const pesoMetric = document.getElementById('pesoMetric');
+    if (pesoMetric) {
+        pesoMetric.querySelector('.metric-value').textContent = pesoAtual > 0 ? `${pesoAtual} kg` : '--';
+        const pesoChangeClass = pesoChange < 0 ? 'green' : pesoChange > 0 ? 'red' : '';
+        pesoMetric.querySelector('.metric-change').className = `metric-change ${pesoChangeClass}`;
+        pesoMetric.querySelector('.metric-change').textContent = pesoChange !== 0 ? `${pesoChange > 0 ? '+' : ''}${pesoChange} kg (${pesoPercentage}%)` : 'Sem alteração';
+    }
+    
+    // Altura
+    const alturaAtual = parseFloat(currentClient.altura) || 0;
+    const alturaMetric = document.getElementById('alturaMetric');
+    if (alturaMetric) {
+        alturaMetric.querySelector('.metric-value').textContent = alturaAtual > 0 ? `${alturaAtual} cm` : '--';
+        alturaMetric.querySelector('.metric-change').textContent = 'Altura fixa';
+    }
+    
+    // IMC
+    if (alturaAtual > 0 && pesoAtual > 0) {
+        const alturaM = alturaAtual / 100;
+        const imc = (pesoAtual / (alturaM * alturaM)).toFixed(1);
+        const imcMetric = document.getElementById('imcMetric');
+        if (imcMetric) {
+            imcMetric.querySelector('.metric-value').textContent = imc;
+            
+            let imcClass = '';
+            let imcStatus = '';
+            if (imc < 18.5) {
+                imcClass = 'red';
+                imcStatus = 'Abaixo do peso';
+            } else if (imc < 25) {
+                imcClass = 'green';
+                imcStatus = 'Peso normal';
+            } else if (imc < 30) {
+                imcClass = 'red';
+                imcStatus = 'Sobrepeso';
+            } else {
+                imcClass = 'red';
+                imcStatus = 'Obesidade';
+            }
+            
+            imcMetric.querySelector('.metric-change').className = `metric-change ${imcClass}`;
+            imcMetric.querySelector('.metric-change').textContent = imcStatus;
+        }
+    }
+}
 
 // Tornar funções globais
 window.goBack = goBack;
