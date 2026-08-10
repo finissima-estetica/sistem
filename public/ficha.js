@@ -813,24 +813,24 @@ function generateBodyVisualization() {
     
     // Mapear as 18 zonas visuais para os dados reais disponíveis
     const zonesAnalysis = {
-        'zone-head': realZonesAnalysis.torax, // Usando torax como placeholder
-        'zone-neck': realZonesAnalysis.torax,
-        'zone-chest': realZonesAnalysis.torax,
-        'zone-ab-upper': realZonesAnalysis.cintura,
-        'zone-ab-lower': realZonesAnalysis.abdomen,
-        'zone-pelvis': realZonesAnalysis.quadril,
-        'zone-arm-r-upper': realZonesAnalysis.braco_direito,
-        'zone-forearm-r': realZonesAnalysis.braco_direito,
-        'zone-hand-r': realZonesAnalysis.braco_direito,
-        'zone-arm-l-upper': realZonesAnalysis.braco_esquerdo,
-        'zone-forearm-l': realZonesAnalysis.braco_esquerdo,
-        'zone-hand-l': realZonesAnalysis.braco_esquerdo,
-        'zone-thigh-r': realZonesAnalysis.coxa_direita,
-        'zone-shin-r': realZonesAnalysis.panturrilha_direita,
-        'zone-foot-r': realZonesAnalysis.panturrilha_direita,
-        'zone-thigh-l': realZonesAnalysis.coxa_esquerda,
-        'zone-shin-l': realZonesAnalysis.panturrilha_esquerda,
-        'zone-foot-l': realZonesAnalysis.panturrilha_esquerda
+        'zone-head': realZonesAnalysis.torax?.color || '#6c757d',
+        'zone-neck': realZonesAnalysis.torax?.color || '#6c757d',
+        'zone-chest': realZonesAnalysis.torax?.color || '#6c757d',
+        'zone-ab-upper': realZonesAnalysis.cintura?.color || '#6c757d',
+        'zone-ab-lower': realZonesAnalysis.abdomen?.color || '#6c757d',
+        'zone-pelvis': realZonesAnalysis.quadril?.color || '#6c757d',
+        'zone-arm-r-upper': realZonesAnalysis.braco_direito?.color || '#6c757d',
+        'zone-forearm-r': realZonesAnalysis.braco_direito?.color || '#6c757d',
+        'zone-hand-r': realZonesAnalysis.braco_direito?.color || '#6c757d',
+        'zone-arm-l-upper': realZonesAnalysis.braco_esquerdo?.color || '#6c757d',
+        'zone-forearm-l': realZonesAnalysis.braco_esquerdo?.color || '#6c757d',
+        'zone-hand-l': realZonesAnalysis.braco_esquerdo?.color || '#6c757d',
+        'zone-thigh-r': realZonesAnalysis.coxa_direita?.color || '#6c757d',
+        'zone-shin-r': realZonesAnalysis.panturrilha_direita?.color || '#6c757d',
+        'zone-foot-r': realZonesAnalysis.panturrilha_direita?.color || '#6c757d',
+        'zone-thigh-l': realZonesAnalysis.coxa_esquerda?.color || '#6c757d',
+        'zone-shin-l': realZonesAnalysis.panturrilha_esquerda?.color || '#6c757d',
+        'zone-foot-l': realZonesAnalysis.panturrilha_esquerda?.color || '#6c757d'
     };
     
     // HTML com camadas: overlays atrás, corpo SVG na frente
