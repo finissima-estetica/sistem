@@ -797,6 +797,8 @@ function generateBodyVisualization() {
     const container = document.getElementById('bodyVisualization');
     if (!container) return;
     
+    console.log("Iniciando renderização do corpo SVG");
+    
     // Análise das zonas disponíveis (dados reais do cadastro/atendimentos)
     const realZonesAnalysis = {
         'braco_direito': analyzeZone('braco_direito'),
@@ -810,6 +812,8 @@ function generateBodyVisualization() {
         'panturrilha_direita': analyzeZone('panturrilha_direita'),
         'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
     };
+    
+    console.log("Dados das zonas do banco:", Object.keys(realZonesAnalysis));
     
     // Mapeamento correto: dados do banco -> IDs do SVG
     const zoneMapping = {
@@ -825,9 +829,14 @@ function generateBodyVisualization() {
         'panturrilha_esquerda': ['zone-shin-l']
     };
     
+    console.log("Mapeamento de zonas:", zoneMapping);
+    
     // Função auxiliar para obter cor com fallback defensivo
     const getZoneColor = (zoneData) => {
-        return zoneData && zoneData.color ? zoneData.color : '#e0e0e0';
+        console.log("Obtendo cor para zona:", zoneData);
+        const color = zoneData?.color || '#e0e0e0';
+        console.log("Cor obtida:", color);
+        return color;
     };
     
     // Mapear todas as zonas visuais para suas cores
@@ -835,11 +844,15 @@ function generateBodyVisualization() {
     
     // Iterar sobre o mapeamento e atribuir cores
     Object.keys(zoneMapping).forEach(dataZone => {
+        console.log("Processando zona do banco:", dataZone);
         const color = getZoneColor(realZonesAnalysis[dataZone]);
         zoneMapping[dataZone].forEach(svgZoneId => {
+            console.log("Mapeando", dataZone, "->", svgZoneId, "com cor:", color);
             zonesAnalysis[svgZoneId] = color;
         });
     });
+    
+    console.log("Zonas Analysis final:", zonesAnalysis);
     
     // Adicionar fallback para zonas não mapeadas
     const allSvgZones = [
@@ -852,9 +865,19 @@ function generateBodyVisualization() {
     
     allSvgZones.forEach(zoneId => {
         if (!zonesAnalysis[zoneId]) {
+            console.log("Zona sem mapeamento, usando fallback:", zoneId);
             zonesAnalysis[zoneId] = '#e0e0e0';
         }
     });
+    
+    console.log("Zonas Analysis final com fallbacks:", zonesAnalysis);
+    
+    // Função helper segura para obter cor do objeto
+    const getSafeColor = (zoneId) => {
+        const color = zonesAnalysis[zoneId] || '#e0e0e0';
+        console.log("Renderizando zona:", zoneId, "com cor:", color);
+        return color;
+    };
     
     // HTML com camadas: overlays atrás, corpo SVG na frente
     let html = `
@@ -864,122 +887,122 @@ function generateBodyVisualization() {
                 <!-- Cabeça -->
                 <path id="zone-head" class="zone-overlay" 
                     d="M163 50 Q140 45 120 55 Q100 70 95 90 Q90 110 100 130 Q110 150 130 155 Q150 160 163 155 Q180 150 195 145 Q210 140 220 125 Q230 110 225 90 Q220 70 200 55 Q180 45 163 50"
-                    fill="${zonesAnalysis.zone_head.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-head')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-head')" onmouseout="unhighlightZone('zone-head')"
                     onclick="selectZone('zone-head')"/>
                 
                 <!-- Pescoço -->
                 <path id="zone-neck" class="zone-overlay"
                     d="M145 155 Q163 150 180 155 L178 180 Q163 175 148 180 Z"
-                    fill="${zonesAnalysis.zone_neck.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-neck')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-neck')" onmouseout="unhighlightZone('zone-neck')"
                     onclick="selectZone('zone-neck')"/>
                 
                 <!-- Peito/Bustiê -->
                 <path id="zone-chest" class="zone-overlay"
                     d="M120 180 Q100 200 105 230 Q110 260 130 280 Q145 290 163 285 Q180 280 195 275 Q210 270 220 250 Q230 230 225 200 Q220 180 200 175 Q180 170 163 175 Q145 180 120 180"
-                    fill="${zonesAnalysis.zone_chest.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-chest')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-chest')" onmouseout="unhighlightZone('zone-chest')"
                     onclick="selectZone('zone-chest')"/>
                 
                 <!-- Abdômen Superior -->
                 <path id="zone-ab-upper" class="zone-overlay"
                     d="M130 280 Q145 290 163 285 Q180 280 195 275 Q205 275 205 290 Q200 310 195 325 Q180 335 163 330 Q145 335 130 325 Q120 310 125 290 Q125 280 130 280"
-                    fill="${zonesAnalysis.zone_ab_upper.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-ab-upper')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-ab-upper')" onmouseout="unhighlightZone('zone-ab-upper')"
                     onclick="selectZone('zone-ab-upper')"/>
                 
                 <!-- Abdômen Inferior -->
                 <path id="zone-ab-lower" class="zone-overlay"
                     d="M130 325 Q145 335 163 330 Q180 335 195 325 Q200 340 195 360 Q180 375 163 370 Q145 375 130 360 Q120 345 125 325 Q130 325 130 325"
-                    fill="${zonesAnalysis.zone_ab_lower.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-ab-lower')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-ab-lower')" onmouseout="unhighlightZone('zone-ab-lower')"
                     onclick="selectZone('zone-ab-lower')"/>
                 
                 <!-- Pélvis/Quadril -->
                 <path id="zone-pelvis" class="zone-overlay"
                     d="M115 360 Q130 375 130 395 Q135 420 150 435 Q165 445 180 440 Q195 435 205 420 Q215 400 210 375 Q205 360 195 360 Q180 365 163 370 Q145 375 115 360"
-                    fill="${zonesAnalysis.zone_pelvis.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-pelvis')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-pelvis')" onmouseout="unhighlightZone('zone-pelvis')"
                     onclick="selectZone('zone-pelvis')"/>
                 
                 <!-- Braço Direito Superior -->
                 <path id="zone-arm-r-upper" class="zone-overlay"
                     d="M100 200 Q80 210 70 230 Q60 250 55 270 Q50 290 55 310 Q60 330 75 340 Q90 350 105 345 Q120 340 125 320 Q130 300 125 280 Q120 260 115 240 Q110 220 100 200"
-                    fill="${zonesAnalysis.zone_arm_r_upper.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-arm-r-upper')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-arm-r-upper')" onmouseout="unhighlightZone('zone-arm-r-upper')"
                     onclick="selectZone('zone-arm-r-upper')"/>
                 
                 <!-- Antebraço Direito -->
                 <path id="zone-forearm-r" class="zone-overlay"
                     d="M55 310 Q60 330 75 340 Q90 350 105 345 Q110 360 108 380 Q105 400 95 415 Q85 430 70 435 Q55 440 45 430 Q40 415 42 395 Q45 375 55 310"
-                    fill="${zonesAnalysis.zone_forearm_r.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-forearm-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-forearm-r')" onmouseout="unhighlightZone('zone-forearm-r')"
                     onclick="selectZone('zone-forearm-r')"/>
                 
                 <!-- Mão Direita -->
                 <ellipse id="zone-hand-r" class="zone-overlay" cx="50" cy="450" rx="15" ry="20"
-                    fill="${zonesAnalysis.zone_hand_r.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-hand-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-hand-r')" onmouseout="unhighlightZone('zone-hand-r')"
                     onclick="selectZone('zone-hand-r')"/>
                 
                 <!-- Braço Esquerdo Superior -->
                 <path id="zone-arm-l-upper" class="zone-overlay"
                     d="M225 200 Q245 210 255 230 Q265 250 270 270 Q275 290 270 310 Q265 330 250 340 Q235 350 220 345 Q205 340 200 320 Q195 300 200 280 Q205 260 210 240 Q215 220 225 200"
-                    fill="${zonesAnalysis.zone_arm_l_upper.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-arm-l-upper')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-arm-l-upper')" onmouseout="unhighlightZone('zone-arm-l-upper')"
                     onclick="selectZone('zone-arm-l-upper')"/>
                 
                 <!-- Antebraço Esquerdo -->
                 <path id="zone-forearm-l" class="zone-overlay"
                     d="M270 310 Q265 330 250 340 Q235 350 220 345 Q215 360 217 380 Q220 400 230 415 Q240 430 255 435 Q270 440 280 430 Q285 415 283 395 Q280 375 270 310"
-                    fill="${zonesAnalysis.zone_forearm_l.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-forearm-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-forearm-l')" onmouseout="unhighlightZone('zone-forearm-l')"
                     onclick="selectZone('zone-forearm-l')"/>
                 
                 <!-- Mão Esquerda -->
                 <ellipse id="zone-hand-l" class="zone-overlay" cx="275" cy="450" rx="15" ry="20"
-                    fill="${zonesAnalysis.zone_hand_l.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-hand-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-hand-l')" onmouseout="unhighlightZone('zone-hand-l')"
                     onclick="selectZone('zone-hand-l')"/>
                 
                 <!-- Coxa Direita -->
                 <path id="zone-thigh-r" class="zone-overlay"
                     d="M130 430 Q145 445 150 470 Q155 495 150 520 Q145 545 130 555 Q115 565 100 555 Q85 545 85 520 Q85 495 95 470 Q105 445 130 430"
-                    fill="${zonesAnalysis.zone_thigh_r.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-thigh-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-thigh-r')" onmouseout="unhighlightZone('zone-thigh-r')"
                     onclick="selectZone('zone-thigh-r')"/>
                 
                 <!-- Canela Direita -->
                 <path id="zone-shin-r" class="zone-overlay"
                     d="M85 520 Q85 545 90 570 Q95 595 110 610 Q125 620 140 610 Q155 600 160 575 Q165 550 160 525 Q155 500 145 490 Q130 480 115 490 Q100 500 85 520"
-                    fill="${zonesAnalysis.zone_shin_r.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-shin-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-shin-r')" onmouseout="unhighlightZone('zone-shin-r')"
                     onclick="selectZone('zone-shin-r')"/>
                 
                 <!-- Pé Direito -->
                 <ellipse id="zone-foot-r" class="zone-overlay" cx="125" cy="635" rx="20" ry="12"
-                    fill="${zonesAnalysis.zone_foot_r.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-foot-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-foot-r')" onmouseout="unhighlightZone('zone-foot-r')"
                     onclick="selectZone('zone-foot-r')"/>
                 
                 <!-- Coxa Esquerda -->
                 <path id="zone-thigh-l" class="zone-overlay"
                     d="M195 430 Q210 445 215 470 Q220 495 215 520 Q210 545 195 555 Q180 565 165 555 Q150 545 150 520 Q150 495 160 470 Q170 445 195 430"
-                    fill="${zonesAnalysis.zone_thigh_l.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-thigh-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-thigh-l')" onmouseout="unhighlightZone('zone-thigh-l')"
                     onclick="selectZone('zone-thigh-l')"/>
                 
                 <!-- Canela Esquerda -->
                 <path id="zone-shin-l" class="zone-overlay"
                     d="M150 520 Q150 545 155 570 Q160 595 175 610 Q190 620 205 610 Q220 600 225 575 Q230 550 225 525 Q220 500 210 490 Q195 480 180 490 Q165 500 150 520"
-                    fill="${zonesAnalysis.zone_shin_l.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-shin-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-shin-l')" onmouseout="unhighlightZone('zone-shin-l')"
                     onclick="selectZone('zone-shin-l')"/>
                 
                 <!-- Pé Esquerdo -->
                 <ellipse id="zone-foot-l" class="zone-overlay" cx="190" cy="635" rx="20" ry="12"
-                    fill="${zonesAnalysis.zone_foot_l.color}" fill-opacity="0.7" stroke="none"
+                    fill="${getSafeColor('zone-foot-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-foot-l')" onmouseout="unhighlightZone('zone-foot-l')"
                     onclick="selectZone('zone-foot-l')"/>
             </svg>
