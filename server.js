@@ -19,7 +19,9 @@ app.get('*', (req, res) => {
 // Configuração do PostgreSQL
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    // Configurar fuso horário para Brasília (UTC-3)
+    timezone: 'America/Sao_Paulo'
 });
 
 // Testar conexão com o banco
@@ -223,6 +225,19 @@ app.post('/api/atendimentos', async (req, res) => {
     try {
         const atendimento = req.body;
         
+        // Ajustar data para fuso horário de Brasília (UTC-3)
+        let dataAtendimento = atendimento.data;
+        if (dataAtendimento) {
+            // Se for string ISO, ajustar para garantir timezone correto
+            const dataObj = new Date(dataAtendimento);
+            if (!isNaN(dataObj.getTime())) {
+                // Criar data em UTC-3 (Brasília)
+                const offsetBrasil = 3 * 60 * 60 * 1000; // 3 horas
+                const dataUTC = dataObj.getTime() + offsetBrasil;
+                dataAtendimento = new Date(dataUTC).toISOString().split('T')[0];
+            }
+        }
+        
         const result = await pool.query(`
             INSERT INTO atendimentos (
                 cliente_id, plano_id, data_atendimento, tipo_atendimento, observacoes,
@@ -231,7 +246,7 @@ app.post('/api/atendimentos', async (req, res) => {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING *
         `, [
-            atendimento.clienteId, atendimento.planoId, atendimento.data,
+            atendimento.clienteId, atendimento.planoId, dataAtendimento,
             atendimento.tipo, atendimento.observacoes, atendimento.peso,
             atendimento.bracoDireito, atendimento.bracoEsquerdo, atendimento.torax,
             atendimento.cintura, atendimento.abdomen, atendimento.quadril,
@@ -264,13 +279,26 @@ app.post('/api/planos', async (req, res) => {
     try {
         const plano = req.body;
         
+        // Ajustar datas para fuso horário de Brasília (UTC-3)
+        const ajustarData = (data) => {
+            if (!data) return null;
+            const dataObj = new Date(data);
+            if (isNaN(dataObj.getTime())) return data;
+            const offsetBrasil = 3 * 60 * 60 * 1000;
+            const dataUTC = dataObj.getTime() + offsetBrasil;
+            return new Date(dataUTC).toISOString().split('T')[0];
+        };
+        
+        const dataInicio = ajustarData(plano.dataInicio);
+        const dataFim = ajustarData(plano.dataFim);
+        
         const result = await pool.query(`
             INSERT INTO planos (cliente_id, plano_id, nome_plano, data_inicio, data_fim, duracao_meses, preco, observacoes)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *
         `, [
-            plano.clienteId, plano.planoId, plano.nomePlano, plano.dataInicio,
-            plano.dataFim, plano.duracao, plano.preco, plano.observacoes
+            plano.clienteId, plano.planoId, plano.nomePlano, dataInicio,
+            dataFim, plano.duracao, plano.preco, plano.observacoes
         ]);
         
         res.status(201).json(result.rows[0]);
