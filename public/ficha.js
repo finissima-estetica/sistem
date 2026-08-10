@@ -1051,18 +1051,28 @@ function calculateMetrics() {
     const firstAtendimento = atendimentosOrdenados[atendimentosOrdenados.length - 1];
     const lastAtendimento = atendimentosOrdenados[0];
     
-    // Peso
+    // Peso - SEMPRE usar cadastro como baseline (fixo)
     const pesoAtual = parseFloat(lastAtendimento.peso) || 0;
-    const pesoInicial = parseFloat(firstAtendimento.peso) || 0;
+    const pesoInicial = parseFloat(currentClient.peso) || 0; // Peso do cadastro
     const pesoChange = pesoAtual - pesoInicial;
     const pesoPercentage = pesoInicial > 0 ? ((pesoChange / pesoInicial) * 100).toFixed(1) : 0;
+    
+    console.log(`Peso: inicial (cadastro)=${pesoInicial}, atual (último atendimento)=${pesoAtual}, mudança=${pesoChange}`);
     
     const pesoMetric = document.getElementById('pesoMetric');
     if (pesoMetric) {
         pesoMetric.querySelector('.metric-value').textContent = pesoAtual > 0 ? `${pesoAtual} kg` : '--';
         const pesoChangeClass = pesoChange < 0 ? 'green' : pesoChange > 0 ? 'red' : '';
         pesoMetric.querySelector('.metric-change').className = `metric-change ${pesoChangeClass}`;
-        pesoMetric.querySelector('.metric-change').textContent = pesoChange !== 0 ? `${pesoChange > 0 ? '+' : ''}${pesoChange} kg (${pesoPercentage}%)` : 'Sem alteração';
+        
+        // Mostrar peso inicial e a diferença
+        if (pesoInicial > 0 && pesoAtual > 0) {
+            pesoMetric.querySelector('.metric-change').textContent = `Inicial: ${pesoInicial} kg | ${pesoChange > 0 ? '+' : ''}${pesoChange} kg (${pesoPercentage}%)`;
+        } else if (pesoAtual > 0) {
+            pesoMetric.querySelector('.metric-change').textContent = 'Sem registro inicial';
+        } else {
+            pesoMetric.querySelector('.metric-change').textContent = '--';
+        }
     }
     
     // Altura
