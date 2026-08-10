@@ -205,9 +205,9 @@ function handleSubmit(e) {
         }
     }
     
-    // Redirecionar para o dashboard
+    // Redirecionar para o dashboard com flag para recarregar
     alert('Cliente cadastrado com sucesso!');
-    window.location.href = 'index.html';
+    window.location.href = 'index.html?reload=true';
 }
 
 // Função para vincular plano ao cliente

@@ -79,6 +79,14 @@ window.addEventListener('load', () => {
     
     // Se estiver na página dashboard, carregar clientes
     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+        // Verificar se deve recarregar (flag reload=true)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('reload') === 'true') {
+            // Remover o parâmetro da URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            // Recarregar clientes do storage
+            loadClientsFromStorage();
+        }
         loadClients();
     }
 });
