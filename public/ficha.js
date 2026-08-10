@@ -792,125 +792,251 @@ async function deleteClient() {
     }
 }
 
-// Função para gerar visualização do corpo
+// Função para gerar visualização do corpo com overlays coloridos
 function generateBodyVisualization() {
     const container = document.getElementById('bodyVisualization');
     if (!container) return;
     
     // Análise de cada zona
     const zonesAnalysis = {
-        'braco_direito': analyzeZone('braco_direito'),
-        'braco_esquerdo': analyzeZone('braco_esquerdo'),
-        'torax': analyzeZone('torax'),
-        'cintura': analyzeZone('cintura'),
-        'abdomen': analyzeZone('abdomen'),
-        'quadril': analyzeZone('quadril'),
-        'coxa_direita': analyzeZone('coxa_direita'),
-        'coxa_esquerda': analyzeZone('coxa_esquerda'),
-        'panturrilha_direita': analyzeZone('panturrilha_direita'),
-        'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
+        'zone-head': analyzeZone('braco_direito'), // Usando dados como placeholder
+        'zone-neck': analyzeZone('braco_esquerdo'),
+        'zone-chest': analyzeZone('torax'),
+        'zone-ab-upper': analyzeZone('cintura'),
+        'zone-ab-lower': analyzeZone('abdomen'),
+        'zone-pelvis': analyzeZone('quadril'),
+        'zone-arm-r-upper': analyzeZone('braco_direito'),
+        'zone-forearm-r': analyzeZone('braco_direito'),
+        'zone-hand-r': analyzeZone('braco_direito'),
+        'zone-arm-l-upper': analyzeZone('braco_esquerdo'),
+        'zone-forearm-l': analyzeZone('braco_esquerdo'),
+        'zone-hand-l': analyzeZone('braco_esquerdo'),
+        'zone-thigh-r': analyzeZone('coxa_direita'),
+        'zone-shin-r': analyzeZone('panturrilha_direita'),
+        'zone-foot-r': analyzeZone('panturrilha_direita'),
+        'zone-thigh-l': analyzeZone('coxa_esquerda'),
+        'zone-shin-l': analyzeZone('panturrilha_esquerda'),
+        'zone-foot-l': analyzeZone('panturrilha_esquerda')
     };
     
-    // Criar SVG do corpo feminino em pose T com formas curvilíneas
-    let svg = `
-        <svg viewBox="0 0 350 550" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
-            <!-- Cabeça feminina -->
-            <ellipse cx="175" cy="45" rx="28" ry="35" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-            <!-- Cabelo sugerido -->
-            <path d="M147 45 Q145 25 175 20 Q205 25 203 45" fill="none" stroke="#adb5bd" stroke-width="2"/>
-            
-            <!-- Pescoço delicado -->
-            <path d="M165 75 Q175 70 185 75 L180 95 Q175 92 170 95 Z" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-            
-            <!-- Ombros suaves -->
-            <path d="M95 95 Q175 90 255 95" stroke="#6c757d" stroke-width="3" fill="none"/>
-            
-            <!-- Braço Direito (pose T) - curvilíneo -->
-            <g>
-                <!-- Ombro direito -->
-                <circle cx="95" cy="95" r="7" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <!-- Braço direito superior - forma curva -->
-                <path d="M95 95 Q80 100 75 115 Q70 130 68 145" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Braço direito inferior - forma curva -->
-                <path d="M68 145 Q65 160 62 175 Q60 190 60 205" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Mão direita -->
-                <ellipse cx="60" cy="215" rx="10" ry="12" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <text x="60" y="220" text-anchor="middle" font-size="10" fill="#333">D</text>
-            </g>
-            
-            <!-- Braço Esquerdo (pose T) - curvilíneo -->
-            <g>
-                <!-- Ombro esquerdo -->
-                <circle cx="255" cy="95" r="7" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <!-- Braço esquerdo superior - forma curva -->
-                <path d="M255 95 Q270 100 275 115 Q280 130 282 145" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Braço esquerdo inferior - forma curva -->
-                <path d="M282 145 Q285 160 288 175 Q290 190 290 205" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Mão esquerda -->
-                <ellipse cx="290" cy="215" rx="10" ry="12" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <text x="290" y="220" text-anchor="middle" font-size="10" fill="#333">E</text>
-            </g>
-            
-            <!-- Torso feminino - formato ampulheta -->
-            <g>
-                <!-- Tórax - lado direito -->
-                <path d="M130 95 Q115 130 125 160 Q135 175 140 195 L175 195 L175 95 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Tórax - lado esquerdo -->
-                <path d="M220 95 Q235 130 225 160 Q215 175 210 195 L175 195 L175 95 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+    // HTML com camadas: overlays atrás, corpo SVG na frente
+    let html = `
+        <div class="body-visualization-container" style="position: relative; width: 100%; max-width: 400px; margin: 0 auto;">
+            <!-- Camada de overlays coloridos (atrás) -->
+            <svg class="body-overlays" viewBox="0 0 326 600" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                <!-- Cabeça -->
+                <path id="zone-head" class="zone-overlay" 
+                    d="M163 50 Q140 45 120 55 Q100 70 95 90 Q90 110 100 130 Q110 150 130 155 Q150 160 163 155 Q180 150 195 145 Q210 140 220 125 Q230 110 225 90 Q220 70 200 55 Q180 45 163 50"
+                    fill="${zonesAnalysis.zone_head.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-head')" onmouseout="unhighlightZone('zone-head')"
+                    onclick="selectZone('zone-head')"/>
                 
-                <!-- Cintura - lado direito -->
-                <path d="M140 195 Q135 210 137 225 Q140 240 145 255 L175 255 L175 195 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Cintura - lado esquerdo -->
-                <path d="M210 195 Q215 210 213 225 Q210 240 205 255 L175 255 L175 195 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Pescoço -->
+                <path id="zone-neck" class="zone-overlay"
+                    d="M145 155 Q163 150 180 155 L178 180 Q163 175 148 180 Z"
+                    fill="${zonesAnalysis.zone_neck.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-neck')" onmouseout="unhighlightZone('zone-neck')"
+                    onclick="selectZone('zone-neck')"/>
                 
-                <!-- Abdômen - lado direito -->
-                <path d="M145 255 Q140 275 145 295 Q150 310 155 320 L175 320 L175 255 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Abdômen - lado esquerdo -->
-                <path d="M205 255 Q210 275 205 295 Q200 310 195 320 L175 320 L175 255 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Peito/Bustiê -->
+                <path id="zone-chest" class="zone-overlay"
+                    d="M120 180 Q100 200 105 230 Q110 260 130 280 Q145 290 163 285 Q180 280 195 275 Q210 270 220 250 Q230 230 225 200 Q220 180 200 175 Q180 170 163 175 Q145 180 120 180"
+                    fill="${zonesAnalysis.zone_chest.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-chest')" onmouseout="unhighlightZone('zone-chest')"
+                    onclick="selectZone('zone-chest')"/>
                 
-                <!-- Quadril feminino - mais largo -->
-                <path d="M125 320 Q110 340 115 365 Q125 385 140 400 L175 400 L175 320 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <path d="M225 320 Q240 340 235 365 Q225 385 210 400 L175 400 L175 320 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            </g>
-            
-            <!-- Pernas femininas - curvilíneas -->
-            <g>
+                <!-- Abdômen Superior -->
+                <path id="zone-ab-upper" class="zone-overlay"
+                    d="M130 280 Q145 290 163 285 Q180 280 195 275 Q205 275 205 290 Q200 310 195 325 Q180 335 163 330 Q145 335 130 325 Q120 310 125 290 Q125 280 130 280"
+                    fill="${zonesAnalysis.zone_ab_upper.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-ab-upper')" onmouseout="unhighlightZone('zone-ab-upper')"
+                    onclick="selectZone('zone-ab-upper')"/>
+                
+                <!-- Abdômen Inferior -->
+                <path id="zone-ab-lower" class="zone-overlay"
+                    d="M130 325 Q145 335 163 330 Q180 335 195 325 Q200 340 195 360 Q180 375 163 370 Q145 375 130 360 Q120 345 125 325 Q130 325 130 325"
+                    fill="${zonesAnalysis.zone_ab_lower.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-ab-lower')" onmouseout="unhighlightZone('zone-ab-lower')"
+                    onclick="selectZone('zone-ab-lower')"/>
+                
+                <!-- Pélvis/Quadril -->
+                <path id="zone-pelvis" class="zone-overlay"
+                    d="M115 360 Q130 375 130 395 Q135 420 150 435 Q165 445 180 440 Q195 435 205 420 Q215 400 210 375 Q205 360 195 360 Q180 365 163 370 Q145 375 115 360"
+                    fill="${zonesAnalysis.zone_pelvis.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-pelvis')" onmouseout="unhighlightZone('zone-pelvis')"
+                    onclick="selectZone('zone-pelvis')"/>
+                
+                <!-- Braço Direito Superior -->
+                <path id="zone-arm-r-upper" class="zone-overlay"
+                    d="M100 200 Q80 210 70 230 Q60 250 55 270 Q50 290 55 310 Q60 330 75 340 Q90 350 105 345 Q120 340 125 320 Q130 300 125 280 Q120 260 115 240 Q110 220 100 200"
+                    fill="${zonesAnalysis.zone_arm_r_upper.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-arm-r-upper')" onmouseout="unhighlightZone('zone-arm-r-upper')"
+                    onclick="selectZone('zone-arm-r-upper')"/>
+                
+                <!-- Antebraço Direito -->
+                <path id="zone-forearm-r" class="zone-overlay"
+                    d="M55 310 Q60 330 75 340 Q90 350 105 345 Q110 360 108 380 Q105 400 95 415 Q85 430 70 435 Q55 440 45 430 Q40 415 42 395 Q45 375 55 310"
+                    fill="${zonesAnalysis.zone_forearm_r.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-forearm-r')" onmouseout="unhighlightZone('zone-forearm-r')"
+                    onclick="selectZone('zone-forearm-r')"/>
+                
+                <!-- Mão Direita -->
+                <ellipse id="zone-hand-r" class="zone-overlay" cx="50" cy="450" rx="15" ry="20"
+                    fill="${zonesAnalysis.zone_hand_r.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-hand-r')" onmouseout="unhighlightZone('zone-hand-r')"
+                    onclick="selectZone('zone-hand-r')"/>
+                
+                <!-- Braço Esquerdo Superior -->
+                <path id="zone-arm-l-upper" class="zone-overlay"
+                    d="M225 200 Q245 210 255 230 Q265 250 270 270 Q275 290 270 310 Q265 330 250 340 Q235 350 220 345 Q205 340 200 320 Q195 300 200 280 Q205 260 210 240 Q215 220 225 200"
+                    fill="${zonesAnalysis.zone_arm_l_upper.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-arm-l-upper')" onmouseout="unhighlightZone('zone-arm-l-upper')"
+                    onclick="selectZone('zone-arm-l-upper')"/>
+                
+                <!-- Antebraço Esquerdo -->
+                <path id="zone-forearm-l" class="zone-overlay"
+                    d="M270 310 Q265 330 250 340 Q235 350 220 345 Q215 360 217 380 Q220 400 230 415 Q240 430 255 435 Q270 440 280 430 Q285 415 283 395 Q280 375 270 310"
+                    fill="${zonesAnalysis.zone_forearm_l.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-forearm-l')" onmouseout="unhighlightZone('zone-forearm-l')"
+                    onclick="selectZone('zone-forearm-l')"/>
+                
+                <!-- Mão Esquerda -->
+                <ellipse id="zone-hand-l" class="zone-overlay" cx="275" cy="450" rx="15" ry="20"
+                    fill="${zonesAnalysis.zone_hand_l.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-hand-l')" onmouseout="unhighlightZone('zone-hand-l')"
+                    onclick="selectZone('zone-hand-l')"/>
+                
                 <!-- Coxa Direita -->
-                <path d="M140 400 Q125 420 130 450 Q135 480 140 500 Q145 510 155 510" fill="${zonesAnalysis.coxa_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Panturrilha Direita -->
-                <path d="M140 500 Q145 515 147 530 Q148 540 150 545" fill="${zonesAnalysis.panturrilha_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <path id="zone-thigh-r" class="zone-overlay"
+                    d="M130 430 Q145 445 150 470 Q155 495 150 520 Q145 545 130 555 Q115 565 100 555 Q85 545 85 520 Q85 495 95 470 Q105 445 130 430"
+                    fill="${zonesAnalysis.zone_thigh_r.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-thigh-r')" onmouseout="unhighlightZone('zone-thigh-r')"
+                    onclick="selectZone('zone-thigh-r')"/>
+                
+                <!-- Canela Direita -->
+                <path id="zone-shin-r" class="zone-overlay"
+                    d="M85 520 Q85 545 90 570 Q95 595 110 610 Q125 620 140 610 Q155 600 160 575 Q165 550 160 525 Q155 500 145 490 Q130 480 115 490 Q100 500 85 520"
+                    fill="${zonesAnalysis.zone_shin_r.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-shin-r')" onmouseout="unhighlightZone('zone-shin-r')"
+                    onclick="selectZone('zone-shin-r')"/>
+                
                 <!-- Pé Direito -->
-                <ellipse cx="155" cy="550" rx="12" ry="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <ellipse id="zone-foot-r" class="zone-overlay" cx="125" cy="635" rx="20" ry="12"
+                    fill="${zonesAnalysis.zone_foot_r.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-foot-r')" onmouseout="unhighlightZone('zone-foot-r')"
+                    onclick="selectZone('zone-foot-r')"/>
                 
                 <!-- Coxa Esquerda -->
-                <path d="M210 400 Q225 420 220 450 Q215 480 210 500 Q205 510 195 510" fill="${zonesAnalysis.coxa_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Panturrilha Esquerda -->
-                <path d="M210 500 Q205 515 203 530 Q202 540 200 545" fill="${zonesAnalysis.panturrilha_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <path id="zone-thigh-l" class="zone-overlay"
+                    d="M195 430 Q210 445 215 470 Q220 495 215 520 Q210 545 195 555 Q180 565 165 555 Q150 545 150 520 Q150 495 160 470 Q170 445 195 430"
+                    fill="${zonesAnalysis.zone_thigh_l.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-thigh-l')" onmouseout="unhighlightZone('zone-thigh-l')"
+                    onclick="selectZone('zone-thigh-l')"/>
+                
+                <!-- Canela Esquerda -->
+                <path id="zone-shin-l" class="zone-overlay"
+                    d="M150 520 Q150 545 155 570 Q160 595 175 610 Q190 620 205 610 Q220 600 225 575 Q230 550 225 525 Q220 500 210 490 Q195 480 180 490 Q165 500 150 520"
+                    fill="${zonesAnalysis.zone_shin_l.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-shin-l')" onmouseout="unhighlightZone('zone-shin-l')"
+                    onclick="selectZone('zone-shin-l')"/>
+                
                 <!-- Pé Esquerdo -->
-                <ellipse cx="195" cy="550" rx="12" ry="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-            </g>
+                <ellipse id="zone-foot-l" class="zone-overlay" cx="190" cy="635" rx="20" ry="12"
+                    fill="${zonesAnalysis.zone_foot_l.color}" fill-opacity="0.7" stroke="none"
+                    onmouseover="highlightZone('zone-foot-l')" onmouseout="unhighlightZone('zone-foot-l')"
+                    onclick="selectZone('zone-foot-l')"/>
+            </svg>
             
-            <!-- Rótulos das zonas -->
-            <text x="175" y="140" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">TÓRAX</text>
-            <text x="175" y="220" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">CINTURA</text>
-            <text x="175" y="285" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">ABDÔMEN</text>
-            <text x="175" y="360" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">QUADRIL</text>
+            <!-- Camada do corpo SVG (na frente) -->
+            <svg class="body-image" viewBox="0 0 326 600" style="position: relative; z-index: 2; width: 100%; height: auto;">
+                <image href="corpo2.svg" x="0" y="0" width="326" height="600" preserveAspectRatio="xMidYMid meet"/>
+            </svg>
             
-            <!-- Legenda de mudança -->
-            <g transform="translate(260, 200)">
-                <rect x="0" y="0" width="80" height="90" fill="white" stroke="#6c757d" stroke-width="1" rx="5"/>
-                <text x="40" y="15" text-anchor="middle" font-size="9" font-weight="bold">MUDANÇA</text>
-                <rect x="10" y="25" width="15" height="15" fill="#28a745"/>
-                <text x="30" y="37" font-size="8" fill="#333">Redução</text>
-                <rect x="10" y="45" width="15" height="15" fill="#dc3545"/>
-                <text x="30" y="57" font-size="8" fill="#333">Aumento</text>
-                <rect x="10" y="65" width="15" height="15" fill="#6c757d"/>
-                <text x="30" y="77" font-size="8" fill="#333">Sem dado</text>
-            </g>
-        </svg>
+            <!-- Legenda -->
+            <div class="legend" style="position: absolute; top: 10px; right: 10px; background: white; padding: 10px; border-radius: 5px; border: 1px solid #6c757d; z-index: 3;">
+                <div style="font-weight: bold; margin-bottom: 5px; font-size: 9px;">MUDANÇA</div>
+                <div style="display: flex; align-items: center; margin: 3px 0;">
+                    <div style="width: 12px; height: 12px; background: #28a745; margin-right: 5px;"></div>
+                    <span style="font-size: 8px;">Redução</span>
+                </div>
+                <div style="display: flex; align-items: center; margin: 3px 0;">
+                    <div style="width: 12px; height: 12px; background: #dc3545; margin-right: 5px;"></div>
+                    <span style="font-size: 8px;">Aumento</span>
+                </div>
+                <div style="display: flex; align-items: center; margin: 3px 0;">
+                    <div style="width: 12px; height: 12px; background: #6c757d; margin-right: 5px;"></div>
+                    <span style="font-size: 8px;">Sem dado</span>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .zone-overlay {
+                transition: fill 0.3s ease, fill-opacity 0.3s ease;
+                cursor: pointer;
+            }
+            .zone-overlay:hover {
+                fill-opacity: 0.9 !important;
+                stroke: #333;
+                stroke-width: 2;
+            }
+            .body-overlays {
+                mix-blend-mode: multiply;
+            }
+        </style>
     `;
     
-    container.innerHTML = svg;
+    container.innerHTML = html;
+}
+
+// Função para destacar zona ao passar o mouse
+function highlightZone(zoneId) {
+    const zone = document.getElementById(zoneId);
+    if (zone) {
+        zone.style.fillOpacity = '0.9';
+        zone.style.stroke = '#333';
+        zone.style.strokeWidth = '2';
+    }
+}
+
+// Função para remover destaque ao sair do mouse
+function unhighlightZone(zoneId) {
+    const zone = document.getElementById(zoneId);
+    if (zone) {
+        zone.style.fillOpacity = '0.7';
+        zone.style.stroke = 'none';
+    }
+}
+
+// Função para selecionar zona ao clicar
+function selectZone(zoneId) {
+    console.log("Zona selecionada:", zoneId);
+    const zone = document.getElementById(zoneId);
+    if (zone) {
+        // Flash effect
+        const originalFill = zone.style.fill;
+        zone.style.fill = '#ffc107';
+        setTimeout(() => {
+            zone.style.fill = originalFill;
+        }, 200);
+    }
+}
+
+// Função para definir cor de uma zona específica
+function setZoneColor(zoneId, colorHex) {
+    const zone = document.getElementById(zoneId);
+    if (zone) {
+        zone.style.fill = colorHex;
+    }
+}
+
+// Função para resetar todas as zonas
+function resetZones() {
+    const zones = document.querySelectorAll('.zone-overlay');
+    zones.forEach(zone => {
+        zone.style.fill = '#6c757d';
+        zone.style.fillOpacity = '0.7';
+    });
 }
 
 // Função para analisar uma zona específica - SEMPRE compara cadastro vs último atendimento
@@ -1128,3 +1254,8 @@ window.openNovoPlano = openNovoPlano;
 window.closeModal = closeModal;
 window.selectPlano = selectPlano;
 window.editCliente = editCliente;
+window.highlightZone = highlightZone;
+window.unhighlightZone = unhighlightZone;
+window.selectZone = selectZone;
+window.setZoneColor = setZoneColor;
+window.resetZones = resetZones;
