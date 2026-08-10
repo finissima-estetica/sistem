@@ -891,11 +891,15 @@ function analyzeZone(zoneKey) {
     console.log('Atendimentos disponíveis:', currentAtendimentos);
     console.log('Cliente atual:', currentClient);
     
-    // Ordenar atendimentos por data (mais recente primeiro)
+    // Ordenar atendimentos por data (mais recente primeiro) - usando fuso horário de Brasília (UTC-3)
     const atendimentosOrdenados = [...currentAtendimentos].sort((a, b) => {
         const dataA = new Date(a.data || a.data_atendimento || 0);
         const dataB = new Date(b.data || b.data_atendimento || 0);
-        return dataB - dataA; // Ordem decrescente (mais recente primeiro)
+        // Ajustar para fuso horário de Brasília (UTC-3)
+        const offsetBrasil = 3 * 60 * 60 * 1000; // 3 horas em milissegundos
+        const dataABrasil = new Date(dataA.getTime() + offsetBrasil);
+        const dataBBrasil = new Date(dataB.getTime() + offsetBrasil);
+        return dataBBrasil - dataABrasil; // Ordem decrescente (mais recente primeiro)
     });
     
     console.log('Atendimentos ordenados por data:', atendimentosOrdenados.map(a => ({
@@ -1010,8 +1014,22 @@ function generateZonesDetails() {
 function calculateMetrics() {
     if (!currentAtendimentos || currentAtendimentos.length < 1) return;
     
-    const firstAtendimento = currentAtendimentos[currentAtendimentos.length - 1];
-    const lastAtendimento = currentAtendimentos[0];
+    // Ordenar atendimentos por data (mais recente primeiro) - usando fuso horário de Brasília (UTC-3)
+    const atendimentosOrdenados = [...currentAtendimentos].sort((a, b) => {
+        const dataA = new Date(a.data || a.data_atendimento || 0);
+        const dataB = new Date(b.data || b.data_atendimento || 0);
+        const offsetBrasil = 3 * 60 * 60 * 1000; // 3 horas em milissegundos
+        const dataABrasil = new Date(dataA.getTime() + offsetBrasil);
+        const dataBBrasil = new Date(dataB.getTime() + offsetBrasil);
+        return dataBBrasil - dataABrasil;
+    });
+    
+    console.log('Atendimentos ordenados para métricas:', atendimentosOrdenados.map(a => ({
+        data: a.data || a.data_atendimento
+    })));
+    
+    const firstAtendimento = atendimentosOrdenados[atendimentosOrdenados.length - 1];
+    const lastAtendimento = atendimentosOrdenados[0];
     
     // Peso
     const pesoAtual = parseFloat(lastAtendimento.peso) || 0;
