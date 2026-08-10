@@ -1,3 +1,24 @@
+// Função para abrir modal de novo atendimento
+function openNovoAtendimento() {
+    const modal = document.getElementById('modalAtendimento');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Limpar formulário
+        const form = document.getElementById('formAtendimento');
+        if (form) {
+            form.reset();
+        }
+    }
+}
+
+// Função para fechar modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 // Função para gerar visualização do corpo com SVG do Figma
 function generateBodyVisualization() {
     const container = document.getElementById('bodyVisualization');
