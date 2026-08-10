@@ -184,7 +184,7 @@ function setupFormValidation() {
 }
 
 // Função para lidar com o envio do formulário
-function handleSubmit(e) {
+async function handleSubmit(e) {
     e.preventDefault();
     
     if (!validateStep(5)) {
@@ -194,8 +194,8 @@ function handleSubmit(e) {
     // Coletar dados do formulário
     const formData = collectFormData();
     
-    // Salvar no localStorage
-    saveClientData(formData);
+    // Salvar no banco de dados ou localStorage
+    await saveClientData(formData);
     
     // Verificar se deve vincular plano
     const vincularPlano = document.getElementById('vincularPlano').value;
@@ -289,8 +289,53 @@ function collectFormData() {
 }
 
 // Função para salvar dados do cliente
-function saveClientData(clientData) {
-    // Recuperar clientes existentes
+async function saveClientData(clientData) {
+    try {
+        // Tentar usar API primeiro
+        if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
+            // Mapear campos do formulário para o banco de dados
+            const apiData = {
+                nome: clientData.nome,
+                cpf: clientData.cpf,
+                data_nascimento: clientData.dataNascimento,
+                telefone: clientData.telefone,
+                email: clientData.email,
+                endereco: clientData.endereco,
+                cidade: clientData.cidade,
+                estado: clientData.estado,
+                doencas_cronicas: clientData.doencasCronicas,
+                medicamentos: clientData.medicamentos,
+                cirurgias: clientData.cirurgias,
+                alergias: clientData.alergias,
+                sensibilidade: clientData.sensibilidade,
+                fumante: clientData.fumante,
+                alcool: clientData.alcool,
+                atividade_fisica: clientData.atividadeFisica,
+                procedimentos_desejados: clientData.detalhesProcedimentos,
+                objetivos: clientData.objetivos,
+                peso: clientData.peso,
+                altura: clientData.altura,
+                braco_direito: clientData.bracoDireito,
+                braco_esquerdo: clientData.bracoEsquerdo,
+                torax: clientData.torax,
+                cintura: clientData.cintura,
+                abdomen: clientData.abdomen,
+                quadril: clientData.quadril,
+                coxa_direita: clientData.coxaDireita,
+                coxa_esquerda: clientData.coxaEsquerda,
+                panturrilha_direita: clientData.panturrilhaDireita,
+                panturrilha_esquerda: clientData.panturrilhaEsquerda
+            };
+            
+            const savedClient = await clientesAPI.criar(apiData);
+            console.log('Cliente salvo no PostgreSQL:', savedClient);
+            return;
+        }
+    } catch (error) {
+        console.log('API não disponível, usando localStorage:', error);
+    }
+    
+    // Fallback para localStorage
     let clients = JSON.parse(localStorage.getItem('clients') || '[]');
     
     // Adicionar novo cliente
@@ -299,10 +344,7 @@ function saveClientData(clientData) {
     // Salvar no localStorage
     localStorage.setItem('clients', JSON.stringify(clients));
     
-    // Atualizar lista no auth.js
-    if (typeof updateClientsList === 'function') {
-        updateClientsList();
-    }
+    console.log('Cliente salvo no localStorage');
 }
 
 // Máscaras de input

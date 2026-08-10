@@ -15,11 +15,20 @@ async function loadClientsFromStorage() {
         if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
             useLocalStorage = false;
             const clientesData = await clientesAPI.listar();
-            clients = clientesData;
+            // Mapear campos do banco para o formato esperado
+            clients = clientesData.map(client => ({
+                id: client.id,
+                nome: client.nome,
+                email: client.email,
+                telefone: client.telefone,
+                status: client.status,
+                dataCadastro: client.data_cadastro
+            }));
+            console.log('Clientes carregados do PostgreSQL:', clients.length);
             return;
         }
     } catch (error) {
-        console.log('Usando localStorage como fallback');
+        console.log('Usando localStorage como fallback:', error);
     }
     
     // Fallback para localStorage
@@ -57,6 +66,7 @@ async function loadClientsFromStorage() {
         ];
         localStorage.setItem('clients', JSON.stringify(clients));
     }
+    console.log('Clientes carregados do localStorage:', clients.length);
 }
 
 // Elementos do DOM
