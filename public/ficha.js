@@ -191,7 +191,7 @@ function updateClientInfo() {
     document.getElementById('clientContact').textContent = `${email} | ${telefone}`;
     
     // Atualizar data de cadastro
-    const dataFormatada = new Date(dataCadastro).toLocaleDateString('pt-BR');
+    const dataFormatada = formatarDataBrasil(dataCadastro);
     document.getElementById('clientSince').textContent = `Cliente desde: ${dataFormatada}`;
     
     // Atualizar status de plano
@@ -210,7 +210,7 @@ function updateClientInfo() {
     
     if (currentClientAtendimentos.length > 0) {
         const ultimoAtendimento = currentClientAtendimentos[currentClientAtendimentos.length - 1];
-        document.getElementById('ultimoAtendimento').textContent = new Date(ultimoAtendimento.data).toLocaleDateString('pt-BR');
+        document.getElementById('ultimoAtendimento').textContent = formatarDataBrasil(ultimoAtendimento.data);
     } else {
         document.getElementById('ultimoAtendimento').textContent = '--';
     }
@@ -270,6 +270,16 @@ function setupForms() {
     loadPlanosSelect();
 }
 
+// Função auxiliar para formatar data com fuso horário de Brasília
+function formatarDataBrasil(dataString) {
+    if (!dataString) return '--';
+    const dataObj = new Date(dataString);
+    if (isNaN(dataObj.getTime())) return '--';
+    const offsetBrasil = 3 * 60 * 60 * 1000;
+    const dataBrasil = new Date(dataObj.getTime() + offsetBrasil);
+    return dataBrasil.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+}
+
 // Carregar atendimentos
 function loadAtendimentos() {
     const atendimentosList = document.getElementById('atendimentosList');
@@ -284,13 +294,23 @@ function loadAtendimentos() {
         return;
     }
     
-    // Ordenar por data (mais recente primeiro)
-    const atendimentosOrdenados = [...currentClientAtendimentos].sort((a, b) => 
-        new Date(b.data) - new Date(a.data)
-    );
+    // Ordenar por data (mais recente primeiro) - usando fuso horário de Brasília
+    const atendimentosOrdenados = [...currentClientAtendimentos].sort((a, b) => {
+        const dataA = new Date(a.data || a.data_atendimento || 0);
+        const dataB = new Date(b.data || b.data_atendimento || 0);
+        const offsetBrasil = 3 * 60 * 60 * 1000;
+        const dataABrasil = new Date(dataA.getTime() + offsetBrasil);
+        const dataBBrasil = new Date(dataB.getTime() + offsetBrasil);
+        return dataBBrasil - dataABrasil;
+    });
     
     atendimentosList.innerHTML = atendimentosOrdenados.map(atendimento => {
-        const dataFormatada = new Date(atendimento.data).toLocaleDateString('pt-BR');
+        // Formatar data considerando fuso horário de Brasília
+        const dataObj = new Date(atendimento.data || atendimento.data_atendimento);
+        const offsetBrasil = 3 * 60 * 60 * 1000;
+        const dataBrasil = new Date(dataObj.getTime() + offsetBrasil);
+        const dataFormatada = dataBrasil.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+        
         const procedimentoNome = procedimentosNomes[atendimento.tipo] || atendimento.tipo;
         const planoVinculado = atendimento.planoId ? currentClientPlanos.find(p => p.id == atendimento.planoId) : null;
         
@@ -329,8 +349,8 @@ function loadPlanos() {
     planosList.innerHTML = currentClientPlanos.map(plano => {
         const planoInfo = planosDisponiveis.find(p => p.id == plano.planoId);
         const nomePlano = planoInfo ? planoInfo.nome : plano.planoId;
-        const dataInicio = new Date(plano.dataInicio).toLocaleDateString('pt-BR');
-        const dataFim = new Date(plano.dataFim).toLocaleDateString('pt-BR');
+        const dataInicio = formatarDataBrasil(plano.dataInicio);
+        const dataFim = formatarDataBrasil(plano.dataFim);
         const ativo = isPlanoAtivo(plano);
         
         return `
@@ -357,7 +377,7 @@ function loadDadosCompletos() {
         'Dados Pessoais': {
             'Nome': currentClient.nome || currentClient.name || '--',
             'CPF': currentClient.cpf || '--',
-            'Data de Nascimento': currentClient.dataNascimento ? new Date(currentClient.dataNascimento).toLocaleDateString('pt-BR') : '--',
+            'Data de Nascimento': currentClient.dataNascimento ? formatarDataBrasil(currentClient.dataNascimento) : '--',
             'Telefone': currentClient.telefone || currentClient.phone || '--',
             'Email': currentClient.email || '--'
         },
@@ -457,13 +477,13 @@ function updateCharts(atendimentos) {
     
     // Criar dados para gráfico de peso
     const pesos = atendimentosOrdenados.filter(a => a.peso).map(a => ({
-        data: new Date(a.data).toLocaleDateString('pt-BR'),
+        data: formatarDataBrasil(a.data),
         valor: a.peso
     }));
     
     // Criar dados para gráfico de cintura
     const cinturas = atendimentosOrdenados.filter(a => a.cintura).map(a => ({
-        data: new Date(a.data).toLocaleDateString('pt-BR'),
+        data: formatarDataBrasil(a.data),
         valor: a.cintura
     }));
     
