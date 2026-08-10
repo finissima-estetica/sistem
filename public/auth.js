@@ -102,7 +102,7 @@ window.addEventListener('load', () => {
 });
 
 // Função de login
-loginForm.addEventListener('submit', (e) => {
+loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const email = document.getElementById('email').value;
@@ -117,7 +117,7 @@ loginForm.addEventListener('submit', (e) => {
         localStorage.setItem('currentUser', JSON.stringify(user));
         
         // Mostrar dashboard
-        showDashboard(user);
+        await showDashboard(user);
     } else {
         // Mostrar erro
         errorMessage.textContent = 'E-mail ou senha incorretos';
@@ -131,12 +131,12 @@ loginForm.addEventListener('submit', (e) => {
 });
 
 // Função para mostrar dashboard
-function showDashboard(user) {
+async function showDashboard(user) {
     loginContainer.style.display = 'none';
     dashboardContainer.classList.add('active');
     userName.textContent = 'Bem-vindo, ' + user.name;
-    loadClientsFromStorage();
-    loadClients();
+    await loadClientsFromStorage();
+    await loadClients();
 }
 
 // Função de logout
@@ -155,8 +155,16 @@ function goToCadastro() {
 }
 
 // Função para carregar lista de clientes
-function loadClients() {
+async function loadClients() {
     if (!clientsList) return;
+    
+    // Recarregar do storage se não estiver usando API
+    if (useLocalStorage) {
+        const storedClients = localStorage.getItem('clients');
+        if (storedClients) {
+            clients = JSON.parse(storedClients);
+        }
+    }
     
     if (clients.length === 0) {
         clientsList.innerHTML = `
@@ -169,7 +177,19 @@ function loadClients() {
     }
     
     // Carregar planos para verificar status
-    const planos = JSON.parse(localStorage.getItem('planos') || '[]');
+    let planos = [];
+    if (useLocalStorage) {
+        planos = JSON.parse(localStorage.getItem('planos') || '[]');
+    } else {
+        try {
+            // Tenta carregar planos da API
+            // Por enquanto, vamos usar localStorage para planos
+            planos = JSON.parse(localStorage.getItem('planos') || '[]');
+        } catch (error) {
+            console.log('Erro ao carregar planos da API:', error);
+            planos = JSON.parse(localStorage.getItem('planos') || '[]');
+        }
+    }
     
     clientsList.innerHTML = clients.map(client => {
         const clientePlanos = planos.filter(p => p.clienteId == client.id);
