@@ -25,11 +25,47 @@ const pool = new Pool({
 // Testar conexão com o banco
 pool.on('connect', () => {
     console.log('Conectado ao PostgreSQL');
+    initializeDatabase();
 });
 
 pool.on('error', (err) => {
     console.error('Erro na conexão com PostgreSQL:', err);
 });
+
+// Função para inicializar o banco de dados
+async function initializeDatabase() {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        const schemaPath = path.join(__dirname, 'database', 'schema.sql');
+        
+        // Verificar se o arquivo schema existe
+        if (!fs.existsSync(schemaPath)) {
+            console.log('Arquivo schema.sql não encontrado');
+            return;
+        }
+        
+        // Verificar se as tabelas já existem
+        const tablesCheck = await pool.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public'
+            );
+        `);
+        
+        if (tablesCheck.rows[0].exists) {
+            console.log('Tabelas já existem, pulando inicialização');
+            return;
+        }
+        
+        // Ler e executar o schema
+        const schema = fs.readFileSync(schemaPath, 'utf8');
+        await pool.query(schema);
+        console.log('Schema do banco de dados inicializado com sucesso');
+    } catch (error) {
+        console.error('Erro ao inicializar banco de dados:', error);
+    }
+}
 
 // Rotas de Autenticação
 app.post('/api/auth/login', async (req, res) => {
@@ -222,7 +258,7 @@ app.post('/api/planos', async (req, res) => {
     }
 });
 
-// Rota para executar o schema
+// Rota para executar o schema (manual)
 app.post('/api/database/init', async (req, res) => {
     try {
         const fs = require('fs');
