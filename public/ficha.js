@@ -438,8 +438,6 @@ async function loadDesempenho() {
         console.error('Erro ao carregar aba de desempenho:', error);
     }
 }
-    updateMedidasTable(atendimentosPeriodo);
-}
 
 // Atualizar gráficos (placeholder)
 function updateCharts(atendimentos) {
