@@ -797,26 +797,40 @@ function generateBodyVisualization() {
     const container = document.getElementById('bodyVisualization');
     if (!container) return;
     
-    // Análise de cada zona
+    // Análise das zonas disponíveis (dados reais do cadastro/atendimentos)
+    const realZonesAnalysis = {
+        'braco_direito': analyzeZone('braco_direito'),
+        'braco_esquerdo': analyzeZone('braco_esquerdo'),
+        'torax': analyzeZone('torax'),
+        'cintura': analyzeZone('cintura'),
+        'abdomen': analyzeZone('abdomen'),
+        'quadril': analyzeZone('quadril'),
+        'coxa_direita': analyzeZone('coxa_direita'),
+        'coxa_esquerda': analyzeZone('coxa_esquerda'),
+        'panturrilha_direita': analyzeZone('panturrilha_direita'),
+        'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
+    };
+    
+    // Mapear as 18 zonas visuais para os dados reais disponíveis
     const zonesAnalysis = {
-        'zone-head': analyzeZone('braco_direito'), // Usando dados como placeholder
-        'zone-neck': analyzeZone('braco_esquerdo'),
-        'zone-chest': analyzeZone('torax'),
-        'zone-ab-upper': analyzeZone('cintura'),
-        'zone-ab-lower': analyzeZone('abdomen'),
-        'zone-pelvis': analyzeZone('quadril'),
-        'zone-arm-r-upper': analyzeZone('braco_direito'),
-        'zone-forearm-r': analyzeZone('braco_direito'),
-        'zone-hand-r': analyzeZone('braco_direito'),
-        'zone-arm-l-upper': analyzeZone('braco_esquerdo'),
-        'zone-forearm-l': analyzeZone('braco_esquerdo'),
-        'zone-hand-l': analyzeZone('braco_esquerdo'),
-        'zone-thigh-r': analyzeZone('coxa_direita'),
-        'zone-shin-r': analyzeZone('panturrilha_direita'),
-        'zone-foot-r': analyzeZone('panturrilha_direita'),
-        'zone-thigh-l': analyzeZone('coxa_esquerda'),
-        'zone-shin-l': analyzeZone('panturrilha_esquerda'),
-        'zone-foot-l': analyzeZone('panturrilha_esquerda')
+        'zone-head': realZonesAnalysis.torax, // Usando torax como placeholder
+        'zone-neck': realZonesAnalysis.torax,
+        'zone-chest': realZonesAnalysis.torax,
+        'zone-ab-upper': realZonesAnalysis.cintura,
+        'zone-ab-lower': realZonesAnalysis.abdomen,
+        'zone-pelvis': realZonesAnalysis.quadril,
+        'zone-arm-r-upper': realZonesAnalysis.braco_direito,
+        'zone-forearm-r': realZonesAnalysis.braco_direito,
+        'zone-hand-r': realZonesAnalysis.braco_direito,
+        'zone-arm-l-upper': realZonesAnalysis.braco_esquerdo,
+        'zone-forearm-l': realZonesAnalysis.braco_esquerdo,
+        'zone-hand-l': realZonesAnalysis.braco_esquerdo,
+        'zone-thigh-r': realZonesAnalysis.coxa_direita,
+        'zone-shin-r': realZonesAnalysis.panturrilha_direita,
+        'zone-foot-r': realZonesAnalysis.panturrilha_direita,
+        'zone-thigh-l': realZonesAnalysis.coxa_esquerda,
+        'zone-shin-l': realZonesAnalysis.panturrilha_esquerda,
+        'zone-foot-l': realZonesAnalysis.panturrilha_esquerda
     };
     
     // HTML com camadas: overlays atrás, corpo SVG na frente
