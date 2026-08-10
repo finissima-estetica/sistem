@@ -62,6 +62,12 @@ const clientesAPI = {
         });
     },
     
+    async excluir(id) {
+        return apiRequest(`/clientes/${id}`, {
+            method: 'DELETE'
+        });
+    },
+    
     async buscarAtendimentos(clienteId) {
         return apiRequest(`/clientes/${clientId}/atendimentos`);
     },

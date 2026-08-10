@@ -131,7 +131,10 @@
                     <div class="tab-pane" id="dados">
                         <div class="tab-header">
                             <h3>Dados Completos do Cliente</h3>
-                            <button class="btn-edit" onclick="editCliente()">Editar Dados</button>
+                            <div class="client-actions-header">
+                                <button class="btn-toggle-status" onclick="toggleClientStatus()">⚡ Ativar/Desativar</button>
+                                <button class="btn-delete" onclick="deleteClient()">🗑️ Excluir Cliente</button>
+                            </div>
                         </div>
                         
                         <div class="dados-completos" id="dadosCompletos">

@@ -660,6 +660,73 @@ function editCliente() {
     alert('Funcionalidade de edição será implementada em breve.');
 }
 
+// Função para ativar/desativar cliente
+async function toggleClientStatus() {
+    const currentStatus = currentClient.status || 'Ativo';
+    const newStatus = currentStatus === 'Ativo' ? 'Inativo' : 'Ativo';
+    
+    if (confirm(`Deseja alterar o status do cliente para ${newStatus}?`)) {
+        try {
+            // Tentar usar API primeiro
+            if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
+                await clientesAPI.atualizar(currentClientId, { status: newStatus });
+                currentClient.status = newStatus;
+            } else {
+                // Fallback para localStorage
+                const clients = JSON.parse(localStorage.getItem('clients') || '[]');
+                const clientIndex = clients.findIndex(c => c.id == currentClientId);
+                if (clientIndex !== -1) {
+                    clients[clientIndex].status = newStatus;
+                    localStorage.setItem('clients', JSON.stringify(clients));
+                    currentClient.status = newStatus;
+                }
+            }
+            
+            // Atualizar UI
+            updateClientInfo();
+            alert(`Cliente alterado para ${newStatus}`);
+        } catch (error) {
+            console.error('Erro ao alterar status:', error);
+            alert('Erro ao alterar status do cliente');
+        }
+    }
+}
+
+// Função para excluir cliente
+async function deleteClient() {
+    if (confirm('Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita e todos os dados serão perdidos.')) {
+        if (confirm('Esta ação é irreversível. Confirma a exclusão do cliente?')) {
+            try {
+                // Tentar usar API primeiro
+                if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
+                    // Excluir cliente no PostgreSQL
+                    await clientesAPI.excluir(currentClientId);
+                } else {
+                    // Fallback para localStorage
+                    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
+                    clients = clients.filter(c => c.id != currentClientId);
+                    localStorage.setItem('clients', JSON.stringify(clients));
+                    
+                    // Excluir atendimentos e planos relacionados
+                    let atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
+                    atendimentos = atendimentos.filter(a => a.clienteId != currentClientId);
+                    localStorage.setItem('atendimentos', JSON.stringify(atendimentos));
+                    
+                    let planos = JSON.parse(localStorage.getItem('planos') || '[]');
+                    planos = planos.filter(p => p.clienteId != currentClientId);
+                    localStorage.setItem('planos', JSON.stringify(planos));
+                }
+                
+                alert('Cliente excluído com sucesso!');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Erro ao excluir cliente:', error);
+                alert('Erro ao excluir cliente');
+            }
+        }
+    }
+}
+
 // Event listener para mudança de período
 document.getElementById('periodoAnalise').addEventListener('change', loadDesempenho);
 
