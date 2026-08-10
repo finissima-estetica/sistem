@@ -885,48 +885,77 @@ function generateBodyVisualization() {
     container.innerHTML = svg;
 }
 
-// Função para analisar uma zona específica
+// Função para analisar uma zona específica - SEMPRE compara cadastro vs último atendimento
 function analyzeZone(zoneKey) {
-    if (!currentAtendimentos || currentAtendimentos.length < 2) {
-        return { color: '#6c757d', change: 0, percentage: 0, current: '--', previous: '--' };
-    }
+    console.log('Analisando zona:', zoneKey);
+    console.log('Atendimentos disponíveis:', currentAtendimentos);
+    console.log('Cliente atual:', currentClient);
     
-    // Pegar primeiro e último atendimento
-    const firstAtendimento = currentAtendimentos[currentAtendimentos.length - 1];
-    const lastAtendimento = currentAtendimentos[0];
+    // Ordenar atendimentos por data (mais recente primeiro)
+    const atendimentosOrdenados = [...currentAtendimentos].sort((a, b) => {
+        const dataA = new Date(a.data || a.data_atendimento || 0);
+        const dataB = new Date(b.data || b.data_atendimento || 0);
+        return dataB - dataA; // Ordem decrescente (mais recente primeiro)
+    });
     
-    // Mapear zona para o campo correto
+    console.log('Atendimentos ordenados por data:', atendimentosOrdenados.map(a => ({
+        data: a.data || a.data_atendimento
+    })));
+    
+    // Mapear zona para o campo correto (suportar camelCase e underscore)
     const zoneMapping = {
-        'braco_direito': 'bracoDireito',
-        'braco_esquerdo': 'bracoEsquerdo',
-        'torax': 'torax',
-        'cintura': 'cintura',
-        'abdomen': 'abdomen',
-        'quadril': 'quadril',
-        'coxa_direita': 'coxaDireito',
-        'coxa_esquerda': 'coxaEsquerdo',
-        'panturrilha_direita': 'panturrilhaDireita',
-        'panturrilha_esquerda': 'panturrilhaEsquerda'
+        'braco_direito': ['bracoDireito', 'braco_direito'],
+        'braco_esquerdo': ['bracoEsquerdo', 'braco_esquerdo'],
+        'torax': ['torax'],
+        'cintura': ['cintura'],
+        'abdomen': ['abdomen'],
+        'quadril': ['quadril'],
+        'coxa_direita': ['coxaDireito', 'coxa_direita'],
+        'coxa_esquerda': ['coxaEsquerdo', 'coxa_esquerda'],
+        'panturrilha_direita': ['panturrilhaDireita', 'panturrilha_direita'],
+        'panturrilha_esquerda': ['panturrilhaEsquerda', 'panturrilha_esquerda']
     };
     
-    const field = zoneMapping[zoneKey];
-    const current = parseFloat(lastAtendimento[field]) || 0;
-    const previous = parseFloat(firstAtendimento[field]) || 0;
+    // SEMPRE usar cadastro como baseline (fixo)
+    let previous = 0;
+    if (currentClient) {
+        const possibleFields = zoneMapping[zoneKey];
+        for (const field of possibleFields) {
+            if (currentClient[field] !== undefined && currentClient[field] !== null) {
+                previous = parseFloat(currentClient[field]) || 0;
+                break;
+            }
+        }
+    }
+    
+    // SEMPRE usar atendimento mais recente como atual
+    let current = 0;
+    if (atendimentosOrdenados.length > 0) {
+        const lastAtendimento = atendimentosOrdenados[0];
+        const possibleFields = zoneMapping[zoneKey];
+        
+        for (const field of possibleFields) {
+            if (lastAtendimento[field] !== undefined && lastAtendimento[field] !== null) {
+                current = parseFloat(lastAtendimento[field]) || 0;
+                break;
+            }
+        }
+    }
+    
+    console.log(`Zona ${zoneKey}: baseline (cadastro)=${previous}, atual (mais recente)=${current}`);
     
     if (current === 0 || previous === 0) {
-        return { color: '#6c757d', change: 0, percentage: 0, current: '--', previous: '--' };
+        return { color: '#6c757d', change: 0, percentage: 0, current: current > 0 ? current.toFixed(1) : '--', previous: previous > 0 ? previous.toFixed(1) : '--' };
     }
     
     const change = current - previous;
     const percentage = ((change / previous) * 100).toFixed(1);
     
-    // Lógica de cores: verde para redução, vermelho para aumento
-    // (para tratamentos estéticos, geralmente queremos redução)
     let color = '#6c757d';
     if (change < 0) {
-        color = '#28a745'; // Verde - redução
+        color = '#28a745';
     } else if (change > 0) {
-        color = '#dc3545'; // Vermelho - aumento
+        color = '#dc3545';
     }
     
     return {
