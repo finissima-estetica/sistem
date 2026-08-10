@@ -17,8 +17,18 @@ async function apiRequest(endpoint, options = {}) {
         const response = await fetch(url, defaultOptions);
         
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || error.message || 'Erro na requisição');
+            // Tentar fazer parse do JSON apenas se houver conteúdo
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                try {
+                    const error = await response.json();
+                    throw new Error(error.error || error.message || 'Erro na requisição');
+                } catch (jsonError) {
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                }
+            } else {
+                throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            }
         }
         
         return await response.json();

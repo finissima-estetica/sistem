@@ -811,27 +811,50 @@ function generateBodyVisualization() {
         'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
     };
     
-    // Mapear as 18 zonas visuais para os dados reais disponíveis
-    const zonesAnalysis = {
-        'zone-head': realZonesAnalysis.torax?.color || '#6c757d',
-        'zone-neck': realZonesAnalysis.torax?.color || '#6c757d',
-        'zone-chest': realZonesAnalysis.torax?.color || '#6c757d',
-        'zone-ab-upper': realZonesAnalysis.cintura?.color || '#6c757d',
-        'zone-ab-lower': realZonesAnalysis.abdomen?.color || '#6c757d',
-        'zone-pelvis': realZonesAnalysis.quadril?.color || '#6c757d',
-        'zone-arm-r-upper': realZonesAnalysis.braco_direito?.color || '#6c757d',
-        'zone-forearm-r': realZonesAnalysis.braco_direito?.color || '#6c757d',
-        'zone-hand-r': realZonesAnalysis.braco_direito?.color || '#6c757d',
-        'zone-arm-l-upper': realZonesAnalysis.braco_esquerdo?.color || '#6c757d',
-        'zone-forearm-l': realZonesAnalysis.braco_esquerdo?.color || '#6c757d',
-        'zone-hand-l': realZonesAnalysis.braco_esquerdo?.color || '#6c757d',
-        'zone-thigh-r': realZonesAnalysis.coxa_direita?.color || '#6c757d',
-        'zone-shin-r': realZonesAnalysis.panturrilha_direita?.color || '#6c757d',
-        'zone-foot-r': realZonesAnalysis.panturrilha_direita?.color || '#6c757d',
-        'zone-thigh-l': realZonesAnalysis.coxa_esquerda?.color || '#6c757d',
-        'zone-shin-l': realZonesAnalysis.panturrilha_esquerda?.color || '#6c757d',
-        'zone-foot-l': realZonesAnalysis.panturrilha_esquerda?.color || '#6c757d'
+    // Mapeamento correto: dados do banco -> IDs do SVG
+    const zoneMapping = {
+        'braco_direito': ['zone-arm-r-upper', 'zone-forearm-r', 'zone-hand-r'],
+        'braco_esquerdo': ['zone-arm-l-upper', 'zone-forearm-l', 'zone-hand-l'],
+        'torax': ['zone-chest'],
+        'cintura': ['zone-pelvis'],
+        'abdomen': ['zone-ab-upper', 'zone-ab-lower'],
+        'quadril': ['zone-pelvis'],
+        'coxa_direita': ['zone-thigh-r'],
+        'coxa_esquerda': ['zone-thigh-l'],
+        'panturrilha_direita': ['zone-shin-r'],
+        'panturrilha_esquerda': ['zone-shin-l']
     };
+    
+    // Função auxiliar para obter cor com fallback defensivo
+    const getZoneColor = (zoneData) => {
+        return zoneData && zoneData.color ? zoneData.color : '#e0e0e0';
+    };
+    
+    // Mapear todas as zonas visuais para suas cores
+    const zonesAnalysis = {};
+    
+    // Iterar sobre o mapeamento e atribuir cores
+    Object.keys(zoneMapping).forEach(dataZone => {
+        const color = getZoneColor(realZonesAnalysis[dataZone]);
+        zoneMapping[dataZone].forEach(svgZoneId => {
+            zonesAnalysis[svgZoneId] = color;
+        });
+    });
+    
+    // Adicionar fallback para zonas não mapeadas
+    const allSvgZones = [
+        'zone-head', 'zone-neck', 'zone-chest', 'zone-ab-upper', 'zone-ab-lower',
+        'zone-pelvis', 'zone-arm-r-upper', 'zone-forearm-r', 'zone-hand-r',
+        'zone-arm-l-upper', 'zone-forearm-l', 'zone-hand-l',
+        'zone-thigh-r', 'zone-shin-r', 'zone-foot-r',
+        'zone-thigh-l', 'zone-shin-l', 'zone-foot-l'
+    ];
+    
+    allSvgZones.forEach(zoneId => {
+        if (!zonesAnalysis[zoneId]) {
+            zonesAnalysis[zoneId] = '#e0e0e0';
+        }
+    });
     
     // HTML com camadas: overlays atrás, corpo SVG na frente
     let html = `
