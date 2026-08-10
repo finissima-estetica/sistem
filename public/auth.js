@@ -6,9 +6,24 @@ const users = [
 
 // Clientes (carregados do localStorage ou exemplos iniciais)
 let clients = [];
+let useLocalStorage = true; // Flag para controlar se usa localStorage ou API
 
 // Função para carregar clientes do localStorage
-function loadClientsFromStorage() {
+async function loadClientsFromStorage() {
+    // Tenta usar API primeiro
+    try {
+        if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
+            useLocalStorage = false;
+            const clientesData = await clientesAPI.listar();
+            clients = clientesData;
+            return;
+        }
+    } catch (error) {
+        console.log('Usando localStorage como fallback');
+    }
+    
+    // Fallback para localStorage
+    useLocalStorage = true;
     const storedClients = localStorage.getItem('clients');
     if (storedClients) {
         clients = JSON.parse(storedClients);

@@ -1,7 +1,16 @@
 services:
   - type: web
     name: sistema-finissima
-    env: static
-    buildCommand: echo "No build required"
-    staticPublishPath: ./public
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+    plan: free
+
+databases:
+  - name: sistema-finissima-db
+    databaseName: sistema_finissima
+    user: sistema_finissima_user
     plan: free
