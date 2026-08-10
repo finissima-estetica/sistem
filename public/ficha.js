@@ -3,6 +3,7 @@ let currentClientId = null;
 let currentClient = null;
 let currentClientAtendimentos = [];
 let currentClientPlanos = [];
+let currentAtendimentos = []; // Para a aba de desempenho
 
 // Planos disponíveis (6 meses para cada produto)
 const planosDisponiveis = [
@@ -113,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Carregar dados do cliente
-function loadClientData() {
+async function loadClientData() {
     const urlParams = new URLSearchParams(window.location.search);
     currentClientId = urlParams.get('id');
     
@@ -123,29 +124,47 @@ function loadClientData() {
         return;
     }
     
-    // Carregar clientes do localStorage
-    const clients = JSON.parse(localStorage.getItem('clients') || '[]');
-    currentClient = clients.find(c => c.id == currentClientId);
-    
-    if (!currentClient) {
-        alert('Cliente não encontrado. Redirecionando para o dashboard.');
-        window.location.href = 'index.html';
-        return;
+    try {
+        // Tentar usar API primeiro
+        if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
+            const clienteData = await clientesAPI.buscar(currentClientId);
+            const atendimentosData = await clientesAPI.buscarAtendimentos(currentClientId);
+            const planosData = await clientesAPI.buscarPlanos(currentClientId);
+            
+            currentClient = clienteData;
+            currentClientAtendimentos = atendimentosData;
+            currentClientPlanos = planosData;
+            
+            console.log('Dados carregados da API:', currentClient);
+        } else {
+            // Fallback para localStorage
+            const clients = JSON.parse(localStorage.getItem('clients') || '[]');
+            const atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
+            const planos = JSON.parse(localStorage.getItem('planos') || '[]');
+            
+            currentClient = clients.find(c => c.id == currentClientId);
+            currentClientAtendimentos = atendimentos.filter(a => a.clienteId == currentClientId);
+            currentClientPlanos = planos.filter(p => p.clienteId == currentClientId);
+            
+            console.log('Dados carregados do localStorage:', currentClient);
+        }
+        
+        if (!currentClient) {
+            alert('Cliente não encontrado. Redirecionando para o dashboard.');
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // Atualizar UI
+        updateClientInfo();
+        loadAtendimentos();
+        loadPlanos();
+        loadDadosCompletos();
+        
+    } catch (error) {
+        console.error('Erro ao carregar dados do cliente:', error);
+        alert('Erro ao carregar dados do cliente. Tente novamente.');
     }
-    
-    // Carregar atendimentos do cliente
-    const atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
-    currentClientAtendimentos = atendimentos.filter(a => a.clienteId == currentClientId);
-    
-    // Carregar planos do cliente
-    const planos = JSON.parse(localStorage.getItem('planos') || '[]');
-    currentClientPlanos = planos.filter(p => p.clienteId == currentClientId);
-    
-    // Atualizar UI
-    updateClientInfo();
-    loadAtendimentos();
-    loadPlanos();
-    loadDadosCompletos();
 }
 
 // Atualizar informações do cliente na UI
@@ -672,6 +691,11 @@ function editCliente() {
 
 // Função para ativar/desativar cliente
 async function toggleClientStatus() {
+    if (!currentClient) {
+        alert('Dados do cliente não carregados. Tente novamente.');
+        return;
+    }
+    
     const currentStatus = currentClient.status || 'Ativo';
     const newStatus = currentStatus === 'Ativo' ? 'Inativo' : 'Ativo';
     
@@ -704,6 +728,11 @@ async function toggleClientStatus() {
 
 // Função para excluir cliente
 async function deleteClient() {
+    if (!currentClient) {
+        alert('Dados do cliente não carregados. Tente novamente.');
+        return;
+    }
+    
     if (confirm('Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita e todos os dados serão perdidos.')) {
         if (confirm('Esta ação é irreversível. Confirma a exclusão do cliente?')) {
             try {
