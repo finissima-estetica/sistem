@@ -883,133 +883,133 @@ function generateBodyVisualization() {
     let html = `
         <div class="body-visualization-container" style="position: relative; width: 100%; max-width: 400px; margin: 0 auto;">
             <!-- Camada de overlays coloridos (atrás) -->
-            <svg class="body-overlays" viewBox="0 0 326 600" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+            <svg class="body-overlays" viewBox="0 0 435 800" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
                 <!-- Cabeça -->
                 <path id="zone-head" class="zone-overlay" 
-                    d="M163 50 Q140 45 120 55 Q100 70 95 90 Q90 110 100 130 Q110 150 130 155 Q150 160 163 155 Q180 150 195 145 Q210 140 220 125 Q230 110 225 90 Q220 70 200 55 Q180 45 163 50"
+                    d="M217 67 Q187 60 160 73 Q133 93 127 120 Q120 147 133 173 Q147 197 173 207 Q200 213 217 207 Q240 200 260 193 Q280 187 293 167 Q307 147 300 120 Q293 93 267 73 Q240 60 217 67"
                     fill="${getSafeColor('zone-head')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-head')" onmouseout="unhighlightZone('zone-head')"
                     onclick="selectZone('zone-head')"/>
                 
                 <!-- Pescoço -->
                 <path id="zone-neck" class="zone-overlay"
-                    d="M145 155 Q163 150 180 155 L178 180 Q163 175 148 180 Z"
+                    d="M193 207 Q217 200 240 207 L237 240 Q217 233 197 240 Z"
                     fill="${getSafeColor('zone-neck')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-neck')" onmouseout="unhighlightZone('zone-neck')"
                     onclick="selectZone('zone-neck')"/>
                 
                 <!-- Peito/Bustiê -->
                 <path id="zone-chest" class="zone-overlay"
-                    d="M120 180 Q100 200 105 230 Q110 260 130 280 Q145 290 163 285 Q180 280 195 275 Q210 270 220 250 Q230 230 225 200 Q220 180 200 175 Q180 170 163 175 Q145 180 120 180"
+                    d="M160 240 Q133 267 140 307 Q147 347 173 373 Q193 387 217 380 Q240 373 260 367 Q280 360 293 333 Q307 307 300 267 Q293 240 267 233 Q240 227 217 233 Q193 240 160 240"
                     fill="${getSafeColor('zone-chest')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-chest')" onmouseout="unhighlightZone('zone-chest')"
                     onclick="selectZone('zone-chest')"/>
                 
                 <!-- Abdômen Superior -->
                 <path id="zone-ab-upper" class="zone-overlay"
-                    d="M130 280 Q145 290 163 285 Q180 280 195 275 Q205 275 205 290 Q200 310 195 325 Q180 335 163 330 Q145 335 130 325 Q120 310 125 290 Q125 280 130 280"
+                    d="M173 373 Q193 387 217 380 Q240 373 260 367 Q273 367 273 387 Q267 413 260 433 Q240 447 217 440 Q193 447 173 433 Q160 413 167 387 Q167 373 173 373"
                     fill="${getSafeColor('zone-ab-upper')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-ab-upper')" onmouseout="unhighlightZone('zone-ab-upper')"
                     onclick="selectZone('zone-ab-upper')"/>
                 
                 <!-- Abdômen Inferior -->
                 <path id="zone-ab-lower" class="zone-overlay"
-                    d="M130 325 Q145 335 163 330 Q180 335 195 325 Q200 340 195 360 Q180 375 163 370 Q145 375 130 360 Q120 345 125 325 Q130 325 130 325"
+                    d="M173 433 Q193 447 217 440 Q240 447 260 433 Q267 453 260 480 Q240 500 217 493 Q193 500 173 480 Q160 460 167 433 Q173 433 173 433"
                     fill="${getSafeColor('zone-ab-lower')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-ab-lower')" onmouseout="unhighlightZone('zone-ab-lower')"
                     onclick="selectZone('zone-ab-lower')"/>
                 
                 <!-- Pélvis/Quadril -->
                 <path id="zone-pelvis" class="zone-overlay"
-                    d="M115 360 Q130 375 130 395 Q135 420 150 435 Q165 445 180 440 Q195 435 205 420 Q215 400 210 375 Q205 360 195 360 Q180 365 163 370 Q145 375 115 360"
+                    d="M153 480 Q173 500 173 527 Q180 560 200 580 Q220 593 240 587 Q260 580 273 560 Q287 533 280 500 Q273 480 260 480 Q240 487 217 493 Q193 500 153 480"
                     fill="${getSafeColor('zone-pelvis')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-pelvis')" onmouseout="unhighlightZone('zone-pelvis')"
                     onclick="selectZone('zone-pelvis')"/>
                 
                 <!-- Braço Direito Superior -->
                 <path id="zone-arm-r-upper" class="zone-overlay"
-                    d="M100 200 Q80 210 70 230 Q60 250 55 270 Q50 290 55 310 Q60 330 75 340 Q90 350 105 345 Q120 340 125 320 Q130 300 125 280 Q120 260 115 240 Q110 220 100 200"
+                    d="M133 267 Q107 280 93 307 Q80 333 73 360 Q67 387 73 413 Q80 440 100 453 Q120 467 140 460 Q160 453 167 427 Q173 400 167 373 Q160 347 153 320 Q147 293 133 267"
                     fill="${getSafeColor('zone-arm-r-upper')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-arm-r-upper')" onmouseout="unhighlightZone('zone-arm-r-upper')"
                     onclick="selectZone('zone-arm-r-upper')"/>
                 
                 <!-- Antebraço Direito -->
                 <path id="zone-forearm-r" class="zone-overlay"
-                    d="M55 310 Q60 330 75 340 Q90 350 105 345 Q110 360 108 380 Q105 400 95 415 Q85 430 70 435 Q55 440 45 430 Q40 415 42 395 Q45 375 55 310"
+                    d="M73 413 Q80 440 100 453 Q120 467 140 460 Q147 480 144 507 Q140 533 127 553 Q113 573 93 580 Q73 587 60 573 Q53 553 56 527 Q60 500 73 413"
                     fill="${getSafeColor('zone-forearm-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-forearm-r')" onmouseout="unhighlightZone('zone-forearm-r')"
                     onclick="selectZone('zone-forearm-r')"/>
                 
                 <!-- Mão Direita -->
-                <ellipse id="zone-hand-r" class="zone-overlay" cx="50" cy="450" rx="15" ry="20"
+                <ellipse id="zone-hand-r" class="zone-overlay" cx="67" cy="600" rx="20" ry="27"
                     fill="${getSafeColor('zone-hand-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-hand-r')" onmouseout="unhighlightZone('zone-hand-r')"
                     onclick="selectZone('zone-hand-r')"/>
                 
                 <!-- Braço Esquerdo Superior -->
                 <path id="zone-arm-l-upper" class="zone-overlay"
-                    d="M225 200 Q245 210 255 230 Q265 250 270 270 Q275 290 270 310 Q265 330 250 340 Q235 350 220 345 Q205 340 200 320 Q195 300 200 280 Q205 260 210 240 Q215 220 225 200"
+                    d="M300 267 Q327 280 340 307 Q353 333 360 360 Q367 387 360 413 Q353 440 333 453 Q313 467 293 460 Q273 453 267 427 Q260 400 267 373 Q273 347 280 320 Q287 293 300 267"
                     fill="${getSafeColor('zone-arm-l-upper')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-arm-l-upper')" onmouseout="unhighlightZone('zone-arm-l-upper')"
                     onclick="selectZone('zone-arm-l-upper')"/>
                 
                 <!-- Antebraço Esquerdo -->
                 <path id="zone-forearm-l" class="zone-overlay"
-                    d="M270 310 Q265 330 250 340 Q235 350 220 345 Q215 360 217 380 Q220 400 230 415 Q240 430 255 435 Q270 440 280 430 Q285 415 283 395 Q280 375 270 310"
+                    d="M360 413 Q353 440 333 453 Q313 467 293 460 Q287 480 290 507 Q293 533 307 553 Q320 573 340 580 Q360 587 373 573 Q380 553 377 527 Q373 500 360 413"
                     fill="${getSafeColor('zone-forearm-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-forearm-l')" onmouseout="unhighlightZone('zone-forearm-l')"
                     onclick="selectZone('zone-forearm-l')"/>
                 
                 <!-- Mão Esquerda -->
-                <ellipse id="zone-hand-l" class="zone-overlay" cx="275" cy="450" rx="15" ry="20"
+                <ellipse id="zone-hand-l" class="zone-overlay" cx="367" cy="600" rx="20" ry="27"
                     fill="${getSafeColor('zone-hand-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-hand-l')" onmouseout="unhighlightZone('zone-hand-l')"
                     onclick="selectZone('zone-hand-l')"/>
                 
                 <!-- Coxa Direita -->
                 <path id="zone-thigh-r" class="zone-overlay"
-                    d="M130 430 Q145 445 150 470 Q155 495 150 520 Q145 545 130 555 Q115 565 100 555 Q85 545 85 520 Q85 495 95 470 Q105 445 130 430"
+                    d="M173 573 Q193 593 200 627 Q207 660 200 693 Q193 727 173 740 Q153 753 133 740 Q113 727 113 693 Q113 660 127 627 Q140 593 173 573"
                     fill="${getSafeColor('zone-thigh-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-thigh-r')" onmouseout="unhighlightZone('zone-thigh-r')"
                     onclick="selectZone('zone-thigh-r')"/>
                 
                 <!-- Canela Direita -->
                 <path id="zone-shin-r" class="zone-overlay"
-                    d="M85 520 Q85 545 90 570 Q95 595 110 610 Q125 620 140 610 Q155 600 160 575 Q165 550 160 525 Q155 500 145 490 Q130 480 115 490 Q100 500 85 520"
+                    d="M113 693 Q113 727 120 760 Q127 793 147 813 Q167 827 187 813 Q207 800 213 767 Q220 733 213 700 Q207 667 193 653 Q173 640 153 653 Q133 667 113 693"
                     fill="${getSafeColor('zone-shin-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-shin-r')" onmouseout="unhighlightZone('zone-shin-r')"
                     onclick="selectZone('zone-shin-r')"/>
                 
                 <!-- Pé Direito -->
-                <ellipse id="zone-foot-r" class="zone-overlay" cx="125" cy="635" rx="20" ry="12"
+                <ellipse id="zone-foot-r" class="zone-overlay" cx="167" cy="847" rx="27" ry="16"
                     fill="${getSafeColor('zone-foot-r')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-foot-r')" onmouseout="unhighlightZone('zone-foot-r')"
                     onclick="selectZone('zone-foot-r')"/>
                 
                 <!-- Coxa Esquerda -->
                 <path id="zone-thigh-l" class="zone-overlay"
-                    d="M195 430 Q210 445 215 470 Q220 495 215 520 Q210 545 195 555 Q180 565 165 555 Q150 545 150 520 Q150 495 160 470 Q170 445 195 430"
+                    d="M260 573 Q280 593 287 627 Q293 660 287 693 Q280 727 260 740 Q240 753 220 740 Q200 727 200 693 Q200 660 213 627 Q227 593 260 573"
                     fill="${getSafeColor('zone-thigh-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-thigh-l')" onmouseout="unhighlightZone('zone-thigh-l')"
                     onclick="selectZone('zone-thigh-l')"/>
                 
                 <!-- Canela Esquerda -->
                 <path id="zone-shin-l" class="zone-overlay"
-                    d="M150 520 Q150 545 155 570 Q160 595 175 610 Q190 620 205 610 Q220 600 225 575 Q230 550 225 525 Q220 500 210 490 Q195 480 180 490 Q165 500 150 520"
+                    d="M200 693 Q200 727 207 760 Q213 793 233 813 Q253 827 273 813 Q293 800 300 767 Q307 733 300 700 Q293 667 280 653 Q260 640 240 653 Q220 667 200 693"
                     fill="${getSafeColor('zone-shin-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-shin-l')" onmouseout="unhighlightZone('zone-shin-l')"
                     onclick="selectZone('zone-shin-l')"/>
                 
                 <!-- Pé Esquerdo -->
-                <ellipse id="zone-foot-l" class="zone-overlay" cx="190" cy="635" rx="20" ry="12"
+                <ellipse id="zone-foot-l" class="zone-overlay" cx="253" cy="847" rx="27" ry="16"
                     fill="${getSafeColor('zone-foot-l')}" fill-opacity="0.7" stroke="none"
                     onmouseover="highlightZone('zone-foot-l')" onmouseout="unhighlightZone('zone-foot-l')"
                     onclick="selectZone('zone-foot-l')"/>
             </svg>
             
             <!-- Camada do corpo SVG (na frente) -->
-            <svg class="body-image" viewBox="0 0 326 600" style="position: relative; z-index: 2; width: 100%; height: auto;">
-                <image href="corpo2.svg" x="0" y="0" width="326" height="600" preserveAspectRatio="xMidYMid meet"/>
+            <svg class="body-image" viewBox="0 0 435 800" style="position: relative; z-index: 2; width: 100%; height: auto;">
+                <image href="corpo2.svg" x="0" y="0" width="435" height="800" preserveAspectRatio="xMidYMid meet"/>
             </svg>
             
             <!-- Legenda -->
