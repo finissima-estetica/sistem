@@ -4,8 +4,11 @@ const totalSteps = 5;
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    updateProgressBar();
-    setupFormValidation();
+    // Só executar se estiver na página cadastro.html
+    if (window.location.pathname.includes('cadastro.html')) {
+        updateProgressBar();
+        setupFormValidation();
+    }
 });
 
 // Função para voltar ao dashboard
