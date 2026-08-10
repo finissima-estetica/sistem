@@ -777,47 +777,111 @@ function generateBodyVisualization() {
     const container = document.getElementById('bodyVisualization');
     if (!container) return;
     
-    // Zonas do corpo com suas coordenadas no SVG
-    const bodyZones = {
-        'braco_direito': { path: 'M80,50 L85,120 L90,120 L85,50 Z', label: 'Braço Direito' },
-        'braco_esquerdo': { path: 'M120,50 L115,120 L110,120 L115,50 Z', label: 'Braço Esquerdo' },
-        'torax': { path: 'M85,120 L90,120 L90,180 L85,180 Z', label: 'Tórax' },
-        'cintura': { path: 'M85,180 L90,180 L90,220 L85,220 Z', label: 'Cintura' },
-        'abdomen': { path: 'M85,220 L90,220 L90,260 L85,260 Z', label: 'Abdômen' },
-        'quadril': { path: 'M85,260 L90,260 L90,300 L85,300 Z', label: 'Quadril' },
-        'coxa_direita': { path: 'M85,300 L90,300 L92,360 L87,360 Z', label: 'Coxa Direita' },
-        'coxa_esquerda': { path: 'M83,300 L88,300 L90,360 L85,360 Z', label: 'Coxa Esquerda' },
-        'panturrilha_direita': { path: 'M87,360 L92,360 L92,400 L87,400 Z', label: 'Panturrilha Direita' },
-        'panturrilha_esquerda': { path: 'M85,360 L90,360 L90,400 L85,400 Z', label: 'Panturrilha Esquerda' }
+    // Análise de cada zona
+    const zonesAnalysis = {
+        'braco_direito': analyzeZone('braco_direito'),
+        'braco_esquerdo': analyzeZone('braco_esquerdo'),
+        'torax': analyzeZone('torax'),
+        'cintura': analyzeZone('cintura'),
+        'abdomen': analyzeZone('abdomen'),
+        'quadril': analyzeZone('quadril'),
+        'coxa_direita': analyzeZone('coxa_direita'),
+        'coxa_esquerda': analyzeZone('coxa_esquerda'),
+        'panturrilha_direita': analyzeZone('panturrilha_direita'),
+        'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
     };
     
-    // Criar SVG do corpo
+    // Criar SVG do corpo em pose T
     let svg = `
-        <svg viewBox="0 0 200 450" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+        <svg viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
             <!-- Cabeça -->
-            <ellipse cx="100" cy="35" rx="20" ry="25" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+            <ellipse cx="150" cy="40" rx="25" ry="30" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
             
             <!-- Pescoço -->
-            <rect x="90" y="55" width="20" height="15" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+            <rect x="140" y="65" width="20" height="20" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
             
             <!-- Ombros -->
-            <line x1="70" y1="70" x2="130" y2="70" stroke="#6c757d" stroke-width="3"/>
+            <line x1="90" y1="85" x2="210" y2="85" stroke="#6c757d" stroke-width="4"/>
+            
+            <!-- Braço Direito (pose T) -->
+            <g>
+                <!-- Ombro direito -->
+                <circle cx="90" cy="85" r="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <!-- Braço direito superior -->
+                <rect x="70" y="75" width="25" height="40" rx="5" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Braço direito inferior -->
+                <rect x="65" y="115" width="20" height="50" rx="5" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Mão direita -->
+                <ellipse cx="75" cy="170" rx="12" ry="15" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <text x="75" y="175" text-anchor="middle" font-size="10" fill="#333">D</text>
+            </g>
+            
+            <!-- Braço Esquerdo (pose T) -->
+            <g>
+                <!-- Ombro esquerdo -->
+                <circle cx="210" cy="85" r="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <!-- Braço esquerdo superior -->
+                <rect x="205" y="75" width="25" height="40" rx="5" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Braço esquerdo inferior -->
+                <rect x="215" y="115" width="20" height="50" rx="5" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Mão esquerda -->
+                <ellipse cx="225" cy="170" rx="12" ry="15" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <text x="225" y="175" text-anchor="middle" font-size="10" fill="#333">E</text>
+            </g>
+            
+            <!-- Tórax -->
+            <path d="M120 85 L150 85 L150 150 L120 150 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            <path d="M150 85 L180 85 L180 150 L150 150 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            
+            <!-- Cintura -->
+            <path d="M125 150 L150 150 L150 190 L125 190 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            <path d="M150 150 L175 150 L175 190 L150 190 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            
+            <!-- Abdômen -->
+            <path d="M127 190 L150 190 L150 230 L127 230 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            <path d="M150 190 L173 190 L173 230 L150 230 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            
+            <!-- Quadril -->
+            <path d="M120 230 L150 230 L150 280 L120 280 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            <path d="M150 230 L180 230 L180 280 L150 280 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            
+            <!-- Pernas -->
+            <g>
+                <!-- Coxa Direita -->
+                <path d="M120 280 L140 280 L135 350 L115 350 Z" fill="${zonesAnalysis.coxa_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Panturrilha Direita -->
+                <path d="M117 350 L135 350 L132 420 L114 420 Z" fill="${zonesAnalysis.panturrilha_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Pé Direito -->
+                <ellipse cx="123" cy="435" rx="15" ry="10" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                
+                <!-- Coxa Esquerda -->
+                <path d="M160 280 L180 280 L185 350 L165 350 Z" fill="${zonesAnalysis.coxa_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Panturrilha Esquerda -->
+                <path d="M165 350 L185 350 L188 420 L168 420 Z" fill="${zonesAnalysis.panturrilha_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Pé Esquerdo -->
+                <ellipse cx="177" cy="435" rx="15" ry="10" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+            </g>
+            
+            <!-- Rótulos das zonas -->
+            <text x="150" y="135" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">TÓRAX</text>
+            <text x="150" y="175" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">CINTURA</text>
+            <text x="150" y="215" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">ABDÔMEN</text>
+            <text x="150" y="260" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">QUADRIL</text>
+            
+            <!-- Legenda de mudança -->
+            <g transform="translate(220, 300)">
+                <rect x="0" y="0" width="70" height="80" fill="white" stroke="#6c757d" stroke-width="1" rx="5"/>
+                <text x="35" y="15" text-anchor="middle" font-size="9" font-weight="bold">MUDANÇA</text>
+                <rect x="10" y="25" width="15" height="15" fill="#28a745"/>
+                <text x="30" y="37" font-size="8" fill="#333">Redução</text>
+                <rect x="10" y="45" width="15" height="15" fill="#dc3545"/>
+                <text x="30" y="57" font-size="8" fill="#333">Aumento</text>
+                <rect x="10" y="65" width="15" height="15" fill="#6c757d"/>
+                <text x="30" y="77" font-size="8" fill="#333">Sem dado</text>
+            </g>
+        </svg>
     `;
     
-    // Adicionar zonas com cores baseadas na análise
-    Object.keys(bodyZones).forEach(zoneKey => {
-        const zone = bodyZones[zoneKey];
-        const analysis = analyzeZone(zoneKey);
-        const color = analysis.color;
-        
-        svg += `
-            <path d="${zone.path}" fill="${color}" stroke="#6c757d" stroke-width="1" opacity="0.7"/>
-            <text x="100" y="${zone.label === 'Tórax' ? 150 : zone.label === 'Cintura' ? 200 : zone.label === 'Abdômen' ? 240 : zone.label === 'Quadril' ? 280 : 100}" 
-                  text-anchor="middle" font-size="8" fill="#333">${zone.label}</text>
-        `;
-    });
-    
-    svg += '</svg>';
     container.innerHTML = svg;
 }
 
