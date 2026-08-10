@@ -9,25 +9,341 @@
 <body>
     <div class="cadastro-container">
         <div class="header">
-            <h1>Clínica Estética - Cadastro</h1>
+            <h1>Clínica Estética - Cadastro de Cliente</h1>
             <button class="btn-back" onclick="goBack()">← Voltar</button>
         </div>
         
         <div class="content">
-            <div class="development-notice">
-                <div class="notice-icon">🚧</div>
-                <h2>Página em Desenvolvimento</h2>
-                <p>A funcionalidade de cadastro de clientes estará disponível em breve.</p>
-                <p>Estamos trabalhando para oferecer a melhor experiência para você.</p>
-                <button class="btn-return" onclick="goBack()">Voltar ao Dashboard</button>
+            <div class="wizard-container">
+                <!-- Progress Bar -->
+                <div class="progress-bar">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Dados Pessoais</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Anamnese</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Medidas</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Procedimentos</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Termo</div>
+                    </div>
+                </div>
+
+                <!-- Form Steps -->
+                <form id="cadastroForm" class="wizard-form">
+                    <!-- Etapa 1: Dados Pessoais -->
+                    <div class="form-step active" data-step="1">
+                        <h2>Dados Pessoais</h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nome">Nome Completo *</label>
+                                <input type="text" id="nome" name="nome" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cpf">CPF *</label>
+                                <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
+                            </div>
+                            <div class="form-group">
+                                <label for="dataNascimento">Data de Nascimento *</label>
+                                <input type="date" id="dataNascimento" name="dataNascimento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="telefone">Telefone *</label>
+                                <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">E-mail *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endereco">Endereço</label>
+                                <input type="text" id="endereco" name="endereco">
+                            </div>
+                            <div class="form-group">
+                                <label for="cidade">Cidade</label>
+                                <input type="text" id="cidade" name="cidade">
+                            </div>
+                            <div class="form-group">
+                                <label for="estado">Estado</label>
+                                <select id="estado" name="estado">
+                                    <option value="">Selecione</option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">Mato Grosso do Sul</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">Rio Grande do Norte</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-next" onclick="nextStep(1)">Próximo →</button>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 2: Anamnese -->
+                    <div class="form-step" data-step="2">
+                        <h2>Ficha de Anamnese</h2>
+                        <div class="form-section">
+                            <h3>Histórico Médico</h3>
+                            <div class="form-group">
+                                <label for="doencasCronicas">Possui doenças crônicas? (diabetes, hipertensão, etc.)</label>
+                                <textarea id="doencasCronicas" name="doencasCronicas" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="medicamentos">Faz uso de medicamentos contínuos?</label>
+                                <textarea id="medicamentos" name="medicamentos" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="cirurgias">Já fez cirurgias estéticas?</label>
+                                <textarea id="cirurgias" name="cirurgias" rows="3"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Alergias e Sensibilidades</h3>
+                            <div class="form-group">
+                                <label for="alergias">Possui alergias conhecidas?</label>
+                                <textarea id="alergias" name="alergias" rows="3" placeholder="Medicamentos, alimentos, produtos, etc."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="sensibilidade">Possui sensibilidade à algum produto específico?</label>
+                                <textarea id="sensibilidade" name="sensibilidade" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Hábitos de Vida</h3>
+                            <div class="form-group">
+                                <label for="fumante">É fumante?</label>
+                                <select id="fumante" name="fumante">
+                                    <option value="">Selecione</option>
+                                    <option value="sim">Sim</option>
+                                    <option value="nao">Não</option>
+                                    <option value="ex-fumante">Ex-fumante</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="alcool">Consome álcool?</label>
+                                <select id="alcool" name="alcool">
+                                    <option value="">Selecione</option>
+                                    <option value="sim">Sim</option>
+                                    <option value="nao">Não</option>
+                                    <option value="ocasional">Ocasionalmente</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="atividadeFisica">Pratica atividade física?</label>
+                                <select id="atividadeFisica" name="atividadeFisica">
+                                    <option value="">Selecione</option>
+                                    <option value="sim">Sim</option>
+                                    <option value="nao">Não</option>
+                                    <option value="ocasional">Ocasionalmente</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-prev" onclick="prevStep(2)">← Anterior</button>
+                            <button type="button" class="btn-next" onclick="nextStep(2)">Próximo →</button>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 3: Medidas Corporais -->
+                    <div class="form-step" data-step="3">
+                        <h2>Medidas Corporais</h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="peso">Peso (kg) *</label>
+                                <input type="number" id="peso" name="peso" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="altura">Altura (cm) *</label>
+                                <input type="number" id="altura" name="altura" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bracoDireito">Braço Direito (cm)</label>
+                                <input type="number" id="bracoDireito" name="bracoDireito" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="bracoEsquerdo">Braço Esquerdo (cm)</label>
+                                <input type="number" id="bracoEsquerdo" name="bracoEsquerdo" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="torax">Tórax (cm)</label>
+                                <input type="number" id="torax" name="torax" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="cintura">Cintura (cm)</label>
+                                <input type="number" id="cintura" name="cintura" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="abdomen">Abdômen (cm)</label>
+                                <input type="number" id="abdomen" name="abdomen" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="quadril">Quadril (cm)</label>
+                                <input type="number" id="quadril" name="quadril" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="coxaDireita">Coxa Direita (cm)</label>
+                                <input type="number" id="coxaDireita" name="coxaDireita" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="coxaEsquerda">Coxa Esquerda (cm)</label>
+                                <input type="number" id="coxaEsquerda" name="coxaEsquerda" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="panturrilhaDireita">Panturrilha Direita (cm)</label>
+                                <input type="number" id="panturrilhaDireita" name="panturrilhaDireita" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="panturrilhaEsquerda">Panturrilha Esquerda (cm)</label>
+                                <input type="number" id="panturrilhaEsquerda" name="panturrilhaEsquerda" step="0.1">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-prev" onclick="prevStep(3)">← Anterior</button>
+                            <button type="button" class="btn-next" onclick="nextStep(3)">Próximo →</button>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 4: Procedimentos -->
+                    <div class="form-step" data-step="4">
+                        <h2>Procedimentos a Serem Realizados</h2>
+                        <div class="form-section">
+                            <h3>Selecione os Procedimentos</h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="limpeza_pele">
+                                    <span>Limpeza de Pele</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="peeling">
+                                    <span>Peeling Químico</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="botox">
+                                    <span>Botox</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="preenchimento">
+                                    <span>Preenchimento Facial</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="laser">
+                                    <span>Laser</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="drenagem">
+                                    <span>Drenagem Linfática</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="massagem">
+                                    <span>Massagem</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="carboxiterapia">
+                                    <span>Carboxiterapia</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="microneedling">
+                                    <span>Microneedling</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="procedimentos" value="outros">
+                                    <span>Outros</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Detalhes dos Procedimentos</h3>
+                            <div class="form-group">
+                                <label for="detalhesProcedimentos">Descreva os procedimentos desejados:</label>
+                                <textarea id="detalhesProcedimentos" name="detalhesProcedimentos" rows="5"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="objetivos">Quais são seus objetivos com os procedimentos?</label>
+                                <textarea id="objetivos" name="objetivos" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-prev" onclick="prevStep(4)">← Anterior</button>
+                            <button type="button" class="btn-next" onclick="nextStep(4)">Próximo →</button>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 5: Termo de Responsabilidade -->
+                    <div class="form-step" data-step="5">
+                        <h2>Termo de Responsabilidade</h2>
+                        <div class="termo-container">
+                            <div class="termo-text">
+                                <h3>TERMO DE RESPONSABILIDADE E CONSENTIMENTO</h3>
+                                <p>Declaro que fui devidamente informado(a) sobre os procedimentos estéticos que serão realizados, bem como sobre seus benefícios, riscos e possíveis efeitos colaterais.</p>
+                                <p>Declaro que informei veridicamente sobre meu histórico médico, alergias, medicamentos em uso e qualquer outra condição de saúde relevante.</p>
+                                <p>Estou ciente de que os resultados podem variar de pessoa para pessoa e que não há garantia de resultados específicos.</p>
+                                <p>Concordo em seguir todas as orientações pós-procedimento fornecidas pela clínica.</p>
+                                <p>Declaro que compreendo que os procedimentos estéticos não substituem tratamentos médicos e que, em caso de necessidade, serei orientado(a) a procurar profissional médico.</p>
+                                <p>Autorizo a Clínica Estética a realizar os procedimentos acima mencionados e exonero a clínica e seus profissionais de qualquer responsabilidade por complicações resultantes de informações falsas ou omissas.</p>
+                                <p>Declaro que li e compreendi este termo em sua totalidade e concordo livremente com todas as condições aqui estabelecidas.</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" id="aceiteTermo" name="aceiteTermo" required>
+                                    <span>Li e aceito o termo de responsabilidade *</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dataAssinatura">Data da Assinatura *</label>
+                                <input type="date" id="dataAssinatura" name="dataAssinatura" required>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-prev" onclick="prevStep(5)">← Anterior</button>
+                            <button type="submit" class="btn-submit">Finalizar Cadastro ✓</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <script>
-        function goBack() {
-            window.location.href = 'index.html';
-        }
-    </script>
+    <script src="cadastro.js"></script>
 </body>
 </html>

@@ -4,12 +4,45 @@ const users = [
     { email: 'usuario@clinica.com', password: 'usuario123', name: 'Usuário' }
 ];
 
-// Clientes de exemplo (em um sistema real, isso viria de um banco de dados)
-let clients = [
-    { id: 1, name: 'Maria Silva', email: 'maria.silva@email.com', phone: '(11) 98765-4321', status: 'Ativo' },
-    { id: 2, name: 'João Santos', email: 'joao.santos@email.com', phone: '(11) 91234-5678', status: 'Ativo' },
-    { id: 3, name: 'Ana Costa', email: 'ana.costa@email.com', phone: '(11) 99876-5432', status: 'Inativo' }
-];
+// Clientes (carregados do localStorage ou exemplos iniciais)
+let clients = [];
+
+// Função para carregar clientes do localStorage
+function loadClientsFromStorage() {
+    const storedClients = localStorage.getItem('clients');
+    if (storedClients) {
+        clients = JSON.parse(storedClients);
+    } else {
+        // Clientes de exemplo iniciais
+        clients = [
+            { 
+                id: 1, 
+                nome: 'Maria Silva', 
+                email: 'maria.silva@email.com', 
+                telefone: '(11) 98765-4321', 
+                status: 'Ativo',
+                dataCadastro: new Date().toISOString()
+            },
+            { 
+                id: 2, 
+                nome: 'João Santos', 
+                email: 'joao.santos@email.com', 
+                telefone: '(11) 91234-5678', 
+                status: 'Ativo',
+                dataCadastro: new Date().toISOString()
+            },
+            { 
+                id: 3, 
+                nome: 'Ana Costa', 
+                email: 'ana.costa@email.com', 
+                telefone: '(11) 99876-5432', 
+                status: 'Inativo',
+                dataCadastro: new Date().toISOString()
+            }
+        ];
+        localStorage.setItem('clients', JSON.stringify(clients));
+    }
+}
 
 // Elementos do DOM
 const loginForm = document.getElementById('loginForm');
@@ -21,6 +54,8 @@ const clientsList = document.getElementById('clientsList');
 
 // Verificar se já está logado ao carregar a página
 window.addEventListener('load', () => {
+    loadClientsFromStorage();
+    
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     if (isLoggedIn === 'true') {
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -67,6 +102,7 @@ function showDashboard(user) {
     loginContainer.style.display = 'none';
     dashboardContainer.classList.add('active');
     userName.textContent = 'Bem-vindo, ' + user.name;
+    loadClientsFromStorage();
     loadClients();
 }
 
@@ -102,10 +138,11 @@ function loadClients() {
     clientsList.innerHTML = clients.map(client => `
         <div class="client-card">
             <div class="client-info">
-                <h3>${client.name}</h3>
+                <h3>${client.nome || client.name}</h3>
                 <p><strong>Email:</strong> ${client.email}</p>
-                <p><strong>Telefone:</strong> ${client.phone}</p>
-                <span class="status-badge ${client.status.toLowerCase()}">${client.status}</span>
+                <p><strong>Telefone:</strong> ${client.telefone || client.phone}</p>
+                <p><strong>Cadastro:</strong> ${formatDate(client.dataCadastro)}</p>
+                <span class="status-badge ${client.status ? client.status.toLowerCase() : 'ativo'}">${client.status || 'Ativo'}</span>
             </div>
             <div class="client-actions">
                 <button class="btn-view" onclick="viewClient(${client.id})">Ver Detalhes</button>
@@ -113,6 +150,13 @@ function loadClients() {
             </div>
         </div>
     `).join('');
+}
+
+// Função para formatar data
+function formatDate(dateString) {
+    if (!dateString) return 'Data não informada';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR');
 }
 
 // Função para pesquisar clientes
@@ -125,9 +169,10 @@ function searchClients() {
     }
     
     const filteredClients = clients.filter(client => 
-        client.name.toLowerCase().includes(searchTerm) ||
-        client.email.toLowerCase().includes(searchTerm) ||
-        client.phone.includes(searchTerm)
+        (client.nome || client.name || '').toLowerCase().includes(searchTerm) ||
+        (client.email || '').toLowerCase().includes(searchTerm) ||
+        (client.telefone || client.phone || '').includes(searchTerm) ||
+        (client.cpf || '').includes(searchTerm)
     );
     
     if (filteredClients.length === 0) {
@@ -142,10 +187,11 @@ function searchClients() {
     clientsList.innerHTML = filteredClients.map(client => `
         <div class="client-card">
             <div class="client-info">
-                <h3>${client.name}</h3>
+                <h3>${client.nome || client.name}</h3>
                 <p><strong>Email:</strong> ${client.email}</p>
-                <p><strong>Telefone:</strong> ${client.phone}</p>
-                <span class="status-badge ${client.status.toLowerCase()}">${client.status}</span>
+                <p><strong>Telefone:</strong> ${client.telefone || client.phone}</p>
+                <p><strong>Cadastro:</strong> ${formatDate(client.dataCadastro)}</p>
+                <span class="status-badge ${client.status ? client.status.toLowerCase() : 'ativo'}">${client.status || 'Ativo'}</span>
             </div>
             <div class="client-actions">
                 <button class="btn-view" onclick="viewClient(${client.id})">Ver Detalhes</button>
@@ -153,6 +199,12 @@ function searchClients() {
             </div>
         </div>
     `).join('');
+}
+
+// Função para atualizar lista de clientes (chamada pelo cadastro.js)
+function updateClientsList() {
+    loadClientsFromStorage();
+    loadClients();
 }
 
 // Função para ver detalhes do cliente (placeholder)
@@ -171,3 +223,4 @@ window.goToCadastro = goToCadastro;
 window.searchClients = searchClients;
 window.viewClient = viewClient;
 window.editClient = editClient;
+window.updateClientsList = updateClientsList;

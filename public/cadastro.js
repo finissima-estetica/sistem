@@ -1,0 +1,290 @@
+// Variáveis globais
+let currentStep = 1;
+const totalSteps = 5;
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    updateProgressBar();
+    setupFormValidation();
+});
+
+// Função para voltar ao dashboard
+function goBack() {
+    if (confirm('Tem certeza que deseja cancelar o cadastro? Todos os dados não salvos serão perdidos.')) {
+        window.location.href = 'index.html';
+    }
+}
+
+// Função para avançar para a próxima etapa
+function nextStep(step) {
+    if (!validateStep(step)) {
+        return;
+    }
+    
+    const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+    const nextStepElement = document.querySelector(`.form-step[data-step="${step + 1}"]`);
+    
+    if (nextStepElement) {
+        currentStepElement.classList.remove('active');
+        nextStepElement.classList.add('active');
+        currentStep = step + 1;
+        updateProgressBar();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// Função para voltar para a etapa anterior
+function prevStep(step) {
+    const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+    const prevStepElement = document.querySelector(`.form-step[data-step="${step - 1}"]`);
+    
+    if (prevStepElement) {
+        currentStepElement.classList.remove('active');
+        prevStepElement.classList.add('active');
+        currentStep = step - 1;
+        updateProgressBar();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// Função para atualizar a barra de progresso
+function updateProgressBar() {
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((step, index) => {
+        const stepNumber = index + 1;
+        step.classList.remove('active', 'completed');
+        
+        if (stepNumber === currentStep) {
+            step.classList.add('active');
+        } else if (stepNumber < currentStep) {
+            step.classList.add('completed');
+        }
+    });
+}
+
+// Função para validar etapa atual
+function validateStep(step) {
+    const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+    const requiredFields = currentStepElement.querySelectorAll('[required]');
+    
+    let isValid = true;
+    let firstInvalidField = null;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+            field.style.borderColor = '#e74c3c';
+            if (!firstInvalidField) {
+                firstInvalidField = field;
+            }
+        } else {
+            field.style.borderColor = '#ddd';
+        }
+    });
+    
+    // Validações específicas por etapa
+    if (step === 1) {
+        // Validação de CPF
+        const cpf = document.getElementById('cpf');
+        if (cpf.value && !validateCPF(cpf.value)) {
+            isValid = false;
+            cpf.style.borderColor = '#e74c3c';
+            alert('CPF inválido. Por favor, verifique.');
+            if (!firstInvalidField) firstInvalidField = cpf;
+        }
+        
+        // Validação de email
+        const email = document.getElementById('email');
+        if (email.value && !validateEmail(email.value)) {
+            isValid = false;
+            email.style.borderColor = '#e74c3c';
+            alert('E-mail inválido. Por favor, verifique.');
+            if (!firstInvalidField) firstInvalidField = email;
+        }
+    }
+    
+    if (step === 3) {
+        // Validação de peso e altura
+        const peso = document.getElementById('peso');
+        const altura = document.getElementById('altura');
+        
+        if (peso.value && (parseFloat(peso.value) < 30 || parseFloat(peso.value) > 300)) {
+            isValid = false;
+            peso.style.borderColor = '#e74c3c';
+            alert('Peso deve estar entre 30kg e 300kg.');
+            if (!firstInvalidField) firstInvalidField = peso;
+        }
+        
+        if (altura.value && (parseFloat(altura.value) < 100 || parseFloat(altura.value) > 250)) {
+            isValid = false;
+            altura.style.borderColor = '#e74c3c';
+            alert('Altura deve estar entre 100cm e 250cm.');
+            if (!firstInvalidField) firstInvalidField = altura;
+        }
+    }
+    
+    if (step === 5) {
+        // Validação do termo de responsabilidade
+        const aceiteTermo = document.getElementById('aceiteTermo');
+        if (!aceiteTermo.checked) {
+            isValid = false;
+            alert('Você deve aceitar o termo de responsabilidade para continuar.');
+            if (!firstInvalidField) firstInvalidField = aceiteTermo;
+        }
+    }
+    
+    if (!isValid && firstInvalidField) {
+        firstInvalidField.focus();
+        firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    return isValid;
+}
+
+// Função para validar CPF
+function validateCPF(cpf) {
+    cpf = cpf.replace(/[^\d]/g, '');
+    
+    if (cpf.length !== 11) return false;
+    
+    if (/^(\d)\1+$/.test(cpf)) return false;
+    
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+        sum += parseInt(cpf[i]) * (10 - i);
+    }
+    let digit = 11 - (sum % 11);
+    if (digit > 9) digit = 0;
+    if (digit !== parseInt(cpf[9])) return false;
+    
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+        sum += parseInt(cpf[i]) * (11 - i);
+    }
+    digit = 11 - (sum % 11);
+    if (digit > 9) digit = 0;
+    if (digit !== parseInt(cpf[10])) return false;
+    
+    return true;
+}
+
+// Função para validar email
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// Função para configurar validação do formulário
+function setupFormValidation() {
+    const form = document.getElementById('cadastroForm');
+    form.addEventListener('submit', handleSubmit);
+}
+
+// Função para lidar com o envio do formulário
+function handleSubmit(e) {
+    e.preventDefault();
+    
+    if (!validateStep(5)) {
+        return;
+    }
+    
+    // Coletar dados do formulário
+    const formData = collectFormData();
+    
+    // Salvar no localStorage
+    saveClientData(formData);
+    
+    // Redirecionar para o dashboard
+    alert('Cliente cadastrado com sucesso!');
+    window.location.href = 'index.html';
+}
+
+// Função para coletar dados do formulário
+function collectFormData() {
+    const form = document.getElementById('cadastroForm');
+    const formData = new FormData(form);
+    const data = {};
+    
+    formData.forEach((value, key) => {
+        if (data[key]) {
+            if (Array.isArray(data[key])) {
+                data[key].push(value);
+            } else {
+                data[key] = [data[key], value];
+            }
+        } else {
+            data[key] = value;
+        }
+    });
+    
+    // Adicionar data de cadastro
+    data.dataCadastro = new Date().toISOString();
+    data.id = Date.now(); // ID único
+    
+    return data;
+}
+
+// Função para salvar dados do cliente
+function saveClientData(clientData) {
+    // Recuperar clientes existentes
+    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
+    
+    // Adicionar novo cliente
+    clients.push(clientData);
+    
+    // Salvar no localStorage
+    localStorage.setItem('clients', JSON.stringify(clients));
+    
+    // Atualizar lista no auth.js
+    if (typeof updateClientsList === 'function') {
+        updateClientsList();
+    }
+}
+
+// Máscaras de input
+document.addEventListener('DOMContentLoaded', () => {
+    // Máscara de CPF
+    const cpfInput = document.getElementById('cpf');
+    if (cpfInput) {
+        cpfInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            
+            if (value.length > 9) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            } else if (value.length > 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1.$2.$3');
+            } else if (value.length > 3) {
+                value = value.replace(/(\d{3})(\d{3})/, '$1.$2');
+            }
+            
+            e.target.value = value;
+        });
+    }
+    
+    // Máscara de telefone
+    const telefoneInput = document.getElementById('telefone');
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            
+            if (value.length > 10) {
+                value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (value.length > 6) {
+                value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            } else if (value.length > 2) {
+                value = value.replace(/(\d{2})(\d{4})/, '($1) $2');
+            } else if (value.length > 0) {
+                value = value.replace(/(\d{2})/, '($1');
+            }
+            
+            e.target.value = value;
+        });
+    }
+});
+
+// Tornar funções globais
+window.goBack = goBack;
+window.nextStep = nextStep;
+window.prevStep = prevStep;
