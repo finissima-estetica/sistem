@@ -104,9 +104,12 @@ const procedimentosNomes = {
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    loadClientData();
-    setupTabs();
-    setupForms();
+    // Só executar se estiver na página ficha.html
+    if (window.location.pathname.includes('ficha.html')) {
+        loadClientData();
+        setupTabs();
+        setupForms();
+    }
 });
 
 // Carregar dados do cliente
