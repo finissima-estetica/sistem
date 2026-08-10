@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Clínica Estética</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo">
+                <h1>Clínica Estética</h1>
+                <p>Sistema de Acompanhamento</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" required placeholder="Digite seu e-mail">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required placeholder="Digite sua senha">
+                </div>
+                <button type="submit" class="btn-login">Entrar</button>
+                <p id="errorMessage" class="error-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Clínica Estética - Dashboard</h1>
+            <div class="header-actions">
+                <span id="userName">Bem-vindo</span>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="welcome-card">
+                <h2>Bem-vindo ao Sistema de Acompanhamento</h2>
+                <p>Este sistema foi desenvolvido para gerenciar o acompanhamento dos clientes da clínica de estética. 
+                Aqui você poderá registrar e visualizar o histórico de tratamentos, evoluções e informações importantes de cada cliente.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>0</h3>
+                    <p>Clientes Ativos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>0</h3>
+                    <p>Tratamentos em Andamento</p>
+                </div>
+                <div class="stat-card">
+                    <h3>0</h3>
+                    <p>Consultas este Mês</p>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <h3>Ações Rápidas</h3>
+                <div class="actions-grid">
+                    <button class="action-btn">Novo Cliente</button>
+                    <button class="action-btn">Buscar Cliente</button>
+                    <button class="action-btn">Agendar Consulta</button>
+                    <button class="action-btn">Relatórios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
