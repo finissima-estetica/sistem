@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha do Cliente - Clínica Estética</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ficha-container">
+        <div class="header">
+            <h1>Clínica Estética - Ficha do Cliente</h1>
+            <button class="btn-back" onclick="goBack()">← Voltar</button>
+        </div>
+        
+        <div class="content">
+            <!-- Informações do Cliente -->
+            <div class="client-info-card">
+                <div class="client-header">
+                    <div class="client-avatar">
+                        <span id="clientInitials">--</span>
+                    </div>
+                    <div class="client-details">
+                        <h2 id="clientName">Nome do Cliente</h2>
+                        <p id="clientContact">email@exemplo.com | (00) 00000-0000</p>
+                        <div class="client-meta">
+                            <span class="status-badge" id="planStatus">Sem Plano</span>
+                            <span class="date-badge" id="clientSince">Cliente desde: --/--/----</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="client-stats">
+                    <div class="stat-item">
+                        <h3 id="totalAtendimentos">0</h3>
+                        <p>Total Atendimentos</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="planosAtivos">0</h3>
+                        <p>Planos Ativos</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="ultimoAtendimento">--</h3>
+                        <p>Último Atendimento</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abas de Navegação -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="atendimentos">Histórico de Atendimentos</button>
+                    <button class="tab-btn" data-tab="desempenho">Desempenho</button>
+                    <button class="tab-btn" data-tab="planos">Planos</button>
+                    <button class="tab-btn" data-tab="dados">Dados Completos</button>
+                </div>
+
+                <!-- Conteúdo das Abas -->
+                <div class="tab-content">
+                    <!-- Aba: Histórico de Atendimentos -->
+                    <div class="tab-pane active" id="atendimentos">
+                        <div class="tab-header">
+                            <h3>Histórico de Atendimentos</h3>
+                            <button class="btn-new-atendimento" onclick="openNovoAtendimento()">+ Novo Atendimento</button>
+                        </div>
+                        
+                        <div class="atendimentos-list" id="atendimentosList">
+                            <div class="empty-state">
+                                <p>Nenhum atendimento registrado ainda.</p>
+                                <p>Clique em "Novo Atendimento" para começar.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba: Desempenho -->
+                    <div class="tab-pane" id="desempenho">
+                        <div class="tab-header">
+                            <h3>Análise de Desempenho</h3>
+                            <div class="period-selector">
+                                <select id="periodoAnalise">
+                                    <option value="30">Últimos 30 dias</option>
+                                    <option value="90">Últimos 90 dias</option>
+                                    <option value="180">Últimos 6 meses</option>
+                                    <option value="365">Último ano</option>
+                                    <option value="all">Todo o período</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="desempenho-content">
+                            <div class="charts-grid">
+                                <div class="chart-card">
+                                    <h4>Evolução do Peso</h4>
+                                    <div class="chart-placeholder" id="pesoChart">
+                                        <p>Gráfico de evolução do peso</p>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <h4>Evolução da Cintura</h4>
+                                    <div class="chart-placeholder" id="cinturaChart">
+                                        <p>Gráfico de evolução da cintura</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="medidas-summary">
+                                <h4>Resumo de Medidas</h4>
+                                <div class="medidas-table" id="medidasTable">
+                                    <p>Selecione um período para ver as estatísticas.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba: Planos -->
+                    <div class="tab-pane" id="planos">
+                        <div class="tab-header">
+                            <h3>Planos do Cliente</h3>
+                            <button class="btn-new-plano" onclick="openNovoPlano()">+ Adicionar Plano</button>
+                        </div>
+                        
+                        <div class="planos-list" id="planosList">
+                            <div class="empty-state">
+                                <p>Nenhum plano vinculado a este cliente.</p>
+                                <p>Clique em "Adicionar Plano" para vincular.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba: Dados Completos -->
+                    <div class="tab-pane" id="dados">
+                        <div class="tab-header">
+                            <h3>Dados Completos do Cliente</h3>
+                            <button class="btn-edit" onclick="editCliente()">Editar Dados</button>
+                        </div>
+                        
+                        <div class="dados-completos" id="dadosCompletos">
+                            <p>Carregando dados...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Novo Atendimento -->
+    <div class="modal" id="modalAtendimento">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registrar Novo Atendimento</h3>
+                <button class="btn-close" onclick="closeModal('modalAtendimento')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="atendimentoForm">
+                    <div class="form-section">
+                        <h4>Informações do Atendimento</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="dataAtendimento">Data *</label>
+                                <input type="date" id="dataAtendimento" name="dataAtendimento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tipoAtendimento">Tipo de Atendimento *</label>
+                                <select id="tipoAtendimento" name="tipoAtendimento" required>
+                                    <option value="">Selecione</option>
+                                    <option value="limpeza_pele">Limpeza de Pele</option>
+                                    <option value="peeling">Peeling Químico</option>
+                                    <option value="botox">Botox</option>
+                                    <option value="preenchimento">Preenchimento Facial</option>
+                                    <option value="laser">Laser</option>
+                                    <option value="drenagem">Drenagem Linfática</option>
+                                    <option value="massagem">Massagem</option>
+                                    <option value="carboxiterapia">Carboxiterapia</option>
+                                    <option value="microneedling">Microneedling</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="planoVinculado">Plano Vinculado</label>
+                                <select id="planoVinculado" name="planoVinculado">
+                                    <option value="">Atendimento Único (Fora de Plano)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes" name="observacoes" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Medidas Atuais</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="pesoAtual">Peso (kg)</label>
+                                <input type="number" id="pesoAtual" name="pesoAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="bracoDireitoAtual">Braço Direito (cm)</label>
+                                <input type="number" id="bracoDireitoAtual" name="bracoDireitoAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="bracoEsquerdoAtual">Braço Esquerdo (cm)</label>
+                                <input type="number" id="bracoEsquerdoAtual" name="bracoEsquerdoAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="toraxAtual">Tórax (cm)</label>
+                                <input type="number" id="toraxAtual" name="toraxAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="cinturaAtual">Cintura (cm)</label>
+                                <input type="number" id="cinturaAtual" name="cinturaAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="abdomenAtual">Abdômen (cm)</label>
+                                <input type="number" id="abdomenAtual" name="abdomenAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="quadrilAtual">Quadril (cm)</label>
+                                <input type="number" id="quadrilAtual" name="quadrilAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="coxaDireitaAtual">Coxa Direita (cm)</label>
+                                <input type="number" id="coxaDireitaAtual" name="coxaDireitaAtual" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="coxaEsquerdaAtual">Coxa Esquerda (cm)</label>
+                                <input type="number" id="coxaEsquerdaAtual" name="coxaEsquerdaAtual" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeModal('modalAtendimento')">Cancelar</button>
+                        <button type="submit" class="btn-submit">Salvar Atendimento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Novo Plano -->
+    <div class="modal" id="modalPlano">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Adicionar Plano ao Cliente</h3>
+                <button class="btn-close" onclick="closeModal('modalPlano')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="planoForm">
+                    <div class="form-section">
+                        <h4>Seleção do Plano</h4>
+                        <div class="planos-disponiveis" id="planosDisponiveis">
+                            <!-- Planos serão carregados dinamicamente -->
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Detalhes do Plano</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="dataInicio">Data de Início *</label>
+                                <input type="date" id="dataInicio" name="dataInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dataFim">Data de Término</label>
+                                <input type="date" id="dataFim" name="dataFim" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="observacoesPlano">Observações</label>
+                            <textarea id="observacoesPlano" name="observacoesPlano" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeModal('modalPlano')">Cancelar</button>
+                        <button type="submit" class="btn-submit">Vincular Plano</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="ficha.js"></script>
+</body>
+</html>

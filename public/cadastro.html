@@ -300,6 +300,39 @@
                             </div>
                         </div>
 
+                        <div class="form-section">
+                            <h3>Vincular Plano (Opcional)</h3>
+                            <div class="form-group">
+                                <label for="vincularPlano">Deseja vincular um plano ao cadastro?</label>
+                                <select id="vincularPlano" name="vincularPlano" onchange="togglePlanoOptions()">
+                                    <option value="">Não vincular plano agora</option>
+                                    <option value="sim">Sim, vincular plano</option>
+                                </select>
+                            </div>
+                            <div id="planoOptions" style="display: none;">
+                                <div class="form-group">
+                                    <label for="planoSelecionado">Selecione o plano:</label>
+                                    <select id="planoSelecionado" name="planoSelecionado">
+                                        <option value="">Selecione um plano</option>
+                                        <option value="plano_limpeza">Plano Limpeza de Pele (6 meses)</option>
+                                        <option value="plano_peeling">Plano Peeling Químico (6 meses)</option>
+                                        <option value="plano_botox">Plano Botox (6 meses)</option>
+                                        <option value="plano_preenchimento">Plano Preenchimento Facial (6 meses)</option>
+                                        <option value="plano_laser">Plano Laser (6 meses)</option>
+                                        <option value="plano_drenagem">Plano Drenagem Linfática (6 meses)</option>
+                                        <option value="plano_massagem">Plano Massagem (6 meses)</option>
+                                        <option value="plano_carboxiterapia">Plano Carboxiterapia (6 meses)</option>
+                                        <option value="plano_microneedling">Plano Microneedling (6 meses)</option>
+                                        <option value="plano_completo">Plano Completo (6 meses)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dataInicioPlano">Data de início do plano:</label>
+                                    <input type="date" id="dataInicioPlano" name="dataInicioPlano">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="button" class="btn-prev" onclick="prevStep(4)">← Anterior</button>
                             <button type="button" class="btn-next" onclick="nextStep(4)">Próximo →</button>

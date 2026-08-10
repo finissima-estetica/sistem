@@ -194,9 +194,70 @@ function handleSubmit(e) {
     // Salvar no localStorage
     saveClientData(formData);
     
+    // Verificar se deve vincular plano
+    const vincularPlano = document.getElementById('vincularPlano').value;
+    if (vincularPlano === 'sim') {
+        const planoId = document.getElementById('planoSelecionado').value;
+        const dataInicio = document.getElementById('dataInicioPlano').value;
+        
+        if (planoId && dataInicio) {
+            vincularPlanoAoCliente(formData.id, planoId, dataInicio);
+        }
+    }
+    
     // Redirecionar para o dashboard
     alert('Cliente cadastrado com sucesso!');
     window.location.href = 'index.html';
+}
+
+// Função para vincular plano ao cliente
+function vincularPlanoAoCliente(clienteId, planoId, dataInicio) {
+    const planosInfo = {
+        'plano_limpeza': { duracao: 6, nome: 'Plano Limpeza de Pele' },
+        'plano_peeling': { duracao: 6, nome: 'Plano Peeling Químico' },
+        'plano_botox': { duracao: 6, nome: 'Plano Botox' },
+        'plano_preenchimento': { duracao: 6, nome: 'Plano Preenchimento Facial' },
+        'plano_laser': { duracao: 6, nome: 'Plano Laser' },
+        'plano_drenagem': { duracao: 6, nome: 'Plano Drenagem Linfática' },
+        'plano_massagem': { duracao: 6, nome: 'Plano Massagem' },
+        'plano_carboxiterapia': { duracao: 6, nome: 'Plano Carboxiterapia' },
+        'plano_microneedling': { duracao: 6, nome: 'Plano Microneedling' },
+        'plano_completo': { duracao: 6, nome: 'Plano Completo' }
+    };
+    
+    const planoInfo = planosInfo[planoId];
+    const dataInicioDate = new Date(dataInicio);
+    const dataFim = new Date(dataInicioDate);
+    dataFim.setMonth(dataFim.getMonth() + planoInfo.duracao);
+    
+    const plano = {
+        id: Date.now(),
+        clienteId: clienteId,
+        planoId: planoId,
+        dataInicio: dataInicio,
+        dataFim: dataFim.toISOString().split('T')[0],
+        observacoes: ''
+    };
+    
+    // Salvar no localStorage
+    const planos = JSON.parse(localStorage.getItem('planos') || '[]');
+    planos.push(plano);
+    localStorage.setItem('planos', JSON.stringify(planos));
+}
+
+// Função para mostrar/esconder opções de plano
+function togglePlanoOptions() {
+    const vincularPlano = document.getElementById('vincularPlano').value;
+    const planoOptions = document.getElementById('planoOptions');
+    
+    if (vincularPlano === 'sim') {
+        planoOptions.style.display = 'block';
+        // Definir data de início como hoje
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataInicioPlano').value = hoje;
+    } else {
+        planoOptions.style.display = 'none';
+    }
 }
 
 // Função para coletar dados do formulário
@@ -288,3 +349,4 @@ document.addEventListener('DOMContentLoaded', () => {
 window.goBack = goBack;
 window.nextStep = nextStep;
 window.prevStep = prevStep;
+window.togglePlanoOptions = togglePlanoOptions;

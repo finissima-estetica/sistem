@@ -135,21 +135,39 @@ function loadClients() {
         return;
     }
     
-    clientsList.innerHTML = clients.map(client => `
-        <div class="client-card">
-            <div class="client-info">
-                <h3>${client.nome || client.name}</h3>
-                <p><strong>Email:</strong> ${client.email}</p>
-                <p><strong>Telefone:</strong> ${client.telefone || client.phone}</p>
-                <p><strong>Cadastro:</strong> ${formatDate(client.dataCadastro)}</p>
-                <span class="status-badge ${client.status ? client.status.toLowerCase() : 'ativo'}">${client.status || 'Ativo'}</span>
+    // Carregar planos para verificar status
+    const planos = JSON.parse(localStorage.getItem('planos') || '[]');
+    
+    clientsList.innerHTML = clients.map(client => {
+        const clientePlanos = planos.filter(p => p.clienteId == client.id);
+        const planosAtivos = clientePlanos.filter(p => {
+            const dataFim = new Date(p.dataFim);
+            return dataFim >= new Date();
+        });
+        
+        const planoBadge = planosAtivos.length > 0 
+            ? `<span class="plano-badge">Plano Ativo</span>` 
+            : `<span class="no-plano-badge">Sem Plano</span>`;
+        
+        return `
+            <div class="client-card">
+                <div class="client-info">
+                    <h3>${client.nome || client.name}</h3>
+                    <p><strong>Email:</strong> ${client.email}</p>
+                    <p><strong>Telefone:</strong> ${client.telefone || client.phone}</p>
+                    <p><strong>Cadastro:</strong> ${formatDate(client.dataCadastro)}</p>
+                    <div class="client-badges">
+                        <span class="status-badge ${client.status ? client.status.toLowerCase() : 'ativo'}">${client.status || 'Ativo'}</span>
+                        ${planoBadge}
+                    </div>
+                </div>
+                <div class="client-actions">
+                    <button class="btn-view" onclick="viewClient(${client.id})">Ver Ficha</button>
+                    <button class="btn-edit" onclick="editClient(${client.id})">Editar</button>
+                </div>
             </div>
-            <div class="client-actions">
-                <button class="btn-view" onclick="viewClient(${client.id})">Ver Detalhes</button>
-                <button class="btn-edit" onclick="editClient(${client.id})">Editar</button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Função para formatar data
@@ -207,9 +225,9 @@ function updateClientsList() {
     loadClients();
 }
 
-// Função para ver detalhes do cliente (placeholder)
+// Função para ver detalhes do cliente
 function viewClient(id) {
-    alert('Funcionalidade de visualização de detalhes será implementada em breve.');
+    window.location.href = `ficha.html?id=${id}`;
 }
 
 // Função para editar cliente (placeholder)
