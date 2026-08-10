@@ -216,9 +216,6 @@ async function loadClients() {
                 </div>
                 <div class="client-actions">
                     <button class="btn-view" onclick="viewClient(${client.id})">Ver Ficha</button>
-                    <button class="btn-edit" onclick="editClient(${client.id})">Editar</button>
-                    <button class="btn-toggle" onclick="toggleClientStatusDashboard(${client.id})">⚡</button>
-                    <button class="btn-delete" onclick="deleteClientDashboard(${client.id})">🗑️</button>
                 </div>
             </div>
         `;
@@ -230,81 +227,6 @@ function formatDate(dateString) {
     if (!dateString) return 'Data não informada';
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
-}
-
-// Função para alternar status do cliente no dashboard
-async function toggleClientStatusDashboard(clientId) {
-    try {
-        // Recarregar dados para ter certeza que está atualizado
-        await loadClientsFromStorage();
-        
-        const client = clients.find(c => c.id == clientId);
-        if (!client) return;
-        
-        const currentStatus = client.status || 'Ativo';
-        const newStatus = currentStatus === 'Ativo' ? 'Inativo' : 'Ativo';
-        
-        if (confirm(`Deseja alterar o status do cliente ${client.nome} para ${newStatus}?`)) {
-            // Tentar usar API primeiro
-            if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
-                await clientesAPI.atualizar(clientId, { status: newStatus });
-            } else {
-                // Fallback para localStorage
-                const clientIndex = clients.findIndex(c => c.id == clientId);
-                if (clientIndex !== -1) {
-                    clients[clientIndex].status = newStatus;
-                    localStorage.setItem('clients', JSON.stringify(clients));
-                }
-            }
-            
-            // Recarregar lista
-            await loadClientsFromStorage();
-            await loadClients();
-        }
-    } catch (error) {
-        console.error('Erro ao alterar status:', error);
-        alert('Erro ao alterar status do cliente');
-    }
-}
-
-// Função para excluir cliente no dashboard
-async function deleteClientDashboard(clientId) {
-    try {
-        // Recarregar dados para ter certeza que está atualizado
-        await loadClientsFromStorage();
-        
-        const client = clients.find(c => c.id == clientId);
-        if (!client) return;
-        
-        if (confirm(`Tem certeza que deseja excluir o cliente ${client.nome}? Esta ação não pode ser desfeita.`)) {
-            if (confirm('Esta ação é irreversível. Confirma a exclusão?')) {
-                // Tentar usar API primeiro
-                if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
-                    await clientesAPI.excluir(clientId);
-                } else {
-                    // Fallback para localStorage
-                    clients = clients.filter(c => c.id != clientId);
-                    localStorage.setItem('clients', JSON.stringify(clients));
-                    
-                    // Excluir atendimentos e planos relacionados
-                    let atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
-                    atendimentos = atendimentos.filter(a => a.clienteId != clientId);
-                    localStorage.setItem('atendimentos', JSON.stringify(atendimentos));
-                    
-                    let planos = JSON.parse(localStorage.getItem('planos') || '[]');
-                    planos = planos.filter(p => p.clienteId != clientId);
-                    localStorage.setItem('planos', JSON.stringify(planos));
-                }
-                
-                // Recarregar lista
-                await loadClientsFromStorage();
-                await loadClients();
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao excluir cliente:', error);
-        alert('Erro ao excluir cliente');
-    }
 }
 
 // Função para pesquisar clientes
