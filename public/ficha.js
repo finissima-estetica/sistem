@@ -811,87 +811,95 @@ function generateBodyVisualization() {
         'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
     };
     
-    // Criar SVG do corpo em pose T
+    // Criar SVG do corpo feminino em pose T com formas curvilíneas
     let svg = `
-        <svg viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
-            <!-- Cabeça -->
-            <ellipse cx="150" cy="40" rx="25" ry="30" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+        <svg viewBox="0 0 350 550" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+            <!-- Cabeça feminina -->
+            <ellipse cx="175" cy="45" rx="28" ry="35" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+            <!-- Cabelo sugerido -->
+            <path d="M147 45 Q145 25 175 20 Q205 25 203 45" fill="none" stroke="#adb5bd" stroke-width="2"/>
             
-            <!-- Pescoço -->
-            <rect x="140" y="65" width="20" height="20" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+            <!-- Pescoço delicado -->
+            <path d="M165 75 Q175 70 185 75 L180 95 Q175 92 170 95 Z" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
             
-            <!-- Ombros -->
-            <line x1="90" y1="85" x2="210" y2="85" stroke="#6c757d" stroke-width="4"/>
+            <!-- Ombros suaves -->
+            <path d="M95 95 Q175 90 255 95" stroke="#6c757d" stroke-width="3" fill="none"/>
             
-            <!-- Braço Direito (pose T) -->
+            <!-- Braço Direito (pose T) - curvilíneo -->
             <g>
                 <!-- Ombro direito -->
-                <circle cx="90" cy="85" r="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <!-- Braço direito superior -->
-                <rect x="70" y="75" width="25" height="40" rx="5" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Braço direito inferior -->
-                <rect x="65" y="115" width="20" height="50" rx="5" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <circle cx="95" cy="95" r="7" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <!-- Braço direito superior - forma curva -->
+                <path d="M95 95 Q80 100 75 115 Q70 130 68 145" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Braço direito inferior - forma curva -->
+                <path d="M68 145 Q65 160 62 175 Q60 190 60 205" fill="${zonesAnalysis.braco_direito.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
                 <!-- Mão direita -->
-                <ellipse cx="75" cy="170" rx="12" ry="15" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <text x="75" y="175" text-anchor="middle" font-size="10" fill="#333">D</text>
+                <ellipse cx="60" cy="215" rx="10" ry="12" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <text x="60" y="220" text-anchor="middle" font-size="10" fill="#333">D</text>
             </g>
             
-            <!-- Braço Esquerdo (pose T) -->
+            <!-- Braço Esquerdo (pose T) - curvilíneo -->
             <g>
                 <!-- Ombro esquerdo -->
-                <circle cx="210" cy="85" r="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <!-- Braço esquerdo superior -->
-                <rect x="205" y="75" width="25" height="40" rx="5" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-                <!-- Braço esquerdo inferior -->
-                <rect x="215" y="115" width="20" height="50" rx="5" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <circle cx="255" cy="95" r="7" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <!-- Braço esquerdo superior - forma curva -->
+                <path d="M255 95 Q270 100 275 115 Q280 130 282 145" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Braço esquerdo inferior - forma curva -->
+                <path d="M282 145 Q285 160 288 175 Q290 190 290 205" fill="${zonesAnalysis.braco_esquerdo.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
                 <!-- Mão esquerda -->
-                <ellipse cx="225" cy="170" rx="12" ry="15" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
-                <text x="225" y="175" text-anchor="middle" font-size="10" fill="#333">E</text>
+                <ellipse cx="290" cy="215" rx="10" ry="12" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <text x="290" y="220" text-anchor="middle" font-size="10" fill="#333">E</text>
             </g>
             
-            <!-- Tórax -->
-            <path d="M120 85 L150 85 L150 150 L120 150 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            <path d="M150 85 L180 85 L180 150 L150 150 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            <!-- Torso feminino - formato ampulheta -->
+            <g>
+                <!-- Tórax - lado direito -->
+                <path d="M130 95 Q115 130 125 160 Q135 175 140 195 L175 195 L175 95 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Tórax - lado esquerdo -->
+                <path d="M220 95 Q235 130 225 160 Q215 175 210 195 L175 195 L175 95 Z" fill="${zonesAnalysis.torax.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                
+                <!-- Cintura - lado direito -->
+                <path d="M140 195 Q135 210 137 225 Q140 240 145 255 L175 255 L175 195 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Cintura - lado esquerdo -->
+                <path d="M210 195 Q215 210 213 225 Q210 240 205 255 L175 255 L175 195 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                
+                <!-- Abdômen - lado direito -->
+                <path d="M145 255 Q140 275 145 295 Q150 310 155 320 L175 320 L175 255 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <!-- Abdômen - lado esquerdo -->
+                <path d="M205 255 Q210 275 205 295 Q200 310 195 320 L175 320 L175 255 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                
+                <!-- Quadril feminino - mais largo -->
+                <path d="M125 320 Q110 340 115 365 Q125 385 140 400 L175 400 L175 320 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <path d="M225 320 Q240 340 235 365 Q225 385 210 400 L175 400 L175 320 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+            </g>
             
-            <!-- Cintura -->
-            <path d="M125 150 L150 150 L150 190 L125 190 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            <path d="M150 150 L175 150 L175 190 L150 190 Z" fill="${zonesAnalysis.cintura.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            
-            <!-- Abdômen -->
-            <path d="M127 190 L150 190 L150 230 L127 230 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            <path d="M150 190 L173 190 L173 230 L150 230 Z" fill="${zonesAnalysis.abdomen.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            
-            <!-- Quadril -->
-            <path d="M120 230 L150 230 L150 280 L120 280 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            <path d="M150 230 L180 230 L180 280 L150 280 Z" fill="${zonesAnalysis.quadril.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
-            
-            <!-- Pernas -->
+            <!-- Pernas femininas - curvilíneas -->
             <g>
                 <!-- Coxa Direita -->
-                <path d="M120 280 L140 280 L135 350 L115 350 Z" fill="${zonesAnalysis.coxa_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <path d="M140 400 Q125 420 130 450 Q135 480 140 500 Q145 510 155 510" fill="${zonesAnalysis.coxa_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
                 <!-- Panturrilha Direita -->
-                <path d="M117 350 L135 350 L132 420 L114 420 Z" fill="${zonesAnalysis.panturrilha_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <path d="M140 500 Q145 515 147 530 Q148 540 150 545" fill="${zonesAnalysis.panturrilha_direita.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
                 <!-- Pé Direito -->
-                <ellipse cx="123" cy="435" rx="15" ry="10" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <ellipse cx="155" cy="550" rx="12" ry="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
                 
                 <!-- Coxa Esquerda -->
-                <path d="M160 280 L180 280 L185 350 L165 350 Z" fill="${zonesAnalysis.coxa_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <path d="M210 400 Q225 420 220 450 Q215 480 210 500 Q205 510 195 510" fill="${zonesAnalysis.coxa_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
                 <!-- Panturrilha Esquerda -->
-                <path d="M165 350 L185 350 L188 420 L168 420 Z" fill="${zonesAnalysis.panturrilha_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
+                <path d="M210 500 Q205 515 203 530 Q202 540 200 545" fill="${zonesAnalysis.panturrilha_esquerda.color}" stroke="#6c757d" stroke-width="2" opacity="0.8"/>
                 <!-- Pé Esquerdo -->
-                <ellipse cx="177" cy="435" rx="15" ry="10" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
+                <ellipse cx="195" cy="550" rx="12" ry="8" fill="#e9ecef" stroke="#6c757d" stroke-width="2"/>
             </g>
             
             <!-- Rótulos das zonas -->
-            <text x="150" y="135" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">TÓRAX</text>
-            <text x="150" y="175" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">CINTURA</text>
-            <text x="150" y="215" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">ABDÔMEN</text>
-            <text x="150" y="260" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">QUADRIL</text>
+            <text x="175" y="140" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">TÓRAX</text>
+            <text x="175" y="220" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">CINTURA</text>
+            <text x="175" y="285" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">ABDÔMEN</text>
+            <text x="175" y="360" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">QUADRIL</text>
             
             <!-- Legenda de mudança -->
-            <g transform="translate(220, 300)">
-                <rect x="0" y="0" width="70" height="80" fill="white" stroke="#6c757d" stroke-width="1" rx="5"/>
-                <text x="35" y="15" text-anchor="middle" font-size="9" font-weight="bold">MUDANÇA</text>
+            <g transform="translate(260, 200)">
+                <rect x="0" y="0" width="80" height="90" fill="white" stroke="#6c757d" stroke-width="1" rx="5"/>
+                <text x="40" y="15" text-anchor="middle" font-size="9" font-weight="bold">MUDANÇA</text>
                 <rect x="10" y="25" width="15" height="15" fill="#28a745"/>
                 <text x="30" y="37" font-size="8" fill="#333">Redução</text>
                 <rect x="10" y="45" width="15" height="15" fill="#dc3545"/>
