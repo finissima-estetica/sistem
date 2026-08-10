@@ -17,7 +17,7 @@ async function loadClientsFromStorage() {
             const clientesData = await clientesAPI.listar();
             // Mapear campos do banco para o formato esperado
             clients = clientesData.map(client => ({
-                id: client.id,
+                id: client.id, // Usar ID do banco de dados
                 nome: client.nome,
                 email: client.email,
                 telefone: client.telefone,

@@ -118,6 +118,8 @@ async function loadClientData() {
     const urlParams = new URLSearchParams(window.location.search);
     currentClientId = urlParams.get('id');
     
+    console.log('Carregando cliente com ID:', currentClientId);
+    
     if (!currentClientId) {
         alert('Cliente não encontrado. Redirecionando para o dashboard.');
         window.location.href = 'index.html';
@@ -127,6 +129,7 @@ async function loadClientData() {
     try {
         // Tentar usar API primeiro
         if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
+            console.log('Tentando buscar cliente via API...');
             const clienteData = await clientesAPI.buscar(currentClientId);
             const atendimentosData = await clientesAPI.buscarAtendimentos(currentClientId);
             const planosData = await clientesAPI.buscarPlanos(currentClientId);
@@ -134,9 +137,11 @@ async function loadClientData() {
             currentClient = clienteData;
             currentClientAtendimentos = atendimentosData;
             currentClientPlanos = planosData;
+            currentAtendimentos = atendimentosData;
             
             console.log('Dados carregados da API:', currentClient);
         } else {
+            console.log('API não disponível, usando localStorage...');
             // Fallback para localStorage
             const clients = JSON.parse(localStorage.getItem('clients') || '[]');
             const atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
@@ -145,16 +150,19 @@ async function loadClientData() {
             currentClient = clients.find(c => c.id == currentClientId);
             currentClientAtendimentos = atendimentos.filter(a => a.clienteId == currentClientId);
             currentClientPlanos = planos.filter(p => p.clienteId == currentClientId);
+            currentAtendimentos = currentClientAtendimentos;
             
             console.log('Dados carregados do localStorage:', currentClient);
         }
         
         if (!currentClient) {
+            console.error('Cliente não encontrado com ID:', currentClientId);
             alert('Cliente não encontrado. Redirecionando para o dashboard.');
             window.location.href = 'index.html';
             return;
         }
         
+        console.log('Cliente encontrado, atualizando UI...');
         // Atualizar UI
         updateClientInfo();
         loadAtendimentos();
@@ -163,7 +171,7 @@ async function loadClientData() {
         
     } catch (error) {
         console.error('Erro ao carregar dados do cliente:', error);
-        alert('Erro ao carregar dados do cliente. Tente novamente.');
+        alert('Erro ao carregar dados do cliente: ' + error.message);
     }
 }
 

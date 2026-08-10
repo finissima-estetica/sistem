@@ -329,6 +329,11 @@ async function saveClientData(clientData) {
             
             const savedClient = await clientesAPI.criar(apiData);
             console.log('Cliente salvo no PostgreSQL:', savedClient);
+            
+            // Armazenar o ID correto do banco para uso posterior
+            clientData.id = savedClient.id;
+            localStorage.setItem('lastCreatedClientId', savedClient.id);
+            
             return;
         }
     } catch (error) {
@@ -338,11 +343,15 @@ async function saveClientData(clientData) {
     // Fallback para localStorage
     let clients = JSON.parse(localStorage.getItem('clients') || '[]');
     
-    // Adicionar novo cliente
+    // Adicionar novo cliente com ID único
+    clientData.id = Date.now();
     clients.push(clientData);
     
     // Salvar no localStorage
     localStorage.setItem('clients', JSON.stringify(clients));
+    
+    // Armazenar o ID para uso posterior
+    localStorage.setItem('lastCreatedClientId', clientData.id);
     
     console.log('Cliente salvo no localStorage');
 }
