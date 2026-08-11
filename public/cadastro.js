@@ -316,6 +316,15 @@ function collectFormData() {
         panturrilhaEsquerda: data.panturrilhaEsquerda
     });
     
+    // Logar medidas individualmente para evitar problema de console
+    console.log('📋 Medidas individuais:');
+    console.log('  bracoDireito:', data.bracoDireito);
+    console.log('  bracoEsquerdo:', data.bracoEsquerdo);
+    console.log('  coxaDireita:', data.coxaDireita);
+    console.log('  coxaEsquerda:', data.coxaEsquerda);
+    console.log('  panturrilhaDireita:', data.panturrilhaDireita);
+    console.log('  panturrilhaEsquerda:', data.panturrilhaEsquerda);
+    
     // Logar todos os campos para debug
     console.log('📋 Todos os campos coletados:', Object.keys(data));
     
