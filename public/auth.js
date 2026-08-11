@@ -138,6 +138,14 @@ function goToCadastro() {
     window.location.href = 'cadastro.html';
 }
 
+// Fechar modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 // Função para carregar lista de clientes
 async function loadClients() {
     if (!clientsList) return;

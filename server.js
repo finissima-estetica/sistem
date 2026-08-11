@@ -117,7 +117,32 @@ async function runMigrations() {
     try {
         console.log('🔄 Iniciando migração do banco de dados...');
 
-        // Verificar se as colunas já existem
+        // Verificar se a tabela servicos existe
+        const tableCheck = await pool.query(`
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'servicos'
+            )
+        `);
+
+        if (!tableCheck.rows[0].exists) {
+            console.log('➕ Criando tabela servicos...');
+            await pool.query(`
+                CREATE TABLE servicos (
+                    id SERIAL PRIMARY KEY,
+                    nome VARCHAR(255) NOT NULL,
+                    valor_medio DECIMAL(10,2) NOT NULL,
+                    descricao TEXT,
+                    ativo BOOLEAN DEFAULT true,
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+            console.log('✅ Tabela servicos criada');
+        } else {
+            console.log('ℹ️ Tabela servicos já existe');
+        }
+
+        // Verificar se as colunas de panturrilha existem em atendimentos
         const checkResult = await pool.query(`
             SELECT column_name 
             FROM information_schema.columns 
@@ -126,7 +151,7 @@ async function runMigrations() {
         `);
 
         const existingColumns = checkResult.rows.map(row => row.column_name);
-        console.log('Colunas existentes:', existingColumns);
+        console.log('Colunas existentes em atendimentos:', existingColumns);
 
         // Adicionar panturrilha_direita se não existir
         if (!existingColumns.includes('panturrilha_direita')) {
@@ -470,6 +495,90 @@ app.post('/api/atendimentos', async (req, res) => {
     } catch (error) {
         console.error('Erro ao criar atendimento:', error);
         res.status(500).json({ error: 'Erro ao criar atendimento' });
+    }
+});
+
+// Rotas de Serviços
+app.get('/api/servicos', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT * FROM servicos WHERE ativo = true ORDER BY nome ASC'
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Erro ao buscar serviços:', error);
+        res.status(500).json({ error: 'Erro ao buscar serviços' });
+    }
+});
+
+app.post('/api/servicos', async (req, res) => {
+    try {
+        const servico = req.body;
+        
+        const result = await pool.query(`
+            INSERT INTO servicos (nome, valor_medio, descricao, ativo)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+        `, [
+            servico.nome,
+            servico.valorMedio,
+            servico.descricao || null,
+            servico.ativo !== false
+        ]);
+        
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao criar serviço:', error);
+        res.status(500).json({ error: 'Erro ao criar serviço' });
+    }
+});
+
+app.put('/api/servicos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const servico = req.body;
+        
+        const result = await pool.query(`
+            UPDATE servicos 
+            SET nome = $1, valor_medio = $2, descricao = $3, ativo = $4
+            WHERE id = $5
+            RETURNING *
+        `, [
+            servico.nome,
+            servico.valorMedio,
+            servico.descricao || null,
+            servico.ativo !== false,
+            id
+        ]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Serviço não encontrado' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao atualizar serviço:', error);
+        res.status(500).json({ error: 'Erro ao atualizar serviço' });
+    }
+});
+
+app.delete('/api/servicos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await pool.query(
+            'UPDATE servicos SET ativo = false WHERE id = $1 RETURNING *',
+            [id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Serviço não encontrado' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao desativar serviço:', error);
+        res.status(500).json({ error: 'Erro ao desativar serviço' });
     }
 });
 

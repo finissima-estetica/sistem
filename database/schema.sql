@@ -93,6 +93,16 @@ CREATE TABLE IF NOT EXISTS usuarios (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela de Serviços
+CREATE TABLE IF NOT EXISTS servicos (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    valor_medio DECIMAL(10,2) NOT NULL,
+    descricao TEXT,
+    ativo BOOLEAN DEFAULT true,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Índices para melhorar performance
 CREATE INDEX IF NOT EXISTS idx_clientes_nome ON clientes(nome);
 CREATE INDEX IF NOT EXISTS idx_clientes_email ON clientes(email);
