@@ -119,13 +119,12 @@ async function runMigrations() {
 
         // Verificar se a tabela servicos existe
         const tableCheck = await pool.query(`
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'servicos'
-            )
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_name = 'servicos'
         `);
 
-        if (!tableCheck.rows[0].exists) {
+        if (tableCheck.rows.length === 0) {
             console.log('➕ Criando tabela servicos...');
             await pool.query(`
                 CREATE TABLE servicos (
@@ -213,13 +212,12 @@ async function initializeDatabase() {
         
         // Verificar se as tabelas já existem
         const tablesCheck = await pool.query(`
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public'
-            );
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
         `);
         
-        if (tablesCheck.rows[0].exists) {
+        if (tablesCheck.rows.length > 0) {
             console.log('Tabelas já existem, pulando inicialização');
             return;
         }
