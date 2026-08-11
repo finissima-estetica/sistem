@@ -854,8 +854,6 @@ function generateBodyVisualization() {
         });
     });
     
-     final:", zonesAnalysis);
-    
     // Adicionar fallback para as 9 zonas
     const allSvgZones = [
         'zone-chest', 'zone-ab-upper', 'zone-pelvis',
