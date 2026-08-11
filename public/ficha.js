@@ -639,7 +639,9 @@ async function handleAtendimentoSubmit(e) {
         abdomen: formData.get('abdomenAtual') || null,
         quadril: formData.get('quadrilAtual') || null,
         coxaDireita: formData.get('coxaDireitaAtual') || null,
-        coxaEsquerda: formData.get('coxaEsquerdaAtual') || null
+        coxaEsquerda: formData.get('coxaEsquerdaAtual') || null,
+        panturrilhaDireita: formData.get('panturrilhaDireitaAtual') || null,
+        panturrilhaEsquerda: formData.get('panturrilhaEsquerdaAtual') || null
     };
     
     // Salvar via API

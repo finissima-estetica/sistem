@@ -77,6 +77,8 @@ CREATE TABLE IF NOT EXISTS atendimentos (
     quadril DECIMAL(5,2),
     coxa_direita DECIMAL(5,2),
     coxa_esquerda DECIMAL(5,2),
+    panturrilha_direita DECIMAL(5,2),
+    panturrilha_esquerda DECIMAL(5,2),
     
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
