@@ -59,8 +59,11 @@ window.addEventListener('load', () => {
         if (urlParams.get('reload') === 'true') {
             // Remover o parâmetro da URL
             window.history.replaceState({}, document.title, window.location.pathname);
-            // Recarregar clientes do storage
-            loadClientsFromStorage();
+            // Recarregar clientes do storage e esperar completar
+            await loadClientsFromStorage();
+        } else {
+            // Carregar clientes normalmente
+            await loadClientsFromStorage();
         }
         loadClients();
     }

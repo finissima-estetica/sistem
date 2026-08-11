@@ -43,6 +43,22 @@ app.get('/api/debug', (req, res) => {
     });
 });
 
+// Rota de teste para criar cliente simples
+app.post('/api/test-client', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            INSERT INTO clientes (nome, email, telefone, status, data_cadastro)
+            VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+            RETURNING *
+        `, ['Teste API', 'teste@api.com', '11999999999', 'Ativo']);
+        
+        res.json({ success: true, client: result.rows[0] });
+    } catch (error) {
+        console.error('Erro no teste:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Configuração do PostgreSQL
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
