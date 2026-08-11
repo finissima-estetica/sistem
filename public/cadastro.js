@@ -278,6 +278,12 @@ function collectFormData() {
     const formData = new FormData(form);
     const data = {};
     
+    // Logar valores brutos do FormData para debug
+    console.log('📋 Valores brutos do FormData:');
+    formData.forEach((value, key) => {
+        console.log(`  ${key}: ${value}`);
+    });
+    
     formData.forEach((value, key) => {
         if (data[key]) {
             if (Array.isArray(data[key])) {
