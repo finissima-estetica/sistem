@@ -111,6 +111,15 @@
 
     <script src="api.js"></script>
     <script src="auth.js"></script>
+    <script>
+        // Configurar formulário de serviço
+        document.addEventListener('DOMContentLoaded', () => {
+            const servicoForm = document.getElementById('servicoForm');
+            if (servicoForm) {
+                servicoForm.addEventListener('submit', handleServicoSubmit);
+            }
+        });
+    </script>
     <script src="servicos.js" defer></script>
 </body>
 </html>

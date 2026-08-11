@@ -42,13 +42,15 @@ function openServicosModal() {
 // Carregar serviços
 async function loadServicos() {
     try {
+        console.log('🔌 Carregando serviços...');
         servicos = await servicosAPI.buscarTodos();
+        console.log('📊 Serviços carregados:', servicos);
         renderServicos();
     } catch (error) {
-        console.error('Erro ao carregar serviços:', error);
+        console.error('❌ Erro ao carregar serviços:', error);
         document.getElementById('servicosList').innerHTML = `
             <div class="empty-state">
-                <p>Erro ao carregar serviços.</p>
+                <p>Erro ao carregar serviços: ${error.message}</p>
             </div>
         `;
     }
@@ -145,13 +147,8 @@ async function handleServicoSubmit(e) {
 
 // Fechar modal
 function closeModal(modalId) {
-    document.getElementById(modalId).classList.remove('active');
-}
-
-// Configurar formulário
-document.addEventListener('DOMContentLoaded', () => {
-    const servicoForm = document.getElementById('servicoForm');
-    if (servicoForm) {
-        servicoForm.addEventListener('submit', handleServicoSubmit);
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
     }
-});
+}
