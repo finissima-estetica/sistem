@@ -305,7 +305,7 @@ async function saveClientData(clientData) {
         const apiData = {
             nome: clientData.nome,
             cpf: clientData.cpf,
-            data_nascimento: clientData.dataNascimento,
+            data_nascimento: clientData.dataNascimento || null,
             telefone: clientData.telefone,
             email: clientData.email,
             endereco: clientData.endereco,

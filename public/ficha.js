@@ -524,6 +524,9 @@ function updateMedidasTable(atendimentos) {
     const primeiro = atendimentos[0];
     const ultimo = atendimentos[atendimentos.length - 1];
     
+    console.log('Comparativo de medidas - Primeiro:', primeiro);
+    console.log('Comparativo de medidas - Último:', ultimo);
+    
     const variacoes = {};
     const medidas = ['peso', 'cintura', 'quadril', 'abdomen', 'bracoDireito', 'bracoEsquerdo'];
     
@@ -532,6 +535,7 @@ function updateMedidasTable(atendimentos) {
             const variacao = ultimo[medida] - primeiro[medida];
             const sinal = variacao > 0 ? '+' : '';
             variacoes[medida] = `${sinal}${variacao.toFixed(1)}`;
+            console.log(`📏 ${medida}: ${primeiro[medida]} → ${ultimo[medida]} (${variacoes[medida]})`);
         }
     });
     
@@ -1153,13 +1157,17 @@ function calculateMetrics() {
     const firstAtendimento = atendimentosOrdenados[atendimentosOrdenados.length - 1];
     const lastAtendimento = atendimentosOrdenados[0];
     
-    // Peso - SEMPRE usar cadastro como baseline (fixo)
-    const pesoAtual = parseFloat(lastAtendimento.peso) || 0;
+    console.log('Atendimentos disponíveis:', atendimentosOrdenados.length);
+    console.log('Último atendimento:', lastAtendimento);
+    console.log('Primeiro atendimento:', firstAtendimento);
+    
+    // Peso - usar último atendimento se disponível, senão usar cadastro
+    const pesoAtual = parseFloat(lastAtendimento?.peso) || parseFloat(currentClient.peso) || 0;
     const pesoInicial = parseFloat(currentClient.peso) || 0; // Peso do cadastro
     const pesoChange = pesoAtual - pesoInicial;
     const pesoPercentage = pesoInicial > 0 ? ((pesoChange / pesoInicial) * 100).toFixed(1) : 0;
     
-    console.log(`Peso: inicial (cadastro)=${pesoInicial}, atual (último atendimento)=${pesoAtual}, mudança=${pesoChange}`);
+    console.log(`Peso: inicial (cadastro)=${pesoInicial}, atual=${pesoAtual}, mudança=${pesoChange}`);
     
     const pesoMetric = document.getElementById('pesoMetric');
     if (pesoMetric) {
@@ -1192,6 +1200,7 @@ function calculateMetrics() {
         const imcMetric = document.getElementById('imcMetric');
         if (imcMetric) {
             imcMetric.querySelector('.metric-value').textContent = imc;
+            console.log(`📊 IMC calculado: ${imc} (peso=${pesoAtual}, altura=${alturaAtual})`);
             
             let imcClass = '';
             let imcStatus = '';
