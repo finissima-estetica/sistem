@@ -187,23 +187,15 @@ function setupFormValidation() {
 async function handleSubmit(e) {
     e.preventDefault();
     
-    console.log('📝 Iniciando submissão do formulário');
-    
     if (!validateStep(5)) {
-        console.log('❌ Validação falhou');
         return;
     }
     
-    console.log('✅ Validação passou');
-    
     // Coletar dados do formulário
     const formData = collectFormData();
-    console.log('📋 Dados coletados:', formData);
     
     // Salvar no banco de dados ou localStorage
-    console.log('💾 Salvando dados do cliente...');
     await saveClientData(formData);
-    console.log('✅ Dados salvos');
     
     // Verificar se deve vincular plano
     const vincularPlano = document.getElementById('vincularPlano').value;
@@ -278,12 +270,6 @@ function collectFormData() {
     const formData = new FormData(form);
     const data = {};
     
-    // Logar valores brutos do FormData para debug
-    console.log('📋 Valores brutos do FormData:');
-    formData.forEach((value, key) => {
-        console.log(`  ${key}: ${value}`);
-    });
-    
     formData.forEach((value, key) => {
         if (data[key]) {
             if (Array.isArray(data[key])) {
@@ -296,37 +282,9 @@ function collectFormData() {
         }
     });
     
-    console.log('📋 Dados após forEach:', data);
-    console.log('📋 coxaDireita após forEach:', data.coxaDireita);
-    
     // Adicionar data de cadastro
     data.dataCadastro = new Date().toISOString();
     data.id = Date.now(); // ID único
-    
-    console.log('📋 Dados coletados do formulário:', data);
-    console.log('📋 Valor completo de data.coxaDireita:', data.coxaDireita);
-    console.log('📋 Tipo de data.coxaDireita:', typeof data.coxaDireita);
-    console.log('📋 Data de nascimento coletada:', data.dataNascimento);
-    console.log('📋 Medidas:', {
-        bracoDireito: data.bracoDireito,
-        bracoEsquerdo: data.bracoEsquerdo,
-        coxaDireita: data.coxaDireito,
-        coxaEsquerda: data.coxaEsquerda,
-        panturrilhaDireita: data.panturrilhaDireita,
-        panturrilhaEsquerda: data.panturrilhaEsquerda
-    });
-    
-    // Logar medidas individualmente para evitar problema de console
-    console.log('📋 Medidas individuais:');
-    console.log('  bracoDireito:', data.bracoDireito);
-    console.log('  bracoEsquerdo:', data.bracoEsquerdo);
-    console.log('  coxaDireita:', data.coxaDireita);
-    console.log('  coxaEsquerda:', data.coxaEsquerda);
-    console.log('  panturrilhaDireita:', data.panturrilhaDireita);
-    console.log('  panturrilhaEsquerda:', data.panturrilhaEsquerda);
-    
-    // Logar todos os campos para debug
-    console.log('📋 Todos os campos coletados:', Object.keys(data));
     
     return data;
 }
@@ -334,15 +292,8 @@ function collectFormData() {
 // Função para salvar dados do cliente
 async function saveClientData(clientData) {
     try {
-        console.log('🔍 saveClientData recebeu:', clientData);
-        console.log('🔍 clientData.coxaDireita:', clientData.coxaDireita);
-        console.log('🔍 clientData.panturrilhaDireita:', clientData.panturrilhaDireita);
-        
         // Enviar clientData diretamente - o servidor normaliza camelCase/snake_case
-        console.log('🚀 Enviando clientData diretamente para o servidor');
-        
         const savedClient = await clientesAPI.criar(clientData);
-        console.log('✅ Cliente salvo no PostgreSQL:', savedClient);
         
         // Armazenar o ID correto do banco para uso posterior
         clientData.id = savedClient.id;

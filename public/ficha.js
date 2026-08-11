@@ -118,8 +118,6 @@ async function loadClientData() {
     const urlParams = new URLSearchParams(window.location.search);
     currentClientId = urlParams.get('id');
     
-    console.log('Carregando cliente com ID:', currentClientId);
-    
     if (!currentClientId) {
         alert('Cliente não encontrado. Redirecionando para o dashboard.');
         window.location.href = 'index.html';
@@ -128,8 +126,6 @@ async function loadClientData() {
     
     try {
         // SEMPRE usar API, nunca localStorage
-        console.log('🔌 Carregando dados do cliente via API:', currentClientId);
-        
         const clienteData = await clientesAPI.buscar(currentClientId);
         const atendimentosData = await clientesAPI.buscarAtendimentos(currentClientId);
         const planosData = await clientesAPI.buscarPlanos(currentClientId);
@@ -152,10 +148,6 @@ async function loadClientData() {
             currentClient.panturrilhaEsquerda = currentClient.panturrilha_esquerda;
         }
         
-        console.log('✅ Dados carregados da API:', currentClient);
-        console.log('📋 Atendimentos carregados:', currentAtendimentos.length);
-        console.log('📋 Planos carregados:', currentClientPlanos.length);
-        
         if (!currentClient) {
             console.error('Cliente não encontrado com ID:', currentClientId);
             alert('Cliente não encontrado. Redirecionando para o dashboard.');
@@ -163,7 +155,6 @@ async function loadClientData() {
             return;
         }
         
-        console.log('Cliente encontrado, atualizando UI...');
         // Atualizar UI
         updateClientInfo();
         loadAtendimentos();
@@ -529,9 +520,6 @@ function updateMedidasTable(atendimentos) {
     const primeiro = atendimentos[0];
     const ultimo = atendimentos[atendimentos.length - 1];
     
-    console.log('Comparativo de medidas - Primeiro:', primeiro);
-    console.log('Comparativo de medidas - Último:', ultimo);
-    
     const variacoes = {};
     const medidas = ['peso', 'cintura', 'quadril', 'abdomen', 'bracoDireito', 'bracoEsquerdo'];
     
@@ -540,7 +528,6 @@ function updateMedidasTable(atendimentos) {
             const variacao = ultimo[medida] - primeiro[medida];
             const sinal = variacao > 0 ? '+' : '';
             variacoes[medida] = `${sinal}${variacao.toFixed(1)}`;
-            console.log(`📏 ${medida}: ${primeiro[medida]} → ${ultimo[medida]} (${variacoes[medida]})`);
         }
     });
     
@@ -657,9 +644,7 @@ async function handleAtendimentoSubmit(e) {
     
     // Salvar via API
     try {
-        console.log('💾 Salvando atendimento via API:', atendimento);
         const savedAtendimento = await clientesAPI.criarAtendimento(atendimento);
-        console.log('✅ Atendimento salvo no PostgreSQL:', savedAtendimento);
         
         // Atualizar lista local com o ID retornado
         atendimento.id = savedAtendimento.id;
@@ -705,9 +690,7 @@ async function handlePlanoSubmit(e) {
     
     // Salvar via API
     try {
-        console.log('💾 Salvando plano via API:', plano);
         const savedPlano = await clientesAPI.criarPlano(plano);
-        console.log('✅ Plano salvo no PostgreSQL:', savedPlano);
         
         // Atualizar lista local com o ID retornado
         plano.id = savedPlano.id;
@@ -840,7 +823,7 @@ function generateBodyVisualization() {
         'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
     };
     
-    console.log("Dados das zonas do banco:", Object.keys(realZonesAnalysis));
+     do banco:", Object.keys(realZonesAnalysis));
     
     // Mapeamento correto: dados do banco -> IDs do SVG (apenas 9 zonas existentes)
     const zoneMapping = {
@@ -856,7 +839,7 @@ function generateBodyVisualization() {
         'panturrilha_esquerda': ['zone-shin-l']
     };
     
-    console.log("Mapeamento de zonas:", zoneMapping);
+    :", zoneMapping);
     
     // Função auxiliar para obter cor com fallback defensivo
     const getZoneColor = (zoneData) => {
@@ -1173,9 +1156,7 @@ function calculateMetrics() {
     const firstAtendimento = atendimentosOrdenados[atendimentosOrdenados.length - 1];
     const lastAtendimento = atendimentosOrdenados[0];
     
-    console.log('Atendimentos disponíveis:', atendimentosOrdenados.length);
-    console.log('Último atendimento:', lastAtendimento);
-    :', firstAtendimento);
+    ', atendimentosOrdenados.length);
     
     // Peso - usar último atendimento se disponível, senão usar cadastro
     const pesoAtual = parseFloat(lastAtendimento?.peso) || parseFloat(currentClient.peso) || 0;
@@ -1254,3 +1235,4 @@ window.unhighlightZone = unhighlightZone;
 window.selectZone = selectZone;
 window.setZoneColor = setZoneColor;
 window.resetZones = resetZones;
+
