@@ -228,6 +228,16 @@ app.post('/api/clientes', async (req, res) => {
         const cliente = req.body;
         console.log('📝 Recebendo dados para criar cliente:', cliente);
         
+        // Converter strings vazias em NULL para campos numéricos
+        const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireito', 'coxaEsquerdo', 'panturrilhaDireito', 'panturrilhaEsquerdo'];
+        numericFields.forEach(field => {
+            if (cliente[field] === '' || cliente[field] === undefined || cliente[field] === null) {
+                cliente[field] = null;
+            }
+        });
+        
+        console.log('🔢 Dados convertidos para campos numéricos:', cliente);
+        
         const result = await pool.query(`
             INSERT INTO clientes (
                 nome, cpf, data_nascimento, telefone, email, endereco, cidade, estado,

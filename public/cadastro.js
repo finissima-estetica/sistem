@@ -336,6 +336,16 @@ async function saveClientData(clientData) {
         };
         
         console.log('🚀 Iniciando criação de cliente via API:', apiData);
+        
+        // Converter strings vazias em NULL para campos numéricos
+        const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireita', 'coxaEsquerda', 'panturrilhaDireita', 'panturrilhaEsquerda'];
+        numericFields.forEach(field => {
+            if (apiData[field] === '' || apiData[field] === undefined || apiData[field] === null) {
+                apiData[field] = null;
+            }
+        });
+        
+        console.log('🔢 Dados convertidos para campos numéricos:', apiData);
         const savedClient = await clientesAPI.criar(apiData);
         console.log('✅ Cliente salvo no PostgreSQL:', savedClient);
         
