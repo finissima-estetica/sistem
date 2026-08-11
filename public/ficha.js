@@ -1203,13 +1203,17 @@ function calculateMetrics() {
     }
     
     // IMC
+    console.log(`📊 Calculando IMC: pesoAtual=${pesoAtual}, alturaAtual=${alturaAtual}`);
+    const imcMetric = document.getElementById('imcMetric');
+    console.log(`📊 Elemento imcMetric encontrado:`, imcMetric);
+    
     if (alturaAtual > 0 && pesoAtual > 0) {
         const alturaM = alturaAtual / 100;
         const imc = (pesoAtual / (alturaM * alturaM)).toFixed(1);
-        const imcMetric = document.getElementById('imcMetric');
+        console.log(`📊 IMC calculado: ${imc} (peso=${pesoAtual}, altura=${alturaAtual}, alturaM=${alturaM})`);
+        
         if (imcMetric) {
             imcMetric.querySelector('.metric-value').textContent = imc;
-            console.log(`📊 IMC calculado: ${imc} (peso=${pesoAtual}, altura=${alturaAtual})`);
             
             let imcClass = '';
             let imcStatus = '';
