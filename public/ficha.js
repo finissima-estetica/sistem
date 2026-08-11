@@ -823,8 +823,6 @@ function generateBodyVisualization() {
         'panturrilha_esquerda': analyzeZone('panturrilha_esquerda')
     };
     
-     do banco:", Object.keys(realZonesAnalysis));
-    
     // Mapeamento correto: dados do banco -> IDs do SVG (apenas 9 zonas existentes)
     const zoneMapping = {
         'braco_direito': ['zone-arm-r-upper'],
@@ -839,13 +837,9 @@ function generateBodyVisualization() {
         'panturrilha_esquerda': ['zone-shin-l']
     };
     
-    :", zoneMapping);
-    
     // Função auxiliar para obter cor com fallback defensivo
     const getZoneColor = (zoneData) => {
-        :", zoneData);
         const color = zoneData?.color || '#e0e0e0';
-        :", color);
         return color;
     };
     
@@ -854,10 +848,8 @@ function generateBodyVisualization() {
     
     // Iterar sobre o mapeamento e atribuir cores
     Object.keys(zoneMapping).forEach(dataZone => {
-        :", dataZone);
         const color = getZoneColor(realZonesAnalysis[dataZone]);
         zoneMapping[dataZone].forEach(svgZoneId => {
-            ", dataZone, "->", svgZoneId, "com cor:", color);
             zonesAnalysis[svgZoneId] = color;
         });
     });
@@ -874,17 +866,13 @@ function generateBodyVisualization() {
     
     allSvgZones.forEach(zoneId => {
         if (!zonesAnalysis[zoneId]) {
-            , usando fallback:", zoneId);
             zonesAnalysis[zoneId] = '#e0e0e0';
         }
     });
     
-     final com fallbacks:", zonesAnalysis);
-    
     // Função helper segura para obter cor do objeto
     const getSafeColor = (zoneId) => {
         const color = zonesAnalysis[zoneId] || '#e0e0e0';
-        :", zoneId, "com cor:", color);
         return color;
     };
     
@@ -988,7 +976,6 @@ function unhighlightZone(zoneId) {
 
 // Função para selecionar zona ao clicar
 function selectZone(zoneId) {
-    :", zoneId);
     const zone = document.getElementById(zoneId);
     if (zone) {
         // Flash effect
@@ -1189,14 +1176,11 @@ function calculateMetrics() {
     }
     
     // IMC
-    : pesoAtual=${pesoAtual}, alturaAtual=${alturaAtual}`);
     const imcMetric = document.getElementById('imcMetric');
-     encontrado:`, imcMetric);
     
     if (alturaAtual > 0 && pesoAtual > 0) {
         const alturaM = alturaAtual / 100;
         const imc = (pesoAtual / (alturaM * alturaM)).toFixed(1);
-        : ${imc} (peso=${pesoAtual}, altura=${alturaAtual}, alturaM=${alturaM})`);
         
         if (imcMetric) {
             imcMetric.querySelector('.metric-value').textContent = imc;
