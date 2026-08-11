@@ -112,9 +112,51 @@ const pool = new Pool({
     timezone: 'America/Sao_Paulo'
 });
 
+// Função de migração automática
+async function runMigrations() {
+    try {
+        console.log('🔄 Iniciando migração do banco de dados...');
+
+        // Verificar se as colunas já existem
+        const checkResult = await pool.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'atendimentos' 
+            AND column_name IN ('panturrilha_direita', 'panturrilha_esquerda')
+        `);
+
+        const existingColumns = checkResult.rows.map(row => row.column_name);
+        console.log('Colunas existentes:', existingColumns);
+
+        // Adicionar panturrilha_direita se não existir
+        if (!existingColumns.includes('panturrilha_direita')) {
+            console.log('➕ Adicionando coluna panturrilha_direita...');
+            await pool.query('ALTER TABLE atendimentos ADD COLUMN panturrilha_direita DECIMAL(5,2)');
+            console.log('✅ Coluna panturrilha_direita adicionada');
+        } else {
+            console.log('ℹ️ Coluna panturrilha_direita já existe');
+        }
+
+        // Adicionar panturrilha_esquerda se não existir
+        if (!existingColumns.includes('panturrilha_esquerda')) {
+            console.log('➕ Adicionando coluna panturrilha_esquerda...');
+            await pool.query('ALTER TABLE atendimentos ADD COLUMN panturrilha_esquerda DECIMAL(5,2)');
+            console.log('✅ Coluna panturrilha_esquerda adicionada');
+        } else {
+            console.log('ℹ️ Coluna panturrilha_esquerda já existe');
+        }
+
+        console.log('✅ Migração concluída com sucesso!');
+    } catch (error) {
+        console.error('❌ Erro na migração:', error);
+        // Não falhar o servidor se a migração falhar
+    }
+}
+
 // Testar conexão com o banco
 pool.on('connect', () => {
     console.log('✅ Conectado ao PostgreSQL');
+    runMigrations();
     initializeDatabase();
 });
 
