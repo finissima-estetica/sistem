@@ -12,11 +12,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rota para a página principal (SPA)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 // Rota de health check para verificar se API está disponível
 app.get('/api/health', async (req, res) => {
     try {
@@ -352,6 +347,11 @@ app.post('/api/database/init', async (req, res) => {
         console.error('Erro ao inicializar schema:', error);
         res.status(500).json({ error: 'Erro ao inicializar schema' });
     }
+});
+
+// Rota para a página principal (SPA) - DEVE SER A ÚLTIMA ROTA
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Iniciar servidor
