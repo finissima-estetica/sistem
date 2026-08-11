@@ -182,6 +182,7 @@ app.get('/api/clientes/:id', async (req, res) => {
 app.post('/api/clientes', async (req, res) => {
     try {
         const cliente = req.body;
+        console.log('📝 Recebendo dados para criar cliente:', cliente);
         
         const result = await pool.query(`
             INSERT INTO clientes (
@@ -203,9 +204,10 @@ app.post('/api/clientes', async (req, res) => {
             cliente.panturrilhaDireita, cliente.panturrilhaEsquerda
         ]);
         
+        console.log('✅ Cliente criado com sucesso:', result.rows[0]);
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        console.error('Erro ao criar cliente:', error);
+        console.error('❌ Erro ao criar cliente:', error);
         res.status(500).json({ error: 'Erro ao criar cliente' });
     }
 });
