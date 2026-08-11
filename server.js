@@ -14,14 +14,47 @@ app.use(express.json());
 // Servir arquivos estáticos explicitamente
 app.use(express.static(path.join(__dirname, 'public'), {
     index: false, // Não servir index.html automaticamente
-    setHeaders: (res, path) => {
-        if (path.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
-        } else if (path.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        } else if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
         }
     }
 }));
+
+// Rotas explícitas para arquivos JavaScript principais
+app.get('/api.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'api.js'), {
+        headers: {
+            'Content-Type': 'application/javascript; charset=utf-8'
+        }
+    });
+});
+
+app.get('/auth.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'auth.js'), {
+        headers: {
+            'Content-Type': 'application/javascript; charset=utf-8'
+        }
+    });
+});
+
+app.get('/cadastro.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'cadastro.js'), {
+        headers: {
+            'Content-Type': 'application/javascript; charset=utf-8'
+        }
+    });
+});
+
+app.get('/ficha.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'ficha.js'), {
+        headers: {
+            'Content-Type': 'application/javascript; charset=utf-8'
+        }
+    });
+});
 
 // Rota de health check para verificar se API está disponível
 app.get('/api/health', async (req, res) => {
