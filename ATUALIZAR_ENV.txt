@@ -1,0 +1,18 @@
+🔧 ATUALIZAÇÃO NECESSÁRIA NO ARQUIVO .env
+
+Por favor, atualize o arquivo .env com a URL COMPLETA (com a porta):
+
+NOVA URL (com a porta):
+DATABASE_URL=postgresql://banco_finiisima_user:McwGm9nHxwU7748XqAy7dM4mQlDxz9a@dpg-d9tim06417fc73egtn30-a.oregon-postgres.render.com:5432/banco_finiisima
+
+Configurações adicionais:
+PORT=3000
+NODE_ENV=production
+
+A diferença é a adição de :5432 (porta do PostgreSQL)
+
+Depois de atualizar:
+1. git add .
+2. git commit -m "Adicionar porta 5432 ao DATABASE_URL"
+3. git push
+4. Forçar deploy manual no Render

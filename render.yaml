@@ -8,7 +8,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        value: postgresql://banco_finiisima_user:McwGm9nHxwqU7748XqAy7dM4mQlDxz9a@dpg-d9tim06417fc73egtn30-a/banco_finiisima
+        value: postgresql://banco_finiisima_user:McwGm9nHxwU7748XqAy7dM4mQlDxz9a@dpg-d9tim06417fc73egtn30-a.oregon-postgres.render.com:5432/banco_finiisima
       - key: NODE_ENV
         value: production
     plan: free
