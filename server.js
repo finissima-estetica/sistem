@@ -228,11 +228,48 @@ app.post('/api/clientes', async (req, res) => {
         const cliente = req.body;
         console.log('📝 Recebendo dados para criar cliente:', cliente);
         
+        // Mapeamento explícito camelCase -> snake_case
+        const {
+            nome,
+            cpf,
+            dataNascimento,
+            telefone,
+            email,
+            endereco,
+            cidade,
+            estado,
+            doencasCronicas,
+            medicamentos,
+            cirurgias,
+            alergias,
+            sensibilidade,
+            fumante,
+            alcool,
+            atividadeFisica,
+            detalhesProcedimentos,
+            objetivos,
+            peso,
+            altura,
+            bracoDireito,
+            bracoEsquerdo,
+            torax,
+            cintura,
+            abdomen,
+            quadril,
+            coxaDireito,
+            coxaEsquerdo,
+            panturrilhaDireito,
+            panturrilhaEsquerdo
+        } = cliente;
+        
         // Converter strings vazias em NULL para campos numéricos
         const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireito', 'coxaEsquerdo', 'panturrilhaDireito', 'panturrilhaEsquerdo'];
         numericFields.forEach(field => {
-            if (cliente[field] === '' || cliente[field] === undefined || cliente[field] === null) {
+            const value = cliente[field];
+            if (value === '' || value === undefined || value === null) {
                 cliente[field] = null;
+            } else {
+                cliente[field] = parseFloat(value) || null;
             }
         });
         
@@ -248,14 +285,14 @@ app.post('/api/clientes', async (req, res) => {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
             RETURNING *
         `, [
-            cliente.nome, cliente.cpf, cliente.dataNascimento, cliente.telefone, cliente.email,
-            cliente.endereco, cliente.cidade, cliente.estado, cliente.doencasCronicas,
-            cliente.medicamentos, cliente.cirurgias, cliente.alergias, cliente.sensibilidade,
-            cliente.fumante, cliente.alcool, cliente.atividadeFisica, cliente.detalhesProcedimentos,
-            cliente.objetivos, cliente.peso, cliente.altura, cliente.bracoDireito,
-            cliente.bracoEsquerdo, cliente.torax, cliente.cintura, cliente.abdomen,
-            cliente.quadril, cliente.coxaDireita, cliente.coxaEsquerda,
-            cliente.panturrilhaDireita, cliente.panturrilhaEsquerda
+            nome, cpf, dataNascimento, telefone, email,
+            endereco, cidade, estado, doencasCronicas,
+            medicamentos, cirurgias, alergias, sensibilidade,
+            fumante, alcool, atividadeFisica, detalhesProcedimentos,
+            objetivos, peso, altura, bracoDireito,
+            bracoEsquerdo, torax, cintura, abdomen,
+            quadril, coxaDireito, coxaEsquerda,
+            panturrilhaDireito, panturrilhaEsquerda
         ]);
         
         console.log('✅ Cliente criado com sucesso:', result.rows[0]);
