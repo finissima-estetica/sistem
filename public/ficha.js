@@ -1064,7 +1064,7 @@ function analyzeZone(zoneKey) {
         }
     }
     
-    // SEMPRE usar atendimento mais recente como atual
+    // SEMPRE usar atendimento mais recente como atual, senão usar cadastro
     let current = 0;
     if (atendimentosOrdenados.length > 0) {
         const lastAtendimento = atendimentosOrdenados[0];
@@ -1076,6 +1076,9 @@ function analyzeZone(zoneKey) {
                 break;
             }
         }
+    } else {
+        // Se não há atendimentos, usar cadastro como atual (primeira medição)
+        current = previous;
     }
     
     console.log(`Zona ${zoneKey}: baseline (cadastro)=${previous}, atual (mais recente)=${current}`);
