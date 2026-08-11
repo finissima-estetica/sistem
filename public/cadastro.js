@@ -370,6 +370,10 @@ async function saveClientData(clientData) {
         };
         
         console.log('📋 Dados completos antes de enviar:', apiData);
+        console.log('📋 Verificando apiData específico:', {
+            coxa_direito: apiData.coxa_direito,
+            panturrilha_direito: apiData.panturrilha_direito
+        });
         console.log('📋 Verificando clientData:', {
             coxaDireita: clientData.coxaDireita,
             panturrilhaDireita: clientData.panturrilhaDireita
