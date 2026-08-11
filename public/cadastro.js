@@ -353,8 +353,8 @@ async function saveClientData(clientData) {
         
         console.log('🚀 Iniciando criação de cliente via API:', apiData);
         
-        // Converter strings vazias em NULL para campos numéricos
-        const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireita', 'coxaEsquerda', 'panturrilhaDireita', 'panturrilhaEsquerda'];
+        // Converter strings vazias em NULL para campos numéricos (apiData usa snake_case)
+        const numericFields = ['peso', 'altura', 'braco_direito', 'braco_esquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxa_direito', 'coxa_esquerda', 'panturrilha_direito', 'panturrilha_esquerda'];
         numericFields.forEach(field => {
             const value = apiData[field];
             if (value === '' || value === undefined || value === null) {
