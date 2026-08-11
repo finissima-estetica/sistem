@@ -300,52 +300,50 @@ function collectFormData() {
 // Função para salvar dados do cliente
 async function saveClientData(clientData) {
     try {
-        // Tentar usar API primeiro
-        if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
-            // Mapear campos do formulário para o banco de dados
-            const apiData = {
-                nome: clientData.nome,
-                cpf: clientData.cpf,
-                data_nascimento: clientData.dataNascimento,
-                telefone: clientData.telefone,
-                email: clientData.email,
-                endereco: clientData.endereco,
-                cidade: clientData.cidade,
-                estado: clientData.estado,
-                doencas_cronicas: clientData.doencasCronicas,
-                medicamentos: clientData.medicamentos,
-                cirurgias: clientData.cirurgias,
-                alergias: clientData.alergias,
-                sensibilidade: clientData.sensibilidade,
-                fumante: clientData.fumante,
-                alcool: clientData.alcool,
-                atividade_fisica: clientData.atividadeFisica,
-                procedimentos_desejados: clientData.detalhesProcedimentos,
-                objetivos: clientData.objetivos,
-                peso: clientData.peso,
-                altura: clientData.altura,
-                braco_direito: clientData.bracoDireito,
-                braco_esquerdo: clientData.bracoEsquerdo,
-                torax: clientData.torax,
-                cintura: clientData.cintura,
-                abdomen: clientData.abdomen,
-                quadril: clientData.quadril,
-                coxa_direita: clientData.coxaDireita,
-                coxa_esquerda: clientData.coxaEsquerda,
-                panturrilha_direita: clientData.panturrilhaDireita,
-                panturrilha_esquerda: clientData.panturrilhaEsquerda
-            };
-            
-            console.log('🚀 Iniciando criação de cliente via API:', apiData);
-            const savedClient = await clientesAPI.criar(apiData);
-            console.log('✅ Cliente salvo no PostgreSQL:', savedClient);
-            
-            // Armazenar o ID correto do banco para uso posterior
-            clientData.id = savedClient.id;
-            localStorage.setItem('lastCreatedClientId', savedClient.id);
-            
-            return;
-        }
+        // Tentar usar API diretamente sem verificar health
+        // Mapear campos do formulário para o banco de dados
+        const apiData = {
+            nome: clientData.nome,
+            cpf: clientData.cpf,
+            data_nascimento: clientData.dataNascimento,
+            telefone: clientData.telefone,
+            email: clientData.email,
+            endereco: clientData.endereco,
+            cidade: clientData.cidade,
+            estado: clientData.estado,
+            doencas_cronicas: clientData.doencasCronicas,
+            medicamentos: clientData.medicamentos,
+            cirurgias: clientData.cirurgias,
+            alergias: clientData.alergias,
+            sensibilidade: clientData.sensibilidade,
+            fumante: clientData.fumante,
+            alcool: clientData.alcool,
+            atividade_fisica: clientData.atividadeFisica,
+            procedimentos_desejados: clientData.detalhesProcedimentos,
+            objetivos: clientData.objetivos,
+            peso: clientData.peso,
+            altura: clientData.altura,
+            braco_direito: clientData.bracoDireito,
+            braco_esquerdo: clientData.bracoEsquerdo,
+            torax: clientData.torax,
+            cintura: clientData.cintura,
+            abdomen: clientData.abdomen,
+            quadril: clientData.quadril,
+            coxa_direita: clientData.coxaDireita,
+            coxa_esquerda: clientData.coxaEsquerda,
+            panturrilha_direita: clientData.panturrilhaDireita,
+            panturrilha_esquerda: clientData.panturrilhaEsquerda
+        };
+        
+        console.log('🚀 Iniciando criação de cliente via API:', apiData);
+        const savedClient = await clientesAPI.criar(apiData);
+        console.log('✅ Cliente salvo no PostgreSQL:', savedClient);
+        
+        // Armazenar o ID correto do banco para uso posterior
+        clientData.id = savedClient.id;
+        localStorage.setItem('lastCreatedClientId', savedClient.id);
+        
+        return;
     } catch (error) {
         console.error('❌ Erro ao criar cliente via API:', error);
         console.log('API não disponível, usando localStorage:', error);
