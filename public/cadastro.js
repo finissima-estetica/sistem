@@ -334,6 +334,10 @@ function collectFormData() {
 // Função para salvar dados do cliente
 async function saveClientData(clientData) {
     try {
+        console.log('🔍 saveClientData recebeu:', clientData);
+        console.log('🔍 clientData.coxaDireita:', clientData.coxaDireita);
+        console.log('🔍 clientData.panturrilhaDireita:', clientData.panturrilhaDireita);
+        
         // Tentar usar API diretamente sem verificar health
         // Mapear campos do formulário para o banco de dados
         const apiData = {
