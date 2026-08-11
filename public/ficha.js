@@ -896,7 +896,7 @@ function generateBodyVisualization() {
     
     // HTML com SVG injetado e legenda
     let html = `
-        <div class="body-visualization-container" style="position: relative; width: 100%; max-width: 500px; margin: 0 auto;">
+        <div class="body-visualization-container" style="position: relative; width: 100%; margin: 0 auto;">
             <!-- SVG injetado -->
             <div class="svg-container" style="position: relative; z-index: 1;">
                 ${svgContent}
