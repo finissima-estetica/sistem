@@ -10,11 +10,16 @@ let useLocalStorage = false; // SEMPRE usar API, nunca localStorage
 
 // Função para carregar clientes da API
 async function loadClientsFromStorage() {
+    console.log('🔌 Iniciando carregamento de clientes da API');
+    
     // SEMPRE usar API, nunca localStorage
     try {
         // Tentar carregar diretamente da API sem verificar health
         useLocalStorage = false;
+        console.log('📡 Chamando API para listar clientes...');
         const clientesData = await clientesAPI.listar();
+        console.log('📊 Dados recebidos da API:', clientesData);
+        
         // Mapear campos do banco para o formato esperado
         clients = clientesData.map(client => ({
             id: client.id, // Usar ID do banco de dados
@@ -25,6 +30,7 @@ async function loadClientsFromStorage() {
             dataCadastro: client.data_cadastro
         }));
         console.log('✅ Clientes carregados do PostgreSQL:', clients.length);
+        console.log('👥 Lista de clientes:', clients);
         return;
     } catch (error) {
         console.error('❌ Erro ao carregar clientes da API:', error);
@@ -54,17 +60,27 @@ window.addEventListener('load', async () => {
     
     // Se estiver na página dashboard, carregar clientes
     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+        console.log('🔍 Na página dashboard, iniciando carregamento de clientes');
+        
         // Verificar se deve recarregar (flag reload=true)
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('reload') === 'true') {
+        const shouldReload = urlParams.get('reload') === 'true';
+        
+        console.log('🔄 Parâmetro reload:', shouldReload);
+        
+        if (shouldReload) {
+            console.log('🔄 Recarregando clientes devido ao parâmetro reload=true');
             // Remover o parâmetro da URL
             window.history.replaceState({}, document.title, window.location.pathname);
             // Recarregar clientes do storage e esperar completar
             await loadClientsFromStorage();
         } else {
+            console.log('📥 Carregando clientes normalmente');
             // Carregar clientes normalmente
             await loadClientsFromStorage();
         }
+        
+        console.log('🎨 Renderizando lista de clientes');
         loadClients();
     }
 });
