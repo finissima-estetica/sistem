@@ -2,12 +2,12 @@
 const servicosAPI = {
     // Buscar todos os serviços
     buscarTodos: async () => {
-        return await apiRequest('/api/servicos');
+        return await apiRequest('/servicos');
     },
     
     // Criar novo serviço
     criar: async (servico) => {
-        return await apiRequest('/api/servicos', {
+        return await apiRequest('/servicos', {
             method: 'POST',
             body: JSON.stringify(servico)
         });
@@ -15,7 +15,7 @@ const servicosAPI = {
     
     // Atualizar serviço
     atualizar: async (id, servico) => {
-        return await apiRequest(`/api/servicos/${id}`, {
+        return await apiRequest(`/servicos/${id}`, {
             method: 'PUT',
             body: JSON.stringify(servico)
         });
@@ -23,7 +23,7 @@ const servicosAPI = {
     
     // Desativar serviço (soft delete)
     desativar: async (id) => {
-        return await apiRequest(`/api/servicos/${id}`, {
+        return await apiRequest(`/servicos/${id}`, {
             method: 'DELETE'
         });
     }
