@@ -12,30 +12,25 @@ let useLocalStorage = false; // SEMPRE usar API, nunca localStorage
 async function loadClientsFromStorage() {
     // SEMPRE usar API, nunca localStorage
     try {
-        if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
-            useLocalStorage = false;
-            const clientesData = await clientesAPI.listar();
-            // Mapear campos do banco para o formato esperado
-            clients = clientesData.map(client => ({
-                id: client.id, // Usar ID do banco de dados
-                nome: client.nome,
-                email: client.email,
-                telefone: client.telefone,
-                status: client.status,
-                dataCadastro: client.data_cadastro
-            }));
-            console.log('✅ Clientes carregados do PostgreSQL:', clients.length);
-            return;
-        } else {
-            console.warn('⚠️ API não disponível, tentando novamente...');
-            // Tentar novamente após um delay
-            setTimeout(loadClientsFromStorage, 2000);
-        }
+        // Tentar carregar diretamente da API sem verificar health
+        useLocalStorage = false;
+        const clientesData = await clientesAPI.listar();
+        // Mapear campos do banco para o formato esperado
+        clients = clientesData.map(client => ({
+            id: client.id, // Usar ID do banco de dados
+            nome: client.nome,
+            email: client.email,
+            telefone: client.telefone,
+            status: client.status,
+            dataCadastro: client.data_cadastro
+        }));
+        console.log('✅ Clientes carregados do PostgreSQL:', clients.length);
+        return;
     } catch (error) {
         console.error('❌ Erro ao carregar clientes da API:', error);
-        console.log('Tentando novamente em 2 segundos...');
-        // Tentar novamente após um delay
-        setTimeout(loadClientsFromStorage, 2000);
+        console.log('⚠️ API não disponível ainda, aguardando deploy...');
+        // Tentar novamente após um delay mais longo (deploy pode demorar)
+        setTimeout(loadClientsFromStorage, 5000);
     }
 }
 
