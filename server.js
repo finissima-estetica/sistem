@@ -226,7 +226,7 @@ app.get('/api/clientes/:id', async (req, res) => {
 app.post('/api/clientes', async (req, res) => {
     try {
         const cliente = req.body;
-        console.log('📝 Recebendo dados para criar cliente:', cliente);
+        console.log(" ?? Dados convertidos para campos num�ricos:\, normalizado);
         
         // Mapeamento explícito (frontend já envia snake_case)
         const {
@@ -238,7 +238,7 @@ app.post('/api/clientes', async (req, res) => {
             endereco,
             cidade,
             estado,
-            doencas_cronicas,
+            normalizado.doencas_cronicas,
             medicamentos,
             cirurgias,
             alergias,
@@ -262,36 +262,61 @@ app.post('/api/clientes', async (req, res) => {
             panturrilha_esquerda
         } = cliente;
         
+        // Normalizar campos camelCase para snake_case
+        const normalizado = { ...cliente };
+        // Criar um mapa de conversão
+        const camelToSnake = {
+            dataNascimento: 'data_nascimento',
+            doencasCronicas: 'doencas_cronicas',
+            atividadeFisica: 'atividade_fisica',
+            detalhesProcedimentos: 'procedimentos_desejados',
+            bracoDireito: 'braco_direito',
+            bracoEsquerdo: 'braco_esquerdo',
+            coxaDireita: 'coxa_direito',
+            coxaEsquerda: 'coxa_esquerda',
+            panturrilhaDireita: 'panturrilha_direito',
+            panturrilhaEsquerda: 'panturrilha_esquerda'
+        };
+        
+        // Aplicar conversão
+        Object.keys(camelToSnake).forEach(camel => {
+            if (cliente[camel] !== undefined && normalizado[camelToSnake[camel]] === undefined) {
+                normalizado[camelToSnake[camel]] = cliente[camel];
+            }
+        });
+
+        console.log('🔍 Dados normalizados:', normalizado);
+
         // Converter strings vazias em NULL para campos numéricos
         const numericFields = ['peso', 'altura', 'braco_direito', 'braco_esquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxa_direito', 'coxa_esquerda', 'panturrilha_direito', 'panturrilha_esquerda'];
         numericFields.forEach(field => {
-            const value = cliente[field];
+            const value = normalizado[field];
             if (value === '' || value === undefined || value === null) {
-                cliente[field] = null;
+                normalizado[field] = null;
             } else {
-                cliente[field] = parseFloat(value) || null;
+                normalizado[field] = parseFloat(value) || null;
             }
         });
         
-        console.log('🔢 Dados convertidos para campos numéricos:', cliente);
+        console.log(" ?? Dados convertidos para campos num�ricos:\, normalizado);
         
         const result = await pool.query(`
             INSERT INTO clientes (
-                nome, cpf, data_nascimento, telefone, email, endereco, cidade, estado,
-                doencas_cronicas, medicamentos, cirurgias, alergias, sensibilidade,
+                normalizado.nome, normalizado.cpf, normalizado.data_nascimento, telefone, email, normalizado.endereco, normalizado.cidade, normalizado.estado,
+                normalizado.doencas_cronicas, normalizado.medicamentos, normalizado.cirurgias, alergias, sensibilidade,
                 fumante, alcool, atividade_fisica, procedimentos_desejados, objetivos,
-                peso, altura, braco_direito, braco_esquerdo, torax, cintura, abdomen,
+                peso, altura, normalizado.braco_direito, normalizado.braco_esquerdo, torax, cintura, abdomen,
                 quadril, coxa_direita, coxa_esquerda, panturrilha_direita, panturrilha_esquerda
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
             RETURNING *
         `, [
-            nome, cpf, data_nascimento, telefone, email,
-            endereco, cidade, estado, doencas_cronicas,
-            medicamentos, cirurgias, alergias, sensibilidade,
+            normalizado.nome, normalizado.cpf, normalizado.data_nascimento, telefone, email,
+            normalizado.endereco, normalizado.cidade, normalizado.estado, normalizado.doencas_cronicas,
+            normalizado.medicamentos, normalizado.cirurgias, alergias, sensibilidade,
             fumante, alcool, atividade_fisica, procedimentos_desejados,
-            objetivos, peso, altura, braco_direito,
+            normalizado.objetivos, normalizado.peso, normalizado.altura, braco_direito,
             braco_esquerdo, torax, cintura, abdomen,
-            quadril, coxa_direito, coxa_esquerda,
+            normalizado.quadril, normalizado.coxa_direito, coxa_esquerda,
             panturrilha_direito, panturrilha_esquerda
         ]);
         
@@ -387,7 +412,7 @@ app.post('/api/atendimentos', async (req, res) => {
         const result = await pool.query(`
             INSERT INTO atendimentos (
                 cliente_id, plano_id, data_atendimento, tipo_atendimento, observacoes,
-                peso, braco_direito, braco_esquerdo, torax, cintura, abdomen,
+                peso, normalizado.braco_direito, normalizado.braco_esquerdo, torax, cintura, abdomen,
                 quadril, coxa_direita, coxa_esquerda
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING *
