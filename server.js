@@ -10,7 +10,18 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Servir arquivos estáticos explicitamente
+app.use(express.static(path.join(__dirname, 'public'), {
+    index: false, // Não servir index.html automaticamente
+    setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        }
+    }
+}));
 
 // Rota de health check para verificar se API está disponível
 app.get('/api/health', async (req, res) => {
