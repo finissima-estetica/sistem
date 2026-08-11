@@ -257,13 +257,13 @@ app.post('/api/clientes', async (req, res) => {
             abdomen,
             quadril,
             coxaDireito,
-            coxaEsquerdo,
-            panturrilhaDireito,
-            panturrilhaEsquerdo
+            coxaEsquerda,
+            panturrilhaDireita,
+            panturrilhaEsquerda
         } = cliente;
         
         // Converter strings vazias em NULL para campos numéricos
-        const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireito', 'coxaEsquerdo', 'panturrilhaDireito', 'panturrilhaEsquerdo'];
+        const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireito', 'coxaEsquerda', 'panturrilhaDireita', 'panturrilhaEsquerda'];
         numericFields.forEach(field => {
             const value = cliente[field];
             if (value === '' || value === undefined || value === null) {
