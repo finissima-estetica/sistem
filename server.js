@@ -228,42 +228,42 @@ app.post('/api/clientes', async (req, res) => {
         const cliente = req.body;
         console.log('📝 Recebendo dados para criar cliente:', cliente);
         
-        // Mapeamento explícito camelCase -> snake_case
+        // Mapeamento explícito (frontend já envia snake_case)
         const {
             nome,
             cpf,
-            dataNascimento,
+            data_nascimento,
             telefone,
             email,
             endereco,
             cidade,
             estado,
-            doencasCronicas,
+            doencas_cronicas,
             medicamentos,
             cirurgias,
             alergias,
             sensibilidade,
             fumante,
             alcool,
-            atividadeFisica,
-            detalhesProcedimentos,
+            atividade_fisica,
+            procedimentos_desejados,
             objetivos,
             peso,
             altura,
-            bracoDireito,
-            bracoEsquerdo,
+            braco_direito,
+            braco_esquerdo,
             torax,
             cintura,
             abdomen,
             quadril,
-            coxaDireito,
-            coxaEsquerda,
-            panturrilhaDireita,
-            panturrilhaEsquerda
+            coxa_direito,
+            coxa_esquerda,
+            panturrilha_direito,
+            panturrilha_esquerda
         } = cliente;
         
         // Converter strings vazias em NULL para campos numéricos
-        const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireito', 'coxaEsquerda', 'panturrilhaDireita', 'panturrilhaEsquerda'];
+        const numericFields = ['peso', 'altura', 'braco_direito', 'braco_esquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxa_direito', 'coxa_esquerda', 'panturrilha_direito', 'panturrilha_esquerda'];
         numericFields.forEach(field => {
             const value = cliente[field];
             if (value === '' || value === undefined || value === null) {
@@ -285,14 +285,14 @@ app.post('/api/clientes', async (req, res) => {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
             RETURNING *
         `, [
-            nome, cpf, dataNascimento, telefone, email,
-            endereco, cidade, estado, doencasCronicas,
+            nome, cpf, data_nascimento, telefone, email,
+            endereco, cidade, estado, doencas_cronicas,
             medicamentos, cirurgias, alergias, sensibilidade,
-            fumante, alcool, atividadeFisica, detalhesProcedimentos,
-            objetivos, peso, altura, bracoDireito,
-            bracoEsquerdo, torax, cintura, abdomen,
-            quadril, coxaDireito, coxaEsquerda,
-            panturrilhaDireito, panturrilhaEsquerda
+            fumante, alcool, atividade_fisica, procedimentos_desejados,
+            objetivos, peso, altura, braco_direito,
+            braco_esquerdo, torax, cintura, abdomen,
+            quadril, coxa_direito, coxa_esquerda,
+            panturrilha_direito, panturrilha_esquerda
         ]);
         
         console.log('✅ Cliente criado com sucesso:', result.rows[0]);
