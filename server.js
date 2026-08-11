@@ -32,6 +32,17 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
+// Rota de debug simples para testar se servidor está respondendo
+app.get('/api/debug', (req, res) => {
+    res.json({
+        message: 'Servidor está respondendo',
+        database_url: process.env.DATABASE_URL ? 'Configurada' : 'NÃO configurada',
+        environment: process.env.NODE_ENV || 'development',
+        port: PORT,
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Configuração do PostgreSQL
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
