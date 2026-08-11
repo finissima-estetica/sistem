@@ -616,7 +616,7 @@ function closeModal(modalId) {
 }
 
 // Lidar com envio de atendimento
-function handleAtendimentoSubmit(e) {
+async function handleAtendimentoSubmit(e) {
     e.preventDefault();
     
     const formData = new FormData(e.target);
@@ -667,7 +667,7 @@ function handleAtendimentoSubmit(e) {
 }
 
 // Lidar com envio de plano
-function handlePlanoSubmit(e) {
+async function handlePlanoSubmit(e) {
     e.preventDefault();
     
     const planoSelecionado = document.querySelector('input[name="planoSelecionado"]:checked');

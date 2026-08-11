@@ -82,6 +82,20 @@ const clientesAPI = {
     
     async buscarPlanos(clienteId) {
         return apiRequest(`/clientes/${clienteId}/planos`);
+    },
+    
+    async criarAtendimento(atendimento) {
+        return apiRequest('/atendimentos', {
+            method: 'POST',
+            body: JSON.stringify(atendimento)
+        });
+    },
+    
+    async criarPlano(plano) {
+        return apiRequest('/planos', {
+            method: 'POST',
+            body: JSON.stringify(plano)
+        });
     }
 };
 
