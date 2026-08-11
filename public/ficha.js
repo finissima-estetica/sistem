@@ -1058,8 +1058,6 @@ function analyzeZone(zoneKey) {
         current = previous;
     }
     
-     (cadastro)=${previous}, atual (mais recente)=${current}`);
-    
     if (current === 0 || previous === 0) {
         return { color: '#6c757d', change: 0, percentage: 0, current: current > 0 ? current.toFixed(1) : '--', previous: previous > 0 ? previous.toFixed(1) : '--' };
     }
