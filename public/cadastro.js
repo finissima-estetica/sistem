@@ -296,6 +296,9 @@ function collectFormData() {
         }
     });
     
+    console.log('📋 Dados após forEach:', data);
+    console.log('📋 coxaDireita após forEach:', data.coxaDireita);
+    
     // Adicionar data de cadastro
     data.dataCadastro = new Date().toISOString();
     data.id = Date.now(); // ID único
