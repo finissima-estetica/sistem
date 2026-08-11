@@ -264,7 +264,7 @@ app.post('/api/clientes', async (req, res) => {
             }
         });
         
-        console.log(" ?? Dados convertidos para campos num�ricos:\, normalizado);
+        console.log('🔢 Dados convertidos para campos numéricos:', normalizado);
         
         const result = await pool.query(`
             INSERT INTO clientes (
