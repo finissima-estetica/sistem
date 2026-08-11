@@ -139,6 +139,19 @@ async function loadClientData() {
         currentClientPlanos = planosData;
         currentAtendimentos = atendimentosData;
         
+        // Normalizar nomes de colunas do banco (snake_case) para camelCase para uso no frontend
+        if (currentClient) {
+            currentClient.dataNascimento = currentClient.data_nascimento;
+            currentClient.doencasCronicas = currentClient.doencas_cronicas;
+            currentClient.atividadeFisica = currentClient.atividade_fisica;
+            currentClient.bracoDireito = currentClient.braco_direito;
+            currentClient.bracoEsquerdo = currentClient.braco_esquerdo;
+            currentClient.coxaDireita = currentClient.coxa_direita;
+            currentClient.coxaEsquerda = currentClient.coxa_esquerda;
+            currentClient.panturrilhaDireita = currentClient.panturrilha_direita;
+            currentClient.panturrilhaEsquerda = currentClient.panturrilha_esquerda;
+        }
+        
         console.log('✅ Dados carregados da API:', currentClient);
         console.log('📋 Atendimentos carregados:', currentAtendimentos.length);
         console.log('📋 Planos carregados:', currentClientPlanos.length);
@@ -386,12 +399,16 @@ function loadDadosCompletos() {
         'Medidas Iniciais': {
             'Peso': currentClient.peso ? `${currentClient.peso} kg` : '--',
             'Altura': currentClient.altura ? `${currentClient.altura} cm` : '--',
-            'Braço Direito': currentClient.bracoDireito ? `${currentClient.bracoDireito} cm` : '--',
-            'Braço Esquerdo': currentClient.bracoEsquerdo ? `${currentClient.bracoEsquerdo} cm` : '--',
+            'Braço Direito': currentClient.braco_direito ? `${currentClient.braco_direito} cm` : '--',
+            'Braço Esquerdo': currentClient.braco_esquerdo ? `${currentClient.braco_esquerdo} cm` : '--',
             'Tórax': currentClient.torax ? `${currentClient.torax} cm` : '--',
             'Cintura': currentClient.cintura ? `${currentClient.cintura} cm` : '--',
             'Abdômen': currentClient.abdomen ? `${currentClient.abdomen} cm` : '--',
-            'Quadril': currentClient.quadril ? `${currentClient.quadril} cm` : '--'
+            'Quadril': currentClient.quadril ? `${currentClient.quadril} cm` : '--',
+            'Coxa Direita': currentClient.coxa_direita ? `${currentClient.coxa_direita} cm` : '--',
+            'Coxa Esquerda': currentClient.coxa_esquerda ? `${currentClient.coxa_esquerda} cm` : '--',
+            'Panturrilha Direita': currentClient.panturrilha_direita ? `${currentClient.panturrilha_direita} cm` : '--',
+            'Panturrilha Esquerda': currentClient.panturrilha_esquerda ? `${currentClient.panturrilha_esquerda} cm` : '--'
         }
     };
     
