@@ -127,33 +127,21 @@ async function loadClientData() {
     }
     
     try {
-        // Tentar usar API primeiro
-        if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
-            console.log('Tentando buscar cliente via API...');
-            const clienteData = await clientesAPI.buscar(currentClientId);
-            const atendimentosData = await clientesAPI.buscarAtendimentos(currentClientId);
-            const planosData = await clientesAPI.buscarPlanos(currentClientId);
-            
-            currentClient = clienteData;
-            currentClientAtendimentos = atendimentosData;
-            currentClientPlanos = planosData;
-            currentAtendimentos = atendimentosData;
-            
-            console.log('Dados carregados da API:', currentClient);
-        } else {
-            console.log('API não disponível, usando localStorage...');
-            // Fallback para localStorage
-            const clients = JSON.parse(localStorage.getItem('clients') || '[]');
-            const atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
-            const planos = JSON.parse(localStorage.getItem('planos') || '[]');
-            
-            currentClient = clients.find(c => c.id == currentClientId);
-            currentClientAtendimentos = atendimentos.filter(a => a.clienteId == currentClientId);
-            currentClientPlanos = planos.filter(p => p.clienteId == currentClientId);
-            currentAtendimentos = currentClientAtendimentos;
-            
-            console.log('Dados carregados do localStorage:', currentClient);
-        }
+        // SEMPRE usar API, nunca localStorage
+        console.log('🔌 Carregando dados do cliente via API:', currentClientId);
+        
+        const clienteData = await clientesAPI.buscar(currentClientId);
+        const atendimentosData = await clientesAPI.buscarAtendimentos(currentClientId);
+        const planosData = await clientesAPI.buscarPlanos(currentClientId);
+        
+        currentClient = clienteData;
+        currentClientAtendimentos = atendimentosData;
+        currentClientPlanos = planosData;
+        currentAtendimentos = atendimentosData;
+        
+        console.log('✅ Dados carregados da API:', currentClient);
+        console.log('📋 Atendimentos carregados:', currentAtendimentos.length);
+        console.log('📋 Planos carregados:', currentClientPlanos.length);
         
         if (!currentClient) {
             console.error('Cliente não encontrado com ID:', currentClientId);
@@ -650,13 +638,22 @@ function handleAtendimentoSubmit(e) {
         coxaEsquerda: formData.get('coxaEsquerdaAtual') || null
     };
     
-    // Salvar no localStorage
-    const atendimentos = JSON.parse(localStorage.getItem('atendimentos') || '[]');
-    atendimentos.push(atendimento);
-    localStorage.setItem('atendimentos', JSON.stringify(atendimentos));
+    // Salvar via API
+    try {
+        console.log('💾 Salvando atendimento via API:', atendimento);
+        const savedAtendimento = await clientesAPI.criarAtendimento(atendimento);
+        console.log('✅ Atendimento salvo no PostgreSQL:', savedAtendimento);
+        
+        // Atualizar lista local com o ID retornado
+        atendimento.id = savedAtendimento.id;
+        currentClientAtendimentos.push(atendimento);
+    } catch (error) {
+        console.error('❌ Erro ao salvar atendimento via API:', error);
+        alert('Erro ao salvar atendimento. Tente novamente.');
+        return;
+    }
     
     // Atualizar lista local
-    currentClientAtendimentos.push(atendimento);
     
     // Atualizar UI
     loadAtendimentos();
@@ -689,13 +686,22 @@ function handlePlanoSubmit(e) {
         observacoes: formData.get('observacoesPlano')
     };
     
-    // Salvar no localStorage
-    const planos = JSON.parse(localStorage.getItem('planos') || '[]');
-    planos.push(plano);
-    localStorage.setItem('planos', JSON.stringify(planos));
+    // Salvar via API
+    try {
+        console.log('💾 Salvando plano via API:', plano);
+        const savedPlano = await clientesAPI.criarPlano(plano);
+        console.log('✅ Plano salvo no PostgreSQL:', savedPlano);
+        
+        // Atualizar lista local com o ID retornado
+        plano.id = savedPlano.id;
+        currentClientPlanos.push(plano);
+    } catch (error) {
+        console.error('❌ Erro ao salvar plano via API:', error);
+        alert('Erro ao salvar plano. Tente novamente.');
+        return;
+    }
     
     // Atualizar lista local
-    currentClientPlanos.push(plano);
     
     // Atualizar UI
     loadPlanos();
