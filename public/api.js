@@ -77,11 +77,11 @@ const clientesAPI = {
     },
     
     async buscarAtendimentos(clienteId) {
-        return apiRequest(`/clientes/${clientId}/atendimentos`);
+        return apiRequest(`/clientes/${clienteId}/atendimentos`);
     },
     
     async buscarPlanos(clienteId) {
-        return apiRequest(`/clientes/${clientId}/planos`);
+        return apiRequest(`/clientes/${clienteId}/planos`);
     }
 };
 
