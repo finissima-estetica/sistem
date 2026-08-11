@@ -381,11 +381,15 @@ async function saveClientData(clientData) {
         const numericFields = ['peso', 'altura', 'braco_direito', 'braco_esquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxa_direito', 'coxa_esquerda', 'panturrilha_direito', 'panturrilha_esquerda'];
         numericFields.forEach(field => {
             const value = apiData[field];
+            console.log(`🔢 Convertendo campo ${field}: valor=${value}, tipo=${typeof value}`);
             if (value === '' || value === undefined || value === null) {
                 apiData[field] = null;
+                console.log(`  -> Campo ${field} definido como null (vazio/undefined/null)`);
             } else {
                 // Converter para número
-                apiData[field] = parseFloat(value) || null;
+                const parsed = parseFloat(value);
+                apiData[field] = parsed || null;
+                console.log(`  -> Campo ${field} convertido: ${value} -> ${parsed} -> ${apiData[field]}`);
             }
         });
         
