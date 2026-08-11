@@ -361,9 +361,32 @@ app.get('/api/clientes/:clienteId/atendimentos', async (req, res) => {
 app.post('/api/atendimentos', async (req, res) => {
     try {
         const atendimento = req.body;
+        console.log('📝 Recebendo dados para criar atendimento:', atendimento);
+        
+        // Normalizar campos camelCase para snake_case
+        const normalizado = { ...atendimento };
+        const camelToSnake = {
+            clienteId: 'cliente_id',
+            planoId: 'plano_id',
+            data: 'data_atendimento',
+            tipo: 'tipo_atendimento',
+            observacoes: 'observacoes',
+            bracoDireito: 'braco_direito',
+            bracoEsquerdo: 'braco_esquerdo',
+            coxaDireita: 'coxa_direita',
+            coxaEsquerda: 'coxa_esquerda'
+        };
+        
+        Object.keys(camelToSnake).forEach(camel => {
+            if (atendimento[camel] !== undefined && normalizado[camelToSnake[camel]] === undefined) {
+                normalizado[camelToSnake[camel]] = atendimento[camel];
+            }
+        });
+        
+        console.log('🔍 Dados normalizados:', normalizado);
         
         // Ajustar data para fuso horário de Brasília (UTC-3)
-        let dataAtendimento = atendimento.data;
+        let dataAtendimento = normalizado.data_atendimento || normalizado.data;
         if (dataAtendimento) {
             // Se for string ISO, ajustar para garantir timezone correto
             const dataObj = new Date(dataAtendimento);
@@ -375,19 +398,32 @@ app.post('/api/atendimentos', async (req, res) => {
             }
         }
         
+        // Converter strings vazias em NULL para campos numéricos
+        const numericFields = ['peso', 'braco_direito', 'braco_esquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxa_direita', 'coxa_esquerda'];
+        numericFields.forEach(field => {
+            const value = normalizado[field];
+            if (value === '' || value === undefined || value === null) {
+                normalizado[field] = null;
+            } else {
+                normalizado[field] = parseFloat(value) || null;
+            }
+        });
+        
+        console.log('🔢 Dados convertidos para campos numéricos:', normalizado);
+        
         const result = await pool.query(`
             INSERT INTO atendimentos (
                 cliente_id, plano_id, data_atendimento, tipo_atendimento, observacoes,
-                peso, normalizado.braco_direito, normalizado.braco_esquerdo, torax, cintura, abdomen,
+                peso, braco_direito, braco_esquerdo, torax, cintura, abdomen,
                 quadril, coxa_direita, coxa_esquerda
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING *
         `, [
-            atendimento.clienteId, atendimento.planoId, dataAtendimento,
-            atendimento.tipo, atendimento.observacoes, atendimento.peso,
-            atendimento.bracoDireito, atendimento.bracoEsquerdo, atendimento.torax,
-            atendimento.cintura, atendimento.abdomen, atendimento.quadril,
-            atendimento.coxaDireita, atendimento.coxaEsquerda
+            normalizado.cliente_id, normalizado.plano_id, dataAtendimento,
+            normalizado.tipo_atendimento, normalizado.observacoes, normalizado.peso,
+            normalizado.braco_direito, normalizado.braco_esquerdo, normalizado.torax,
+            normalizado.cintura, normalizado.abdomen, normalizado.quadril,
+            normalizado.coxa_direita, normalizado.coxa_esquerda
         ]);
         
         res.status(201).json(result.rows[0]);

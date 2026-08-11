@@ -860,9 +860,9 @@ function generateBodyVisualization() {
     
     // Função auxiliar para obter cor com fallback defensivo
     const getZoneColor = (zoneData) => {
-        console.log("Obtendo cor para zona:", zoneData);
+        :", zoneData);
         const color = zoneData?.color || '#e0e0e0';
-        console.log("Cor obtida:", color);
+        :", color);
         return color;
     };
     
@@ -871,15 +871,15 @@ function generateBodyVisualization() {
     
     // Iterar sobre o mapeamento e atribuir cores
     Object.keys(zoneMapping).forEach(dataZone => {
-        console.log("Processando zona do banco:", dataZone);
+        :", dataZone);
         const color = getZoneColor(realZonesAnalysis[dataZone]);
         zoneMapping[dataZone].forEach(svgZoneId => {
-            console.log("Mapeando", dataZone, "->", svgZoneId, "com cor:", color);
+            ", dataZone, "->", svgZoneId, "com cor:", color);
             zonesAnalysis[svgZoneId] = color;
         });
     });
     
-    console.log("Zonas Analysis final:", zonesAnalysis);
+     final:", zonesAnalysis);
     
     // Adicionar fallback para as 9 zonas
     const allSvgZones = [
@@ -891,17 +891,17 @@ function generateBodyVisualization() {
     
     allSvgZones.forEach(zoneId => {
         if (!zonesAnalysis[zoneId]) {
-            console.log("Zona sem mapeamento, usando fallback:", zoneId);
+            , usando fallback:", zoneId);
             zonesAnalysis[zoneId] = '#e0e0e0';
         }
     });
     
-    console.log("Zonas Analysis final com fallbacks:", zonesAnalysis);
+     final com fallbacks:", zonesAnalysis);
     
     // Função helper segura para obter cor do objeto
     const getSafeColor = (zoneId) => {
         const color = zonesAnalysis[zoneId] || '#e0e0e0';
-        console.log("Renderizando zona:", zoneId, "com cor:", color);
+        :", zoneId, "com cor:", color);
         return color;
     };
     
@@ -1005,7 +1005,7 @@ function unhighlightZone(zoneId) {
 
 // Função para selecionar zona ao clicar
 function selectZone(zoneId) {
-    console.log("Zona selecionada:", zoneId);
+    :", zoneId);
     const zone = document.getElementById(zoneId);
     if (zone) {
         // Flash effect
@@ -1036,10 +1036,6 @@ function resetZones() {
 
 // Função para analisar uma zona específica - SEMPRE compara cadastro vs último atendimento
 function analyzeZone(zoneKey) {
-    console.log('Analisando zona:', zoneKey);
-    console.log('Atendimentos disponíveis:', currentAtendimentos);
-    console.log('Cliente atual:', currentClient);
-    
     // Ordenar atendimentos por data (mais recente primeiro) - usando fuso horário de Brasília (UTC-3)
     const atendimentosOrdenados = [...currentAtendimentos].sort((a, b) => {
         const dataA = new Date(a.data || a.data_atendimento || 0);
@@ -1050,10 +1046,6 @@ function analyzeZone(zoneKey) {
         const dataBBrasil = new Date(dataB.getTime() + offsetBrasil);
         return dataBBrasil - dataABrasil; // Ordem decrescente (mais recente primeiro)
     });
-    
-    console.log('Atendimentos ordenados por data:', atendimentosOrdenados.map(a => ({
-        data: a.data || a.data_atendimento
-    })));
     
     // Mapear zona para o campo correto (suportar camelCase e underscore)
     const zoneMapping = {
@@ -1098,7 +1090,7 @@ function analyzeZone(zoneKey) {
         current = previous;
     }
     
-    console.log(`Zona ${zoneKey}: baseline (cadastro)=${previous}, atual (mais recente)=${current}`);
+     (cadastro)=${previous}, atual (mais recente)=${current}`);
     
     if (current === 0 || previous === 0) {
         return { color: '#6c757d', change: 0, percentage: 0, current: current > 0 ? current.toFixed(1) : '--', previous: previous > 0 ? previous.toFixed(1) : '--' };
@@ -1164,8 +1156,6 @@ function generateZonesDetails() {
 
 // Função para calcular métricas gerais
 function calculateMetrics() {
-    if (!currentAtendimentos || currentAtendimentos.length < 1) return;
-    
     // Ordenar atendimentos por data (mais recente primeiro) - usando fuso horário de Brasília (UTC-3)
     const atendimentosOrdenados = [...currentAtendimentos].sort((a, b) => {
         const dataA = new Date(a.data || a.data_atendimento || 0);
@@ -1176,7 +1166,7 @@ function calculateMetrics() {
         return dataBBrasil - dataABrasil;
     });
     
-    console.log('Atendimentos ordenados para métricas:', atendimentosOrdenados.map(a => ({
+     para métricas:', atendimentosOrdenados.map(a => ({
         data: a.data || a.data_atendimento
     })));
     
@@ -1185,15 +1175,13 @@ function calculateMetrics() {
     
     console.log('Atendimentos disponíveis:', atendimentosOrdenados.length);
     console.log('Último atendimento:', lastAtendimento);
-    console.log('Primeiro atendimento:', firstAtendimento);
+    :', firstAtendimento);
     
     // Peso - usar último atendimento se disponível, senão usar cadastro
     const pesoAtual = parseFloat(lastAtendimento?.peso) || parseFloat(currentClient.peso) || 0;
     const pesoInicial = parseFloat(currentClient.peso) || 0; // Peso do cadastro
     const pesoChange = pesoAtual - pesoInicial;
     const pesoPercentage = pesoInicial > 0 ? ((pesoChange / pesoInicial) * 100).toFixed(1) : 0;
-    
-    console.log(`Peso: inicial (cadastro)=${pesoInicial}, atual=${pesoAtual}, mudança=${pesoChange}`);
     
     const pesoMetric = document.getElementById('pesoMetric');
     if (pesoMetric) {
@@ -1220,14 +1208,14 @@ function calculateMetrics() {
     }
     
     // IMC
-    console.log(`📊 Calculando IMC: pesoAtual=${pesoAtual}, alturaAtual=${alturaAtual}`);
+    : pesoAtual=${pesoAtual}, alturaAtual=${alturaAtual}`);
     const imcMetric = document.getElementById('imcMetric');
-    console.log(`📊 Elemento imcMetric encontrado:`, imcMetric);
+     encontrado:`, imcMetric);
     
     if (alturaAtual > 0 && pesoAtual > 0) {
         const alturaM = alturaAtual / 100;
         const imc = (pesoAtual / (alturaM * alturaM)).toFixed(1);
-        console.log(`📊 IMC calculado: ${imc} (peso=${pesoAtual}, altura=${alturaAtual}, alturaM=${alturaM})`);
+        : ${imc} (peso=${pesoAtual}, altura=${alturaAtual}, alturaM=${alturaM})`);
         
         if (imcMetric) {
             imcMetric.querySelector('.metric-value').textContent = imc;
