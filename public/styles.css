@@ -1444,8 +1444,18 @@ body {
 .body-visualization-container {
     position: relative;
     width: 100%;
-    max-width: 350px;
-    margin: 0 auto;
+    max-height: 480px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.body-visualization-container svg {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 .body-overlays {

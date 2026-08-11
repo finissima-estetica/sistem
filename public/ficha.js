@@ -879,7 +879,7 @@ function generateBodyVisualization() {
     };
     
     // SVG do corpo2.svg com IDs de zonas
-    let svgContent = `<svg width="300" height="550" viewBox="0 0 435 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+    let svgContent = `<svg viewBox="0 0 435 800" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; max-height: 100%;">
 <!-- Camada 1: Zonas coloridas (fundo) -->
 <path id="zone-thigh-r" d="M194 566H235V527L241 490L250 425L184 385H179V418V453V490L184 527L194 566Z" fill="${getSafeColor('zone-thigh-r')}"/>
 <path id="zone-shin-r" d="M194 659V595H241V626V656L237 681L231 714V739H202V714L194 659Z" fill="${getSafeColor('zone-shin-r')}"/>
@@ -896,7 +896,7 @@ function generateBodyVisualization() {
     
     // HTML com SVG injetado e legenda
     let html = `
-        <div class="body-visualization-container" style="position: relative; width: 100%; margin: 0 auto;">
+        <div class="body-visualization-container">
             <!-- SVG injetado -->
             <div class="svg-container" style="position: relative; z-index: 1;">
                 ${svgContent}
