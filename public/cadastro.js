@@ -187,15 +187,23 @@ function setupFormValidation() {
 async function handleSubmit(e) {
     e.preventDefault();
     
+    console.log('📝 Iniciando submissão do formulário');
+    
     if (!validateStep(5)) {
+        console.log('❌ Validação falhou');
         return;
     }
     
+    console.log('✅ Validação passou');
+    
     // Coletar dados do formulário
     const formData = collectFormData();
+    console.log('📋 Dados coletados:', formData);
     
     // Salvar no banco de dados ou localStorage
+    console.log('💾 Salvando dados do cliente...');
     await saveClientData(formData);
+    console.log('✅ Dados salvos');
     
     // Verificar se deve vincular plano
     const vincularPlano = document.getElementById('vincularPlano').value;
@@ -209,6 +217,7 @@ async function handleSubmit(e) {
     }
     
     // Redirecionar para o dashboard com flag para recarregar
+    console.log('🔄 Redirecionando para dashboard...');
     alert('Cliente cadastrado com sucesso!');
     window.location.href = 'index.html?reload=true';
 }
@@ -327,8 +336,9 @@ async function saveClientData(clientData) {
                 panturrilha_esquerda: clientData.panturrilhaEsquerda
             };
             
+            console.log('🚀 Iniciando criação de cliente via API:', apiData);
             const savedClient = await clientesAPI.criar(apiData);
-            console.log('Cliente salvo no PostgreSQL:', savedClient);
+            console.log('✅ Cliente salvo no PostgreSQL:', savedClient);
             
             // Armazenar o ID correto do banco para uso posterior
             clientData.id = savedClient.id;
@@ -337,6 +347,7 @@ async function saveClientData(clientData) {
             return;
         }
     } catch (error) {
+        console.error('❌ Erro ao criar cliente via API:', error);
         console.log('API não disponível, usando localStorage:', error);
     }
     
