@@ -305,6 +305,9 @@ function collectFormData() {
         panturrilhaEsquerda: data.panturrilhaEsquerda
     });
     
+    // Logar todos os campos para debug
+    console.log('📋 Todos os campos coletados:', Object.keys(data));
+    
     return data;
 }
 
