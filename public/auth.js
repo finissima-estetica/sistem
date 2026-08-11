@@ -43,7 +43,7 @@ const userName = document.getElementById('userName');
 const clientsList = document.getElementById('clientsList');
 
 // Verificar se já está logado ao carregar a página
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     loadClientsFromStorage();
     
     const isLoggedIn = localStorage.getItem('isLoggedIn');
