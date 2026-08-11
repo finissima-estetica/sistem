@@ -294,6 +294,17 @@ function collectFormData() {
     data.dataCadastro = new Date().toISOString();
     data.id = Date.now(); // ID único
     
+    console.log('📋 Dados coletados do formulário:', data);
+    console.log('📋 Data de nascimento coletada:', data.dataNascimento);
+    console.log('📋 Medidas:', {
+        bracoDireito: data.bracoDireito,
+        bracoEsquerdo: data.bracoEsquerdo,
+        coxaDireita: data.coxaDireito,
+        coxaEsquerda: data.coxaEsquerda,
+        panturrilhaDireita: data.panturrilhaDireita,
+        panturrilhaEsquerda: data.panturrilhaEsquerda
+    });
+    
     return data;
 }
 
@@ -329,11 +340,13 @@ async function saveClientData(clientData) {
             cintura: clientData.cintura,
             abdomen: clientData.abdomen,
             quadril: clientData.quadril,
-            coxa_direita: clientData.coxaDireita,
+            coxa_direito: clientData.coxaDireito,
             coxa_esquerda: clientData.coxaEsquerda,
-            panturrilha_direita: clientData.panturrilhaDireita,
+            panturrilha_direito: clientData.panturrilhaDireito,
             panturrilha_esquerda: clientData.panturrilhaEsquerda
         };
+        
+        console.log('📋 Dados completos antes de enviar:', apiData);
         
         console.log('🚀 Iniciando criação de cliente via API:', apiData);
         
