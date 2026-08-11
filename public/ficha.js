@@ -1132,14 +1132,8 @@ function calculateMetrics() {
         return dataBBrasil - dataABrasil;
     });
     
-     para métricas:', atendimentosOrdenados.map(a => ({
-        data: a.data || a.data_atendimento
-    })));
-    
     const firstAtendimento = atendimentosOrdenados[atendimentosOrdenados.length - 1];
     const lastAtendimento = atendimentosOrdenados[0];
-    
-    ', atendimentosOrdenados.length);
     
     // Peso - usar último atendimento se disponível, senão usar cadastro
     const pesoAtual = parseFloat(lastAtendimento?.peso) || parseFloat(currentClient.peso) || 0;
