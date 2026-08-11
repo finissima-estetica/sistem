@@ -338,117 +338,10 @@ async function saveClientData(clientData) {
         console.log('🔍 clientData.coxaDireita:', clientData.coxaDireita);
         console.log('🔍 clientData.panturrilhaDireita:', clientData.panturrilhaDireita);
         
-        // Tentar usar API diretamente sem verificar health
-        // Mapear campos do formulário para o banco de dados
-        const apiData = {
-            nome: clientData.nome,
-            cpf: clientData.cpf,
-            data_nascimento: clientData.dataNascimento || null,
-            telefone: clientData.telefone,
-            email: clientData.email,
-            endereco: clientData.endereco,
-            cidade: clientData.cidade,
-            estado: clientData.estado,
-            doencas_cronicas: clientData.doencasCronicas,
-            medicamentos: clientData.medicamentos,
-            cirurgias: clientData.cirurgias,
-            alergias: clientData.alergias,
-            sensibilidade: clientData.sensibilidade,
-            fumante: clientData.fumante,
-            alcool: clientData.alcool,
-            atividade_fisica: clientData.atividadeFisica,
-            procedimentos_desejados: clientData.detalhesProcedimentos,
-            objetivos: clientData.objetivos,
-            peso: clientData.peso,
-            altura: clientData.altura,
-            braco_direito: clientData.bracoDireito,
-            braco_esquerdo: clientData.bracoEsquerdo,
-            torax: clientData.torax,
-            cintura: clientData.cintura,
-            abdomen: clientData.abdomen,
-            quadril: clientData.quadril,
-            coxa_direito: clientData.coxaDireito,
-            coxaEsquerda: clientData.coxaEsquerda,
-            panturrilha_direito: clientData.panturrilhaDireito,
-            panturrilhaEsquerda: clientData.panturrilhaEsquerda
-        };
+        // Enviar clientData diretamente - o servidor normaliza camelCase/snake_case
+        console.log('🚀 Enviando clientData diretamente para o servidor');
         
-        console.log('📋 Dados completos antes de enviar:', apiData);
-        console.log('📋 Verificando apiData específico:', {
-            coxa_direito: apiData.coxa_direito,
-            panturrilha_direito: apiData.panturrilha_direito
-        });
-        console.log('📋 Verificando clientData:', {
-            coxaDireita: clientData.coxaDireita,
-            panturrilhaDireita: clientData.panturrilhaDireita
-        });
-        
-        console.log('🚀 Iniciando criação de cliente via API:', apiData);
-        
-        // Converter strings vazias em NULL para campos numéricos (apiData usa camelCase agora)
-        const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireita', 'coxaEsquerda', 'panturrilhaDireita', 'panturrilhaEsquerda'];
-        numericFields.forEach(field => {
-            const value = apiData[field];
-            console.log(`🔢 Convertendo campo ${field}: valor=${value}, tipo=${typeof value}`);
-            if (value === '' || value === undefined || value === null) {
-                apiData[field] = null;
-                console.log(`  -> Campo ${field} definido como null (vazio/undefined/null)`);
-            } else {
-                // Converter para número
-                const parsed = parseFloat(value);
-                apiData[field] = parsed || null;
-                console.log(`  -> Campo ${field} convertido: ${value} -> ${parsed} -> ${apiData[field]}`);
-            }
-        });
-        
-        // Converter chaves camelCase para snake_case para o servidor
-        const apiDataSnakeCase = {
-            nome: apiData.nome,
-            cpf: apiData.cpf,
-            data_nascimento: apiData.data_nascimento,
-            telefone: apiData.telefone,
-            email: apiData.email,
-            endereco: apiData.endereco,
-            cidade: apiData.cidade,
-            estado: apiData.estado,
-            doencas_cronicas: apiData.doencas_cronicas,
-            medicamentos: apiData.medicamentos,
-            cirurgias: apiData.cirurgias,
-            alergias: apiData.alergias,
-            sensibilidade: apiData.sensibilidade,
-            fumante: apiData.fumante,
-            alcool: apiData.alcool,
-            atividade_fisica: apiData.atividade_fisica,
-            procedimentos_desejados: apiData.procedimentos_desejados,
-            objetivos: apiData.objetivos,
-            peso: apiData.peso,
-            altura: apiData.altura,
-            braco_direito: apiData.bracoDireito,
-            braco_esquerdo: apiData.bracoEsquerdo,
-            torax: apiData.torax,
-            cintura: apiData.cintura,
-            abdomen: apiData.abdomen,
-            quadril: apiData.quadril,
-            coxa_direito: apiData.coxaDireita,
-            coxa_esquerda: apiData.coxaEsquerda,
-            panturrilha_direito: apiData.panturrilhaDireita,
-            panturrilha_esquerda: apiData.panturrilhaEsquerda
-        };
-        
-        console.log('🔢 Dados convertidos para snake_case:', apiDataSnakeCase);
-        
-        console.log('🔢 Dados convertidos para campos numéricos:', apiData);
-        console.log('📋 Verificando campos específicos antes de enviar:', {
-            dataNascimento: apiData.data_nascimento,
-            bracoDireito: apiData.braco_direito,
-            bracoEsquerdo: apiData.braco_esquerdo,
-            coxaDireito: apiData.coxa_direito,
-            coxaEsquerda: apiData.coxa_esquerda,
-            panturrilhaDireito: apiData.panturrilha_direito,
-            panturrilhaEsquerda: apiData.panturrilha_esquerda
-        });
-        
-        const savedClient = await clientesAPI.criar(apiDataSnakeCase);
+        const savedClient = await clientesAPI.criar(clientData);
         console.log('✅ Cliente salvo no PostgreSQL:', savedClient);
         
         // Armazenar o ID correto do banco para uso posterior
@@ -525,5 +418,6 @@ window.goBack = goBack;
 window.nextStep = nextStep;
 window.prevStep = prevStep;
 window.togglePlanoOptions = togglePlanoOptions;
+
 
 
