@@ -363,6 +363,16 @@ async function saveClientData(clientData) {
         });
         
         console.log('🔢 Dados convertidos para campos numéricos:', apiData);
+        console.log('📋 Verificando campos específicos antes de enviar:', {
+            dataNascimento: apiData.data_nascimento,
+            bracoDireito: apiData.braco_direito,
+            bracoEsquerdo: apiData.braco_esquerdo,
+            coxaDireito: apiData.coxa_direito,
+            coxaEsquerda: apiData.coxa_esquerda,
+            panturrilhaDireito: apiData.panturrilha_direito,
+            panturrilhaEsquerda: apiData.panturrilha_esquerda
+        });
+        
         const savedClient = await clientesAPI.criar(apiData);
         console.log('✅ Cliente salvo no PostgreSQL:', savedClient);
         
