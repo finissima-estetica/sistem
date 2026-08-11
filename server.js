@@ -226,42 +226,8 @@ app.get('/api/clientes/:id', async (req, res) => {
 app.post('/api/clientes', async (req, res) => {
     try {
         const cliente = req.body;
-        console.log(" ?? Dados convertidos para campos num�ricos:\, normalizado);
-        
-        // Mapeamento explícito (frontend já envia snake_case)
-        const {
-            nome,
-            cpf,
-            data_nascimento,
-            telefone,
-            email,
-            endereco,
-            cidade,
-            estado,
-            normalizado.doencas_cronicas,
-            medicamentos,
-            cirurgias,
-            alergias,
-            sensibilidade,
-            fumante,
-            alcool,
-            atividade_fisica,
-            procedimentos_desejados,
-            objetivos,
-            peso,
-            altura,
-            braco_direito,
-            braco_esquerdo,
-            torax,
-            cintura,
-            abdomen,
-            quadril,
-            coxa_direito,
-            coxa_esquerda,
-            panturrilha_direito,
-            panturrilha_esquerda
-        } = cliente;
-        
+        console.log('📝 Recebendo dados para criar cliente:', cliente);
+
         // Normalizar campos camelCase para snake_case
         const normalizado = { ...cliente };
         // Criar um mapa de conversão
@@ -298,26 +264,26 @@ app.post('/api/clientes', async (req, res) => {
             }
         });
         
-        console.log(" ?? Dados convertidos para campos num�ricos:\, normalizado);
+        console.log(" ?? Dados convertidos para campos num�ricos:\, normalizado);
         
         const result = await pool.query(`
             INSERT INTO clientes (
-                normalizado.nome, normalizado.cpf, normalizado.data_nascimento, telefone, email, normalizado.endereco, normalizado.cidade, normalizado.estado,
-                normalizado.doencas_cronicas, normalizado.medicamentos, normalizado.cirurgias, alergias, sensibilidade,
+                nome, cpf, data_nascimento, telefone, email, endereco, cidade, estado,
+                doencas_cronicas, medicamentos, cirurgias, alergias, sensibilidade,
                 fumante, alcool, atividade_fisica, procedimentos_desejados, objetivos,
-                peso, altura, normalizado.braco_direito, normalizado.braco_esquerdo, torax, cintura, abdomen,
-                quadril, coxa_direita, coxa_esquerda, panturrilha_direita, panturrilha_esquerda
+                peso, altura, braco_direito, braco_esquerdo, torax, cintura, abdomen,
+                quadril, coxa_direita, coxa_esquerda, panturrilha_direito, panturrilha_esquerda
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
             RETURNING *
         `, [
-            normalizado.nome, normalizado.cpf, normalizado.data_nascimento, telefone, email,
+            normalizado.nome, normalizado.cpf, normalizado.data_nascimento, normalizado.telefone, normalizado.email,
             normalizado.endereco, normalizado.cidade, normalizado.estado, normalizado.doencas_cronicas,
-            normalizado.medicamentos, normalizado.cirurgias, alergias, sensibilidade,
-            fumante, alcool, atividade_fisica, procedimentos_desejados,
-            normalizado.objetivos, normalizado.peso, normalizado.altura, braco_direito,
-            braco_esquerdo, torax, cintura, abdomen,
-            normalizado.quadril, normalizado.coxa_direito, coxa_esquerda,
-            panturrilha_direito, panturrilha_esquerda
+            normalizado.medicamentos, normalizado.cirurgias, normalizado.alergias, normalizado.sensibilidade,
+            normalizado.fumante, normalizado.alcool, normalizado.atividade_fisica, normalizado.procedimentos_desejados,
+            normalizado.objetivos, normalizado.peso, normalizado.altura, normalizado.braco_direito,
+            normalizado.braco_esquerdo, normalizado.torax, normalizado.cintura, normalizado.abdomen,
+            normalizado.quadril, normalizado.coxa_direito, normalizado.coxa_esquerda,
+            normalizado.panturrilha_direito, normalizado.panturrilha_esquerda
         ]);
         
         console.log('✅ Cliente criado com sucesso:', result.rows[0]);
