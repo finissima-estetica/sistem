@@ -304,6 +304,8 @@ function collectFormData() {
     data.id = Date.now(); // ID único
     
     console.log('📋 Dados coletados do formulário:', data);
+    console.log('📋 Valor completo de data.coxaDireita:', data.coxaDireita);
+    console.log('📋 Tipo de data.coxaDireita:', typeof data.coxaDireita);
     console.log('📋 Data de nascimento coletada:', data.dataNascimento);
     console.log('📋 Medidas:', {
         bracoDireito: data.bracoDireito,
