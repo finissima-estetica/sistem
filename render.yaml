@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sistema-finissima
+    name: sistema-finissimo
     env: node
     buildCommand: npm install
     startCommand: node server.js
@@ -8,15 +8,7 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        fromDatabase:
-          name: sistema-finissima-db
-          property: connectionString
+        value: postgresql://banco_finiisima_user:McwGm9nHxwqU7748XqAy7dM4mQlDxz9a@dpg-d9tim06417fc73egtn30-a/banco_finiisima
       - key: NODE_ENV
         value: production
-    plan: free
-
-databases:
-  - name: sistema-finissima-db
-    databaseName: sistema_finissima
-    user: sistema_finissima_user
     plan: free
