@@ -4,13 +4,13 @@ const users = [
     { email: 'usuario@clinica.com', password: 'usuario123', name: 'Usuário' }
 ];
 
-// Clientes (carregados do localStorage ou exemplos iniciais)
+// Clientes (carregados APENAS da API - sem localStorage)
 let clients = [];
-let useLocalStorage = true; // Flag para controlar se usa localStorage ou API
+let useLocalStorage = false; // SEMPRE usar API, nunca localStorage
 
-// Função para carregar clientes do localStorage
+// Função para carregar clientes da API
 async function loadClientsFromStorage() {
-    // Tenta usar API primeiro
+    // SEMPRE usar API, nunca localStorage
     try {
         if (typeof isApiAvailable === 'function' && await isApiAvailable()) {
             useLocalStorage = false;
@@ -24,49 +24,19 @@ async function loadClientsFromStorage() {
                 status: client.status,
                 dataCadastro: client.data_cadastro
             }));
-            console.log('Clientes carregados do PostgreSQL:', clients.length);
+            console.log('✅ Clientes carregados do PostgreSQL:', clients.length);
             return;
+        } else {
+            console.warn('⚠️ API não disponível, tentando novamente...');
+            // Tentar novamente após um delay
+            setTimeout(loadClientsFromStorage, 2000);
         }
     } catch (error) {
-        console.log('Usando localStorage como fallback:', error);
+        console.error('❌ Erro ao carregar clientes da API:', error);
+        console.log('Tentando novamente em 2 segundos...');
+        // Tentar novamente após um delay
+        setTimeout(loadClientsFromStorage, 2000);
     }
-    
-    // Fallback para localStorage
-    useLocalStorage = true;
-    const storedClients = localStorage.getItem('clients');
-    if (storedClients) {
-        clients = JSON.parse(storedClients);
-    } else {
-        // Clientes de exemplo iniciais
-        clients = [
-            { 
-                id: 1, 
-                nome: 'Maria Silva', 
-                email: 'maria.silva@email.com', 
-                telefone: '(11) 98765-4321', 
-                status: 'Ativo',
-                dataCadastro: new Date().toISOString()
-            },
-            { 
-                id: 2, 
-                nome: 'João Santos', 
-                email: 'joao.santos@email.com', 
-                telefone: '(11) 91234-5678', 
-                status: 'Ativo',
-                dataCadastro: new Date().toISOString()
-            },
-            { 
-                id: 3, 
-                nome: 'Ana Costa', 
-                email: 'ana.costa@email.com', 
-                telefone: '(11) 99876-5432', 
-                status: 'Inativo',
-                dataCadastro: new Date().toISOString()
-            }
-        ];
-        localStorage.setItem('clients', JSON.stringify(clients));
-    }
-    console.log('Clientes carregados do localStorage:', clients.length);
 }
 
 // Elementos do DOM

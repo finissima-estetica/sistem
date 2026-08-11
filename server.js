@@ -17,23 +17,53 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Rota de health check para verificar se API está disponível
+app.get('/api/health', async (req, res) => {
+    try {
+        // Testar conexão com o banco
+        await pool.query('SELECT 1');
+        res.json({ 
+            status: 'ok', 
+            database: 'connected',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Erro no health check:', error);
+        res.status(500).json({ 
+            status: 'error', 
+            database: 'disconnected',
+            error: error.message 
+        });
+    }
+});
+
 // Configuração do PostgreSQL
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    // Sempre usar SSL para Render
+    ssl: { rejectUnauthorized: false },
     // Configurar fuso horário para Brasília (UTC-3)
     timezone: 'America/Sao_Paulo'
 });
 
 // Testar conexão com o banco
 pool.on('connect', () => {
-    console.log('Conectado ao PostgreSQL');
+    console.log('✅ Conectado ao PostgreSQL');
     initializeDatabase();
 });
 
 pool.on('error', (err) => {
-    console.error('Erro na conexão com PostgreSQL:', err);
+    console.error('❌ Erro na conexão com PostgreSQL:', err);
 });
+
+// Forçar conexão inicial ao iniciar o servidor
+pool.connect()
+    .then(() => {
+        console.log('🔗 Conexão inicial estabelecida com PostgreSQL');
+    })
+    .catch(err => {
+        console.error('❌ Falha na conexão inicial:', err);
+    });
 
 // Função para inicializar o banco de dados
 async function initializeDatabase() {
@@ -324,12 +354,9 @@ app.post('/api/database/init', async (req, res) => {
     }
 });
 
-// Rota de health check
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', database: pool.totalCount > 0 ? 'connected' : 'disconnected' });
-});
-
 // Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+    console.log(`📡 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🗄️  Database URL: ${process.env.DATABASE_URL ? 'Configurada' : 'NÃO configurada'}`);
 });
