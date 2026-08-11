@@ -353,8 +353,12 @@ async function saveClientData(clientData) {
         // Converter strings vazias em NULL para campos numéricos
         const numericFields = ['peso', 'altura', 'bracoDireito', 'bracoEsquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxaDireita', 'coxaEsquerda', 'panturrilhaDireita', 'panturrilhaEsquerda'];
         numericFields.forEach(field => {
-            if (apiData[field] === '' || apiData[field] === undefined || apiData[field] === null) {
+            const value = apiData[field];
+            if (value === '' || value === undefined || value === null) {
                 apiData[field] = null;
+            } else {
+                // Converter para número
+                apiData[field] = parseFloat(value) || null;
             }
         });
         
