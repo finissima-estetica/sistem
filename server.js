@@ -238,9 +238,9 @@ app.post('/api/clientes', async (req, res) => {
             detalhesProcedimentos: 'procedimentos_desejados',
             bracoDireito: 'braco_direito',
             bracoEsquerdo: 'braco_esquerdo',
-            coxaDireita: 'coxa_direito',
+            coxaDireita: 'coxa_direita',
             coxaEsquerda: 'coxa_esquerda',
-            panturrilhaDireita: 'panturrilha_direito',
+            panturrilhaDireita: 'panturrilha_direita',
             panturrilhaEsquerda: 'panturrilha_esquerda'
         };
         
@@ -254,7 +254,7 @@ app.post('/api/clientes', async (req, res) => {
         console.log('🔍 Dados normalizados:', normalizado);
 
         // Converter strings vazias em NULL para campos numéricos
-        const numericFields = ['peso', 'altura', 'braco_direito', 'braco_esquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxa_direito', 'coxa_esquerda', 'panturrilha_direito', 'panturrilha_esquerda'];
+        const numericFields = ['peso', 'altura', 'braco_direito', 'braco_esquerdo', 'torax', 'cintura', 'abdomen', 'quadril', 'coxa_direita', 'coxa_esquerda', 'panturrilha_direita', 'panturrilha_esquerda'];
         numericFields.forEach(field => {
             const value = normalizado[field];
             if (value === '' || value === undefined || value === null) {
@@ -272,7 +272,7 @@ app.post('/api/clientes', async (req, res) => {
                 doencas_cronicas, medicamentos, cirurgias, alergias, sensibilidade,
                 fumante, alcool, atividade_fisica, procedimentos_desejados, objetivos,
                 peso, altura, braco_direito, braco_esquerdo, torax, cintura, abdomen,
-                quadril, coxa_direita, coxa_esquerda, panturrilha_direito, panturrilha_esquerda
+                quadril, coxa_direita, coxa_esquerda, panturrilha_direita, panturrilha_esquerda
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
             RETURNING *
         `, [
@@ -282,8 +282,8 @@ app.post('/api/clientes', async (req, res) => {
             normalizado.fumante, normalizado.alcool, normalizado.atividade_fisica, normalizado.procedimentos_desejados,
             normalizado.objetivos, normalizado.peso, normalizado.altura, normalizado.braco_direito,
             normalizado.braco_esquerdo, normalizado.torax, normalizado.cintura, normalizado.abdomen,
-            normalizado.quadril, normalizado.coxa_direito, normalizado.coxa_esquerda,
-            normalizado.panturrilha_direito, normalizado.panturrilha_esquerda
+            normalizado.quadril, normalizado.coxa_direita, normalizado.coxa_esquerda,
+            normalizado.panturrilha_direita, normalizado.panturrilha_esquerda
         ]);
         
         console.log('✅ Cliente criado com sucesso:', result.rows[0]);
