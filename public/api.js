@@ -158,6 +158,17 @@ const servicosAPI = {
             method: 'POST',
             body: JSON.stringify({ servicoIds })
         });
+    },
+    
+    async buscarPorAtendimento(atendimentoId) {
+        return apiRequest(`/atendimentos/${atendimentoId}/servicos`);
+    },
+    
+    async vincularAoAtendimento(atendimentoId, servicoIds) {
+        return apiRequest(`/atendimentos/${atendimentoId}/servicos`, {
+            method: 'POST',
+            body: JSON.stringify({ servicoIds })
+        });
     }
 };
 

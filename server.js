@@ -163,6 +163,28 @@ async function runMigrations() {
             console.log('ℹ️ Tabela cliente_servicos já existe');
         }
 
+        // Verificar se a tabela atendimento_servicos existe
+        const atendimentoServicosCheck = await pool.query(`
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_name = 'atendimento_servicos'
+        `);
+
+        if (atendimentoServicosCheck.rows.length === 0) {
+            console.log('➕ Criando tabela atendimento_servicos...');
+            await pool.query(`
+                CREATE TABLE atendimento_servicos (
+                    id SERIAL PRIMARY KEY,
+                    atendimento_id INTEGER REFERENCES atendimentos(id) ON DELETE CASCADE,
+                    servico_id INTEGER REFERENCES servicos(id) ON DELETE CASCADE,
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+            console.log('✅ Tabela atendimento_servicos criada');
+        } else {
+            console.log('ℹ️ Tabela atendimento_servicos já existe');
+        }
+
         // Verificar se as colunas de panturrilha existem em atendimentos
         const checkResult = await pool.query(`
             SELECT column_name 
@@ -558,6 +580,49 @@ app.post('/api/clientes/:id/servicos', async (req, res) => {
     } catch (error) {
         console.error('Erro ao vincular serviços ao cliente:', error);
         res.status(500).json({ error: 'Erro ao vincular serviços ao cliente' });
+    }
+});
+
+// Endpoint para buscar serviços de um atendimento específico
+app.get('/api/atendimentos/:id/servicos', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(`
+            SELECT s.* FROM servicos s
+            INNER JOIN atendimento_servicos aso ON s.id = aso.servico_id
+            WHERE aso.atendimento_id = $1 AND s.ativo = true
+            ORDER BY s.nome ASC
+        `, [id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Erro ao buscar serviços do atendimento:', error);
+        res.status(500).json({ error: 'Erro ao buscar serviços do atendimento' });
+    }
+});
+
+// Endpoint para vincular serviços a um atendimento
+app.post('/api/atendimentos/:id/servicos', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { servicoIds } = req.body;
+        
+        // Remover vínculos antigos
+        await pool.query('DELETE FROM atendimento_servicos WHERE atendimento_id = $1', [id]);
+        
+        // Adicionar novos vínculos
+        if (servicoIds && servicoIds.length > 0) {
+            for (const servicoId of servicoIds) {
+                await pool.query(
+                    'INSERT INTO atendimento_servicos (atendimento_id, servico_id) VALUES ($1, $2)',
+                    [id, servicoId]
+                );
+            }
+        }
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Erro ao vincular serviços ao atendimento:', error);
+        res.status(500).json({ error: 'Erro ao vincular serviços ao atendimento' });
     }
 });
 

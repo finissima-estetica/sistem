@@ -4,6 +4,7 @@ let currentClient = null;
 let currentClientAtendimentos = [];
 let currentClientPlanos = [];
 let currentAtendimentos = []; // Para a aba de desempenho
+let servicosDisponiveis = []; // Serviços disponíveis para atendimento
 
 // Planos disponíveis (6 meses para cada produto)
 const planosDisponiveis = [
@@ -607,6 +608,7 @@ function loadPlanosSelect() {
 // Abrir modal de novo atendimento
 function openNovoAtendimento() {
     document.getElementById('modalAtendimento').classList.add('active');
+    carregarServicosAtendimento();
 }
 
 // Abrir modal de novo plano
@@ -628,7 +630,6 @@ async function handleAtendimentoSubmit(e) {
         id: Date.now(),
         clienteId: currentClientId,
         data: formData.get('dataAtendimento'),
-        tipo: formData.get('tipoAtendimento'),
         planoId: formData.get('planoVinculado') || null,
         observacoes: formData.get('observacoes'),
         peso: formData.get('pesoAtual') || null,
@@ -651,6 +652,12 @@ async function handleAtendimentoSubmit(e) {
         // Atualizar lista local com o ID retornado
         atendimento.id = savedAtendimento.id;
         currentClientAtendimentos.push(atendimento);
+        
+        // Salvar serviços selecionados
+        const servicosIds = coletarServicosAtendimento();
+        if (servicosIds.length > 0) {
+            await servicosAPI.vincularAoAtendimento(savedAtendimento.id, servicosIds);
+        }
     } catch (error) {
         console.error('❌ Erro ao salvar atendimento via API:', error);
         alert('Erro ao salvar atendimento. Tente novamente.');
@@ -1199,6 +1206,55 @@ function calculateMetrics() {
     }
 }
 
+// Função para carregar serviços do banco de dados para atendimento
+async function carregarServicosAtendimento() {
+    try {
+        const servicos = await servicosAPI.listar();
+        servicosDisponiveis = servicos;
+        renderizarServicosAtendimento();
+    } catch (error) {
+        console.error('Erro ao carregar serviços:', error);
+    }
+}
+
+// Função para renderizar serviços no formulário de atendimento
+function renderizarServicosAtendimento() {
+    const servicosContainer = document.getElementById('servicosAtendimentoContainer');
+    if (!servicosContainer) return;
+
+    servicosContainer.innerHTML = '';
+    
+    if (servicosDisponiveis.length === 0) {
+        servicosContainer.innerHTML = '<p class="empty-state">Nenhum serviço disponível. Crie serviços primeiro no dashboard.</p>';
+        return;
+    }
+
+    servicosDisponiveis.forEach(servico => {
+        const div = document.createElement('div');
+        div.className = 'servico-item';
+        div.innerHTML = `
+            <label class="servico-label">
+                <input type="checkbox" 
+                       name="servicosAtendimento" 
+                       value="${servico.id}" 
+                       class="servico-checkbox"
+                       data-nome="${servico.nome}"
+                       data-valor="${servico.valor_medio}">
+                <span class="servico-nome">${servico.nome}</span>
+                <span class="servico-valor">R$ ${parseFloat(servico.valor_medio).toFixed(2)}</span>
+            </label>
+        `;
+        servicosContainer.appendChild(div);
+    });
+}
+
+// Função para coletar serviços selecionados no atendimento
+function coletarServicosAtendimento() {
+    const checkboxes = document.querySelectorAll('input[name="servicosAtendimento"]:checked');
+    const servicosIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    return servicosIds;
+}
+
 // Tornar funções globais
 window.goBack = goBack;
 window.openNovoAtendimento = openNovoAtendimento;
@@ -1211,4 +1267,6 @@ window.unhighlightZone = unhighlightZone;
 window.selectZone = selectZone;
 window.setZoneColor = setZoneColor;
 window.resetZones = resetZones;
+window.carregarServicosAtendimento = carregarServicosAtendimento;
+window.coletarServicosAtendimento = coletarServicosAtendimento;
 

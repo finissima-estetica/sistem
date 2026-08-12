@@ -169,22 +169,6 @@
                                 <input type="date" id="dataAtendimento" name="dataAtendimento" required>
                             </div>
                             <div class="form-group">
-                                <label for="tipoAtendimento">Tipo de Atendimento *</label>
-                                <select id="tipoAtendimento" name="tipoAtendimento" required>
-                                    <option value="">Selecione</option>
-                                    <option value="limpeza_pele">Limpeza de Pele</option>
-                                    <option value="peeling">Peeling Químico</option>
-                                    <option value="botox">Botox</option>
-                                    <option value="preenchimento">Preenchimento Facial</option>
-                                    <option value="laser">Laser</option>
-                                    <option value="drenagem">Drenagem Linfática</option>
-                                    <option value="massagem">Massagem</option>
-                                    <option value="carboxiterapia">Carboxiterapia</option>
-                                    <option value="microneedling">Microneedling</option>
-                                    <option value="outros">Outros</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
                                 <label for="planoVinculado">Plano Vinculado</label>
                                 <select id="planoVinculado" name="planoVinculado">
                                     <option value="">Atendimento Único (Fora de Plano)</option>
@@ -194,6 +178,13 @@
                         <div class="form-group">
                             <label for="observacoes">Observações</label>
                             <textarea id="observacoes" name="observacoes" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Serviços Realizados</h4>
+                        <div id="servicosAtendimentoContainer" class="servicos-container">
+                            <p class="loading">Carregando serviços...</p>
                         </div>
                     </div>
 
