@@ -6,6 +6,11 @@ let currentClientPlanos = [];
 let currentAtendimentos = []; // Para a aba de desempenho
 let servicosDisponiveis = []; // Serviços disponíveis para atendimento
 
+// Verificar se servicosAPI está disponível globalmente
+if (typeof servicosAPI === 'undefined') {
+    console.error('servicosAPI não está disponível. Verifique se api.js foi carregado.');
+}
+
 // Planos disponíveis (6 meses para cada produto)
 const planosDisponiveis = [
     {
