@@ -196,19 +196,8 @@ function updateClientInfo() {
     const dataFormatada = formatarDataBrasil(dataCadastro);
     document.getElementById('clientSince').textContent = `Cliente desde: ${dataFormatada}`;
     
-    // Atualizar status de plano
-    const planosAtivos = currentClientPlanos.filter(p => isPlanoAtivo(p));
-    if (planosAtivos.length > 0) {
-        document.getElementById('planStatus').textContent = `${planosAtivos.length} Plano(s) Ativo(s)`;
-        document.getElementById('planStatus').classList.add('ativo');
-    } else {
-        document.getElementById('planStatus').textContent = 'Sem Plano';
-        document.getElementById('planStatus').classList.remove('ativo');
-    }
-    
     // Atualizar estatísticas
     document.getElementById('totalAtendimentos').textContent = currentClientAtendimentos.length;
-    document.getElementById('planosAtivos').textContent = planosAtivos.length;
     
     if (currentClientAtendimentos.length > 0) {
         const ultimoAtendimento = currentClientAtendimentos[currentClientAtendimentos.length - 1];
@@ -216,13 +205,6 @@ function updateClientInfo() {
     } else {
         document.getElementById('ultimoAtendimento').textContent = '--';
     }
-}
-
-// Verificar se plano está ativo
-function isPlanoAtivo(plano) {
-    const hoje = new Date();
-    const dataFim = new Date(plano.dataFim);
-    return dataFim >= hoje;
 }
 
 // Configurar abas
@@ -697,7 +679,6 @@ async function handleAtendimentoSubmit(e) {
         id: Date.now(),
         clienteId: currentClientId,
         data: formData.get('dataAtendimento'),
-        planoId: formData.get('planoVinculado') || null,
         observacoes: formData.get('observacoes'),
         peso: formData.get('pesoAtual') || null,
         bracoDireito: formData.get('bracoDireitoAtual') || null,
@@ -1280,7 +1261,6 @@ window.goBack = goBack;
 window.openNovoAtendimento = openNovoAtendimento;
 window.openNovoPacote = openNovoPacote;
 window.closeModal = closeModal;
-window.selectPlano = selectPlano;
 window.highlightZone = highlightZone;
 window.unhighlightZone = unhighlightZone;
 window.selectZone = selectZone;
