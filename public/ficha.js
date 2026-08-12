@@ -615,9 +615,51 @@ function formatarDataBrasil(dataString) {
 }
 
 // Abrir modal de novo atendimento
-function openNovoAtendimento() {
+async function openNovoAtendimento() {
     document.getElementById('modalAtendimento').classList.add('active');
-    carregarServicosAtendimento();
+    await carregarServicosAtendimento();
+    await carregarPacotesAtendimento();
+}
+
+// Carregar pacotes do cliente para o atendimento
+async function carregarPacotesAtendimento() {
+    try {
+        console.log('🔌 Carregando pacotes do cliente para atendimento...');
+        
+        const select = document.getElementById('pacoteVinculado');
+        if (!select) {
+            console.error('❌ Elemento pacoteVinculado não encontrado');
+            return;
+        }
+        
+        select.innerHTML = '<option value="">Atendimento Individual (Sem Pacote)</option>';
+        
+        // Adicionar serviços individuais
+        servicosDisponiveis.forEach(servico => {
+            select.innerHTML += `
+                <option value="servico_${servico.id}">
+                    Serviço: ${servico.nome} - R$ ${parseFloat(servico.valor_medio).toFixed(2)}
+                </option>
+            `;
+        });
+        
+        // Adicionar pacotes ativos do cliente
+        if (currentClientPacotes && currentClientPacotes.length > 0) {
+            currentClientPacotes.forEach(pacote => {
+                if (pacote.status === 'Ativo' && pacote.sessoes_restantes > 0) {
+                    select.innerHTML += `
+                        <option value="pacote_${pacote.id}">
+                            Pacote: ${pacote.pacote_nome} (${pacote.sessoes_restantes} sessões restantes)
+                        </option>
+                    `;
+                }
+            });
+        }
+        
+        console.log('✅ Pacotes carregados no select de atendimento');
+    } catch (error) {
+        console.error('❌ Erro ao carregar pacotes para atendimento:', error);
+    }
 }
 
 // Abrir modal de novo pacote
@@ -700,6 +742,19 @@ async function handleAtendimentoSubmit(e) {
     e.preventDefault();
     
     const formData = new FormData(e.target);
+    const pacoteVinculado = formData.get('pacoteVinculado');
+    
+    // Se for pacote, validar sessões disponíveis
+    if (pacoteVinculado && pacoteVinculado.startsWith('pacote_')) {
+        const clientePacoteId = parseInt(pacoteVinculado.replace('pacote_', ''));
+        const pacote = currentClientPacotes.find(p => p.id === clientePacoteId);
+        
+        if (!pacote || pacote.sessoes_restantes <= 0) {
+            alert('Este pacote não tem sessões disponíveis!');
+            return;
+        }
+    }
+    
     const atendimento = {
         id: Date.now(),
         clienteId: currentClientId,
@@ -731,13 +786,21 @@ async function handleAtendimentoSubmit(e) {
         if (servicosIds.length > 0) {
             await servicosAPI.vincularAoAtendimento(savedAtendimento.id, servicosIds);
         }
+        
+        // Se for pacote, abater uma sessão
+        if (pacoteVinculado && pacoteVinculado.startsWith('pacote_')) {
+            const clientePacoteId = parseInt(pacoteVinculado.replace('pacote_', ''));
+            await pacotesAPI.atualizarSessoes(clientePacoteId, true);
+            console.log('✅ Sessão abatida do pacote:', clientePacoteId);
+            
+            // Recarregar pacotes para atualizar UI
+            await loadPacotes();
+        }
     } catch (error) {
         console.error('❌ Erro ao salvar atendimento via API:', error);
         alert('Erro ao salvar atendimento. Tente novamente.');
         return;
     }
-    
-    // Atualizar lista local
     
     // Atualizar UI
     loadAtendimentos();
@@ -751,19 +814,6 @@ async function handleAtendimentoSubmit(e) {
 }
 
 // Voltar ao dashboard
-function goBack() {
-    window.location.href = 'index.html';
-}
-
-// Editar cliente (placeholder)
-function editCliente() {
-    alert('Funcionalidade de edição será implementada em breve.');
-}
-
-// Função para ativar/desativar cliente
-async function toggleClientStatus() {
-    if (!currentClient) {
-        alert('Dados do cliente não carregados. Tente novamente.');
         return;
     }
     
