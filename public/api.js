@@ -150,18 +150,18 @@ const pacotesAPI = {
     },
     
     async buscarPorCliente(clienteId) {
-        return apiRequest(`/clientes/${clientId}/pacotes`);
+        return apiRequest('/clientes/' + clienteId + '/pacotes');
     },
     
     async vincularAoCliente(clienteId, pacoteData) {
-        return apiRequest(`/clientes/${clientId}/pacotes`, {
+        return apiRequest('/clientes/' + clienteId + '/pacotes', {
             method: 'POST',
             body: JSON.stringify(pacoteData)
         });
     },
     
     async atualizarSessoes(clientePacoteId, decrementar) {
-        return apiRequest(`/cliente_pacotes/${clientePacoteId}`, {
+        return apiRequest('/cliente_pacotes/' + clientePacoteId, {
             method: 'PUT',
             body: JSON.stringify({ decrementar })
         });
