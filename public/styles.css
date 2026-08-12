@@ -1660,6 +1660,102 @@ body {
     font-size: 14px;
 }
 
+/* Pacote Cards na Ficha */
+.pacotes-list {
+    display: grid;
+    gap: 20px;
+}
+
+.pacote-card {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.pacote-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.pacote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.pacote-header h4 {
+    color: #333;
+    margin: 0;
+    font-size: 18px;
+}
+
+.pacote-details {
+    margin-bottom: 15px;
+}
+
+.pacote-details p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.pacote-details strong {
+    color: #333;
+}
+
+.sessoes-info {
+    margin-top: 15px;
+    padding: 10px;
+    background: #e8ecff;
+    border-radius: 6px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #d0d7ff;
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.pacote-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-use-sessao {
+    background: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-use-sessao:hover {
+    background: #218838;
+}
+
+.btn-use-sessao:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
 /* Desktop Layout - preencher tela horizontalmente */
 @media (min-width: 769px) {
     .content {

@@ -24,7 +24,7 @@
                         <h2 id="clientName">Nome do Cliente</h2>
                         <p id="clientContact">email@exemplo.com | (00) 00000-0000</p>
                         <div class="client-meta">
-                            <span class="status-badge" id="planStatus">Sem Plano</span>
+                            <span class="status-badge" id="pacotesAtivosBadge">0 Pacotes Ativos</span>
                             <span class="date-badge" id="clientSince">Cliente desde: --/--/----</span>
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                     </div>
                     <div class="stat-item">
                         <h3 id="planosAtivos">0</h3>
-                        <p>Planos Ativos</p>
+                        <p>Pacotes Ativos</p>
                     </div>
                     <div class="stat-item">
                         <h3 id="ultimoAtendimento">--</h3>
@@ -51,7 +51,7 @@
                 <div class="tabs">
                     <button class="tab-btn active" data-tab="atendimentos">Histórico de Atendimentos</button>
                     <button class="tab-btn" data-tab="desempenho">Desempenho</button>
-                    <button class="tab-btn" data-tab="planos">Planos</button>
+                    <button class="tab-btn" data-tab="pacotes">Pacotes</button>
                     <button class="tab-btn" data-tab="dados">Dados Completos</button>
                 </div>
 
@@ -118,17 +118,17 @@
                         </div>
                     </div>
 
-                    <!-- Aba: Planos -->
-                    <div class="tab-pane" id="planos">
+                    <!-- Aba: Pacotes -->
+                    <div class="tab-pane" id="pacotes">
                         <div class="tab-header">
-                            <h3>Planos do Cliente</h3>
-                            <button class="btn-new-plano" onclick="openNovoPlano()">+ Adicionar Plano</button>
+                            <h3>Pacotes do Cliente</h3>
+                            <button class="btn-new-pacote" onclick="openNovoPacote()">+ Adicionar Pacote</button>
                         </div>
                         
-                        <div class="planos-list" id="planosList">
+                        <div class="pacotes-list" id="pacotesList">
                             <div class="empty-state">
-                                <p>Nenhum plano vinculado a este cliente.</p>
-                                <p>Clique em "Adicionar Plano" para vincular.</p>
+                                <p>Nenhum pacote vinculado a este cliente.</p>
+                                <p>Clique em "Adicionar Pacote" para vincular.</p>
                             </div>
                         </div>
                     </div>
@@ -247,43 +247,36 @@
         </div>
     </div>
 
-    <!-- Modal de Novo Plano -->
-    <div class="modal" id="modalPlano">
+    <!-- Modal de Novo Pacote -->
+    <div class="modal" id="modalPacote">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Adicionar Plano ao Cliente</h3>
-                <button class="btn-close" onclick="closeModal('modalPlano')">×</button>
+                <h3>Adicionar Pacote ao Cliente</h3>
+                <button class="btn-close" onclick="closeModal('modalPacote')">×</button>
             </div>
             <div class="modal-body">
-                <form id="planoForm">
+                <form id="pacoteForm">
                     <div class="form-section">
-                        <h4>Seleção do Plano</h4>
-                        <div class="planos-disponiveis" id="planosDisponiveis">
-                            <!-- Planos serão carregados dinamicamente -->
+                        <h4>Seleção do Pacote</h4>
+                        <div class="form-group">
+                            <label for="pacoteSelecionado">Selecione o pacote:</label>
+                            <select id="pacoteSelecionado" name="pacoteSelecionado" required>
+                                <option value="">Selecione um pacote</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h4>Detalhes do Plano</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="dataInicio">Data de Início *</label>
-                                <input type="date" id="dataInicio" name="dataInicio" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="dataFim">Data de Término</label>
-                                <input type="date" id="dataFim" name="dataFim" readonly>
-                            </div>
-                        </div>
+                        <h4>Detalhes do Pacote</h4>
                         <div class="form-group">
-                            <label for="observacoesPlano">Observações</label>
-                            <textarea id="observacoesPlano" name="observacoesPlano" rows="3"></textarea>
+                            <label for="observacoesPacote">Observações</label>
+                            <textarea id="observacoesPacote" name="observacoesPacote" rows="3"></textarea>
                         </div>
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeModal('modalPlano')">Cancelar</button>
-                        <button type="submit" class="btn-submit">Vincular Plano</button>
+                        <button type="button" class="btn-cancel" onclick="closeModal('modalPacote')">Cancelar</button>
+                        <button type="submit" class="btn-submit">Vincular Pacote</button>
                     </div>
                 </form>
             </div>

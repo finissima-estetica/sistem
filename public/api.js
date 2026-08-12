@@ -158,6 +158,13 @@ const pacotesAPI = {
             method: 'POST',
             body: JSON.stringify(pacoteData)
         });
+    },
+    
+    async atualizarSessoes(clientePacoteId, decrementar) {
+        return apiRequest(`/cliente_pacotes/${clientePacoteId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ decrementar })
+        });
     }
 };
 

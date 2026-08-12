@@ -880,7 +880,7 @@ app.get('/api/clientes/:id/pacotes', async (req, res) => {
             FROM cliente_pacotes cp
             LEFT JOIN pacotes p ON cp.pacote_id = p.id
             LEFT JOIN servicos s ON p.servico_id = s.id
-            WHERE cp.cliente_id = $1
+            WHERE cp.cliente_id = $1 AND cp.status = 'Ativo'
             ORDER BY cp.data_criacao DESC
         `, [id]);
         res.json(result.rows);
@@ -890,7 +890,7 @@ app.get('/api/clientes/:id/pacotes', async (req, res) => {
     }
 });
 
-// Endpoint para vincular pacote a um cliente
+// Endpoint para adicionar pacote a um cliente (para ficha)
 app.post('/api/clientes/:id/pacotes', async (req, res) => {
     try {
         const { id } = req.params;
@@ -918,6 +918,41 @@ app.post('/api/clientes/:id/pacotes', async (req, res) => {
     } catch (error) {
         console.error('Erro ao vincular pacote ao cliente:', error);
         res.status(500).json({ error: 'Erro ao vincular pacote ao cliente' });
+    }
+});
+
+// Endpoint para decrementar sessões restantes de um pacote
+app.put('/api/cliente_pacotes/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { decrementar } = req.body;
+        
+        if (decrementar) {
+            const result = await pool.query(
+                'UPDATE cliente_pacotes SET sessoes_restantes = sessoes_restantes - 1 WHERE id = $1 AND sessoes_restantes > 0 RETURNING *',
+                [id]
+            );
+            
+            if (result.rows.length === 0) {
+                return res.status(400).json({ error: 'Não há sessões restantes ou pacote não encontrado' });
+            }
+            
+            // Se não houver mais sessões, marcar como concluído
+            if (result.rows[0].sessoes_restantes === 0) {
+                await pool.query(
+                    'UPDATE cliente_pacotes SET status = $1 WHERE id = $2',
+                    ['Concluído', id]
+                );
+                result.rows[0].status = 'Concluído';
+            }
+            
+            res.json(result.rows[0]);
+        } else {
+            res.status(400).json({ error: 'Operação inválida' });
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar pacote:', error);
+        res.status(500).json({ error: 'Erro ao atualizar pacote' });
     }
 });
 

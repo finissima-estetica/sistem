@@ -2,13 +2,19 @@
 let currentClientId = null;
 let currentClient = null;
 let currentClientAtendimentos = [];
-let currentClientPlanos = [];
+let currentClientPacotes = []; // Novo: pacotes do cliente
 let currentAtendimentos = []; // Para a aba de desempenho
 let servicosDisponiveis = []; // Serviços disponíveis para atendimento
+let pacotesDisponiveis = []; // Pacotes disponíveis para adicionar ao cliente
 
 // Verificar se servicosAPI está disponível globalmente
 if (typeof servicosAPI === 'undefined') {
     console.error('servicosAPI não está disponível. Verifique se api.js foi carregado.');
+}
+
+// Verificar se pacotesAPI está disponível globalmente
+if (typeof pacotesAPI === 'undefined') {
+    console.error('pacotesAPI não está disponível. Verifique se api.js foi carregado.');
 }
 
 // Planos disponíveis (6 meses para cada produto)
@@ -134,11 +140,9 @@ async function loadClientData() {
         // SEMPRE usar API, nunca localStorage
         const clienteData = await clientesAPI.buscar(currentClientId);
         const atendimentosData = await clientesAPI.buscarAtendimentos(currentClientId);
-        const planosData = await clientesAPI.buscarPlanos(currentClientId);
         
         currentClient = clienteData;
         currentClientAtendimentos = atendimentosData;
-        currentClientPlanos = planosData;
         currentAtendimentos = atendimentosData;
         
         // Normalizar nomes de colunas do banco (snake_case) para camelCase para uso no frontend
@@ -164,7 +168,7 @@ async function loadClientData() {
         // Atualizar UI
         updateClientInfo();
         loadAtendimentos();
-        loadPlanos();
+        loadPacotes();
         loadDadosCompletos();
         
     } catch (error) {
@@ -250,22 +254,22 @@ function setupTabs() {
 function setupForms() {
     // Formulário de atendimento
     const atendimentoForm = document.getElementById('atendimentoForm');
-    atendimentoForm.addEventListener('submit', handleAtendimentoSubmit);
+    if (atendimentoForm) {
+        atendimentoForm.addEventListener('submit', handleAtendimentoSubmit);
+    }
     
-    // Formulário de plano
-    const planoForm = document.getElementById('planoForm');
-    planoForm.addEventListener('submit', handlePlanoSubmit);
+    // Formulário de pacote
+    const pacoteForm = document.getElementById('pacoteForm');
+    if (pacoteForm) {
+        pacoteForm.addEventListener('submit', handlePacoteSubmit);
+    }
     
-    // Configurar data de início como hoje
+    // Configurar data de atendimento como hoje
     const hoje = new Date().toISOString().split('T')[0];
-    document.getElementById('dataInicio').value = hoje;
-    document.getElementById('dataAtendimento').value = hoje;
-    
-    // Carregar planos disponíveis
-    loadPlanosDisponiveis();
-    
-    // Carregar planos do cliente no select
-    loadPlanosSelect();
+    const dataAtendimento = document.getElementById('dataAtendimento');
+    if (dataAtendimento) {
+        dataAtendimento.value = hoje;
+    }
 }
 
 // Função auxiliar para formatar data com fuso horário de Brasília
@@ -330,41 +334,88 @@ function loadAtendimentos() {
     }).join('');
 }
 
-// Carregar planos
-function loadPlanos() {
-    const planosList = document.getElementById('planosList');
+// Carregar pacotes
+async function loadPacotes() {
+    try {
+        currentClientPacotes = await pacotesAPI.buscarPorCliente(currentClientId);
+        renderPacotes();
+        updatePacotesBadge();
+    } catch (error) {
+        console.error('Erro ao carregar pacotes:', error);
+    }
+}
+
+// Renderizar pacotes
+function renderPacotes() {
+    const pacotesList = document.getElementById('pacotesList');
     
-    if (currentClientPlanos.length === 0) {
-        planosList.innerHTML = `
+    if (currentClientPacotes.length === 0) {
+        pacotesList.innerHTML = `
             <div class="empty-state">
-                <p>Nenhum plano vinculado a este cliente.</p>
-                <p>Clique em "Adicionar Plano" para vincular.</p>
+                <p>Nenhum pacote vinculado a este cliente.</p>
+                <p>Clique em "Adicionar Pacote" para vincular.</p>
             </div>
         `;
         return;
     }
     
-    planosList.innerHTML = currentClientPlanos.map(plano => {
-        const planoInfo = planosDisponiveis.find(p => p.id == plano.planoId);
-        const nomePlano = planoInfo ? planoInfo.nome : plano.planoId;
-        const dataInicio = formatarDataBrasil(plano.dataInicio);
-        const dataFim = formatarDataBrasil(plano.dataFim);
-        const ativo = isPlanoAtivo(plano);
+    pacotesList.innerHTML = currentClientPacotes.map(pacote => {
+        const sessoesFeitas = pacote.total_sessoes - pacote.sessoes_restantes;
+        const progresso = ((sessoesFeitas / pacote.total_sessoes) * 100).toFixed(0);
         
         return `
-            <div class="plano-card">
-                <div class="plano-header">
-                    <span class="plano-name">${nomePlano}</span>
-                    <span class="plano-status">${ativo ? 'Ativo' : 'Expirado'}</span>
+            <div class="pacote-card">
+                <div class="pacote-header">
+                    <h4>${pacote.pacote_nome || 'Pacote'}</h4>
+                    <span class="status-badge ${pacote.status.toLowerCase()}">${pacote.status}</span>
                 </div>
-                <div class="plano-details">
-                    <div class="plano-detail"><label>Início:</label><span>${dataInicio}</span></div>
-                    <div class="plano-detail"><label>Término:</label><span>${dataFim}</span></div>
-                    <div class="plano-detail"><label>Duração:</label><span>${planoInfo ? planoInfo.duracao : 6} meses</span></div>
+                <div class="pacote-details">
+                    <p><strong>Serviço:</strong> ${pacote.servico_nome || 'N/A'}</p>
+                    <p><strong>Valor:</strong> R$ ${parseFloat(pacote.pacote_valor).toFixed(2)}</p>
+                    <div class="sessoes-info">
+                        <p><strong>Sessões:</strong> ${sessoesFeitas}/${pacote.total_sessoes}</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progresso}%"></div>
+                        </div>
+                    </div>
+                    ${pacote.observacoes ? `<p><strong>Observações:</strong> ${pacote.observacoes}</p>` : ''}
+                </div>
+                <div class="pacote-actions">
+                    <button class="btn-use-sessao" onclick="usarSessao(${pacote.id})">Usar Sessão</button>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+// Atualizar badge de pacotes
+function updatePacotesBadge() {
+    const badge = document.getElementById('pacotesAtivosBadge');
+    const statsBadge = document.getElementById('planosAtivos');
+    
+    const pacotesAtivos = currentClientPacotes.filter(p => p.status === 'Ativo').length;
+    
+    if (badge) {
+        badge.textContent = pacotesAtivos > 0 ? `${pacotesAtivos} Pacote(s) Ativo(s)` : 'Sem Pacotes';
+    }
+    
+    if (statsBadge) {
+        statsBadge.textContent = pacotesAtivos;
+    }
+}
+
+// Usar uma sessão do pacote
+async function usarSessao(clientePacoteId) {
+    if (!confirm('Deseja usar uma sessão deste pacote?')) return;
+    
+    try {
+        const updated = await pacotesAPI.atualizarSessoes(clientePacoteId, true);
+        await loadPacotes();
+        alert('Sessão utilizada com sucesso!');
+    } catch (error) {
+        console.error('Erro ao usar sessão:', error);
+        alert('Erro ao usar sessão. Tente novamente.');
+    }
 }
 
 // Carregar dados completos
@@ -561,53 +612,14 @@ function updateMedidasTable(atendimentos) {
     `;
 }
 
-// Carregar planos disponíveis
-function loadPlanosDisponiveis() {
-    const planosContainer = document.getElementById('planosDisponiveis');
-    
-    planosContainer.innerHTML = planosDisponiveis.map(plano => `
-        <div class="plano-option" onclick="selectPlano('${plano.id}')">
-            <input type="radio" name="planoSelecionado" value="${plano.id}" id="plano_${plano.id}">
-            <h4>${plano.nome}</h4>
-            <p>${plano.descricao}</p>
-            <p><strong>Duração:</strong> ${plano.duracao} meses | <strong>Preço:</strong> R$ ${plano.preco.toFixed(2)}</p>
-        </div>
-    `).join('');
-}
-
-// Selecionar plano
-function selectPlano(planoId) {
-    document.querySelectorAll('.plano-option').forEach(option => {
-        option.classList.remove('selected');
-    });
-    
-    const selectedOption = document.querySelector(`#plano_${planoId}`).parentElement;
-    selectedOption.classList.add('selected');
-    document.querySelector(`#plano_${planoId}`).checked = true;
-    
-    // Atualizar data de término
-    const planoInfo = planosDisponiveis.find(p => p.id == planoId);
-    const dataInicio = new Date(document.getElementById('dataInicio').value);
-    const dataFim = new Date(dataInicio);
-    dataFim.setMonth(dataFim.getMonth() + planoInfo.duracao);
-    
-    document.getElementById('dataFim').value = dataFim.toISOString().split('T')[0];
-}
-
-// Carregar planos do cliente no select
-function loadPlanosSelect() {
-    const select = document.getElementById('planoVinculado');
-    
-    // Manter opção de atendimento único
-    select.innerHTML = '<option value="">Atendimento Único (Fora de Plano)</option>';
-    
-    // Adicionar planos ativos
-    const planosAtivos = currentClientPlanos.filter(p => isPlanoAtivo(p));
-    planosAtivos.forEach(plano => {
-        const planoInfo = planosDisponiveis.find(p => p.id == plano.planoId);
-        const nomePlano = planoInfo ? planoInfo.nome : plano.planoId;
-        select.innerHTML += `<option value="${plano.id}">${nomePlano}</option>`;
-    });
+// Função auxiliar para formatar data com fuso horário de Brasília
+function formatarDataBrasil(dataString) {
+    if (!dataString) return '--';
+    const dataObj = new Date(dataString);
+    if (isNaN(dataObj.getTime())) return '--';
+    const offsetBrasil = 3 * 60 * 60 * 1000;
+    const dataBrasil = new Date(dataObj.getTime() + offsetBrasil);
+    return dataBrasil.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 }
 
 // Abrir modal de novo atendimento
@@ -616,9 +628,59 @@ function openNovoAtendimento() {
     carregarServicosAtendimento();
 }
 
-// Abrir modal de novo plano
-function openNovoPlano() {
-    document.getElementById('modalPlano').classList.add('active');
+// Abrir modal de novo pacote
+async function openNovoPacote() {
+    document.getElementById('modalPacote').classList.add('active');
+    await carregarPacotesDisponiveis();
+}
+
+// Carregar pacotes disponíveis para adicionar ao cliente
+async function carregarPacotesDisponiveis() {
+    try {
+        pacotesDisponiveis = await pacotesAPI.listar();
+        
+        const select = document.getElementById('pacoteSelecionado');
+        select.innerHTML = '<option value="">Selecione um pacote</option>';
+        
+        pacotesDisponiveis.forEach(pacote => {
+            select.innerHTML += `
+                <option value="${pacote.id}">
+                    ${pacote.nome} - ${pacote.numero_sessoes} sessões - R$ ${parseFloat(pacote.valor).toFixed(2)}
+                </option>
+            `;
+        });
+    } catch (error) {
+        console.error('Erro ao carregar pacotes:', error);
+    }
+}
+
+// Lidar com envio de pacote
+async function handlePacoteSubmit(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const pacoteId = formData.get('pacoteSelecionado');
+    const observacoes = formData.get('observacoesPacote');
+    
+    if (!pacoteId) {
+        alert('Selecione um pacote');
+        return;
+    }
+    
+    try {
+        await pacotesAPI.vincularAoCliente(currentClientId, {
+            pacoteId: parseInt(pacoteId),
+            observacoes
+        });
+        
+        closeModal('modalPacote');
+        e.target.reset();
+        await loadPacotes();
+        alert('Pacote vinculado com sucesso!');
+    } catch (error) {
+        console.error('Erro ao vincular pacote:', error);
+        alert('Erro ao vincular pacote. Tente novamente.');
+    }
 }
 
 // Fechar modal
@@ -1263,10 +1325,9 @@ function coletarServicosAtendimento() {
 // Tornar funções globais
 window.goBack = goBack;
 window.openNovoAtendimento = openNovoAtendimento;
-window.openNovoPlano = openNovoPlano;
+window.openNovoPacote = openNovoPacote;
 window.closeModal = closeModal;
 window.selectPlano = selectPlano;
-window.editCliente = editCliente;
 window.highlightZone = highlightZone;
 window.unhighlightZone = unhighlightZone;
 window.selectZone = selectZone;
@@ -1274,4 +1335,5 @@ window.setZoneColor = setZoneColor;
 window.resetZones = resetZones;
 window.carregarServicosAtendimento = carregarServicosAtendimento;
 window.coletarServicosAtendimento = coletarServicosAtendimento;
+window.usarSessao = usarSessao;
 
