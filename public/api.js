@@ -119,6 +119,48 @@ const planosAPI = {
     }
 };
 
+// API de Serviços
+const servicosAPI = {
+    async listar() {
+        return apiRequest('/servicos');
+    },
+    
+    async buscar(id) {
+        return apiRequest(`/servicos/${id}`);
+    },
+    
+    async criar(servico) {
+        return apiRequest('/servicos', {
+            method: 'POST',
+            body: JSON.stringify(servico)
+        });
+    },
+    
+    async atualizar(id, servico) {
+        return apiRequest(`/servicos/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(servico)
+        });
+    },
+    
+    async excluir(id) {
+        return apiRequest(`/servicos/${id}`, {
+            method: 'DELETE'
+        });
+    },
+    
+    async buscarPorCliente(clienteId) {
+        return apiRequest(`/clientes/${clienteId}/servicos`);
+    },
+    
+    async vincularAoCliente(clienteId, servicoIds) {
+        return apiRequest(`/clientes/${clienteId}/servicos`, {
+            method: 'POST',
+            body: JSON.stringify({ servicoIds })
+        });
+    }
+};
+
 // API de Banco de Dados
 const databaseAPI = {
     async inicializar() {
@@ -148,5 +190,6 @@ window.authAPI = authAPI;
 window.clientesAPI = clientesAPI;
 window.atendimentosAPI = atendimentosAPI;
 window.planosAPI = planosAPI;
+window.servicosAPI = servicosAPI;
 window.databaseAPI = databaseAPI;
 window.isApiAvailable = isApiAvailable;

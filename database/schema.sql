@@ -103,6 +103,14 @@ CREATE TABLE IF NOT EXISTS servicos (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela de Cliente_Serviços (relacionamento many-to-many)
+CREATE TABLE IF NOT EXISTS cliente_servicos (
+    id SERIAL PRIMARY KEY,
+    cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
+    servico_id INTEGER REFERENCES servicos(id) ON DELETE CASCADE,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Índices para melhorar performance
 CREATE INDEX IF NOT EXISTS idx_clientes_nome ON clientes(nome);
 CREATE INDEX IF NOT EXISTS idx_clientes_email ON clientes(email);

@@ -1,6 +1,7 @@
 // Variáveis globais
 let currentStep = 1;
 const totalSteps = 5;
+let servicosDisponiveis = [];
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.includes('cadastro.html')) {
         updateProgressBar();
         setupFormValidation();
+        carregarServicos();
     }
 });
 
@@ -299,6 +301,12 @@ async function saveClientData(clientData) {
         clientData.id = savedClient.id;
         localStorage.setItem('lastCreatedClientId', savedClient.id);
         
+        // Salvar serviços selecionados
+        const servicosIds = coletarServicosSelecionados();
+        if (servicosIds.length > 0) {
+            await vincularServicosAoCliente(savedClient.id, servicosIds);
+        }
+        
         return;
     } catch (error) {
         console.error('❌ Erro ao criar cliente via API:', error);
@@ -319,6 +327,65 @@ async function saveClientData(clientData) {
     localStorage.setItem('lastCreatedClientId', clientData.id);
     
     console.log('Cliente salvo no localStorage');
+}
+
+// Função para vincular serviços ao cliente
+async function vincularServicosAoCliente(clienteId, servicosIds) {
+    try {
+        await servicosAPI.vincularAoCliente(clienteId, servicosIds);
+        console.log('Serviços vinculados com sucesso');
+    } catch (error) {
+        console.error('Erro ao vincular serviços:', error);
+    }
+}
+
+// Função para carregar serviços do banco de dados
+async function carregarServicos() {
+    try {
+        const servicos = await servicosAPI.listar();
+        servicosDisponiveis = servicos;
+        renderizarServicos();
+    } catch (error) {
+        console.error('Erro ao carregar serviços:', error);
+    }
+}
+
+// Função para renderizar serviços no formulário
+function renderizarServicos() {
+    const servicosContainer = document.getElementById('servicosContainer');
+    if (!servicosContainer) return;
+
+    servicosContainer.innerHTML = '';
+    
+    if (servicosDisponiveis.length === 0) {
+        servicosContainer.innerHTML = '<p class="empty-state">Nenhum serviço disponível. Crie serviços primeiro no dashboard.</p>';
+        return;
+    }
+
+    servicosDisponiveis.forEach(servico => {
+        const div = document.createElement('div');
+        div.className = 'servico-item';
+        div.innerHTML = `
+            <label class="servico-label">
+                <input type="checkbox" 
+                       name="servicos" 
+                       value="${servico.id}" 
+                       class="servico-checkbox"
+                       data-nome="${servico.nome}"
+                       data-valor="${servico.valor_medio}">
+                <span class="servico-nome">${servico.nome}</span>
+                <span class="servico-valor">R$ ${parseFloat(servico.valor_medio).toFixed(2)}</span>
+            </label>
+        `;
+        servicosContainer.appendChild(div);
+    });
+}
+
+// Função para coletar serviços selecionados
+function coletarServicosSelecionados() {
+    const checkboxes = document.querySelectorAll('input[name="servicos"]:checked');
+    const servicosIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    return servicosIds;
 }
 
 // Máscaras de input
