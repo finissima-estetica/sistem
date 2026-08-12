@@ -744,53 +744,6 @@ async function handleAtendimentoSubmit(e) {
     alert('Atendimento registrado com sucesso!');
 }
 
-// Lidar com envio de plano
-async function handlePlanoSubmit(e) {
-    e.preventDefault();
-    
-    const planoSelecionado = document.querySelector('input[name="planoSelecionado"]:checked');
-    if (!planoSelecionado) {
-        alert('Selecione um plano para vincular.');
-        return;
-    }
-    
-    const formData = new FormData(e.target);
-    const plano = {
-        id: Date.now(),
-        clienteId: currentClientId,
-        planoId: planoSelecionado.value,
-        dataInicio: formData.get('dataInicio'),
-        dataFim: formData.get('dataFim'),
-        observacoes: formData.get('observacoesPlano')
-    };
-    
-    // Salvar via API
-    try {
-        const savedPlano = await clientesAPI.criarPlano(plano);
-        
-        // Atualizar lista local com o ID retornado
-        plano.id = savedPlano.id;
-        currentClientPlanos.push(plano);
-    } catch (error) {
-        console.error('❌ Erro ao salvar plano via API:', error);
-        alert('Erro ao salvar plano. Tente novamente.');
-        return;
-    }
-    
-    // Atualizar lista local
-    
-    // Atualizar UI
-    loadPlanos();
-    updateClientInfo();
-    loadPlanosSelect();
-    
-    // Fechar modal e limpar formulário
-    closeModal('modalPlano');
-    e.target.reset();
-    
-    alert('Plano vinculado com sucesso!');
-}
-
 // Voltar ao dashboard
 function goBack() {
     window.location.href = 'index.html';
