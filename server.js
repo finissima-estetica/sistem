@@ -234,6 +234,24 @@ async function runMigrations() {
             console.log('✅ Tabela cliente_pacotes criada');
         } else {
             console.log('ℹ️ Tabela cliente_pacotes já existe');
+            
+            // Verificar se tem colunas antigas data_inicio e data_fim
+            const columnsCheck = await pool.query(`
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = 'cliente_pacotes' 
+                AND column_name IN ('data_inicio', 'data_fim')
+            `);
+            
+            if (columnsCheck.rows.length > 0) {
+                console.log('➕ Removendo colunas antigas data_inicio e data_fim...');
+                await pool.query(`
+                    ALTER TABLE cliente_pacotes 
+                    DROP COLUMN IF EXISTS data_inicio,
+                    DROP COLUMN IF EXISTS data_fim
+                `);
+                console.log('✅ Colunas antigas removidas');
+            }
         }
 
         // Verificar se a coluna tipo_atendimento pode ser NULL
