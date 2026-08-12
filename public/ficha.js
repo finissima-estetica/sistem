@@ -812,6 +812,19 @@ async function handleAtendimentoSubmit(e) {
 }
 
 // Voltar ao dashboard
+function goBack() {
+    window.location.href = 'index.html';
+}
+
+// Editar cliente (placeholder)
+function editCliente() {
+    alert('Funcionalidade de edição será implementada em breve.');
+}
+
+// Função para ativar/desativar cliente
+async function toggleClientStatus() {
+    if (!currentClient) {
+        alert('Dados do cliente não carregados. Tente novamente.');
         return;
     }
     
