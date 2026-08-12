@@ -120,8 +120,6 @@ CREATE TABLE IF NOT EXISTS cliente_pacotes (
     id SERIAL PRIMARY KEY,
     cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
     pacote_id INTEGER REFERENCES pacotes(id) ON DELETE CASCADE,
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
     sessoes_restantes INTEGER NOT NULL,
     observacoes TEXT,
     status VARCHAR(20) DEFAULT 'Ativo',

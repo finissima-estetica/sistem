@@ -205,12 +205,10 @@ async function handleSubmit(e) {
     const vincularPacote = document.getElementById('vincularPacote').value;
     if (vincularPacote === 'sim') {
         const pacoteId = document.getElementById('pacoteSelecionado').value;
-        const dataInicio = document.getElementById('dataInicioPacote').value;
-        const dataFim = document.getElementById('dataFimPacote').value;
         const observacoes = document.getElementById('observacoesPacote').value;
         
-        if (pacoteId && dataInicio && dataFim) {
-            await vincularPacoteAoCliente(formData.id, pacoteId, dataInicio, dataFim, observacoes);
+        if (pacoteId) {
+            await vincularPacoteAoCliente(formData.id, pacoteId, observacoes);
         }
     }
     
@@ -221,12 +219,10 @@ async function handleSubmit(e) {
 }
 
 // Função para vincular pacote ao cliente
-async function vincularPacoteAoCliente(clienteId, pacoteId, dataInicio, dataFim, observacoes) {
+async function vincularPacoteAoCliente(clienteId, pacoteId, observacoes) {
     try {
         await pacotesAPI.vincularAoCliente(clienteId, {
             pacoteId: parseInt(pacoteId),
-            dataInicio,
-            dataFim,
             observacoes
         });
         console.log('Pacote vinculado com sucesso');
@@ -353,9 +349,6 @@ function togglePacoteOptions() {
     
     if (vincularPacote === 'sim') {
         pacoteOptions.style.display = 'block';
-        // Definir data de início como hoje
-        const hoje = new Date().toISOString().split('T')[0];
-        document.getElementById('dataInicioPacote').value = hoje;
     } else {
         pacoteOptions.style.display = 'none';
     }

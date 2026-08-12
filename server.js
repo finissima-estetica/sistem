@@ -225,8 +225,6 @@ async function runMigrations() {
                     id SERIAL PRIMARY KEY,
                     cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
                     pacote_id INTEGER REFERENCES pacotes(id) ON DELETE CASCADE,
-                    data_inicio DATE NOT NULL,
-                    data_fim DATE NOT NULL,
                     sessoes_restantes INTEGER NOT NULL,
                     observacoes TEXT,
                     status VARCHAR(20) DEFAULT 'Ativo',
@@ -896,7 +894,7 @@ app.get('/api/clientes/:id/pacotes', async (req, res) => {
 app.post('/api/clientes/:id/pacotes', async (req, res) => {
     try {
         const { id } = req.params;
-        const { pacoteId, dataInicio, dataFim, observacoes } = req.body;
+        const { pacoteId, observacoes } = req.body;
         
         // Buscar informações do pacote para obter número de sessões
         const pacoteResult = await pool.query(
@@ -911,10 +909,10 @@ app.post('/api/clientes/:id/pacotes', async (req, res) => {
         const numeroSessoes = pacoteResult.rows[0].numero_sessoes;
         
         const result = await pool.query(`
-            INSERT INTO cliente_pacotes (cliente_id, pacote_id, data_inicio, data_fim, sessoes_restantes, observacoes, status)
-            VALUES ($1, $2, $3, $4, $5, $6, 'Ativo')
+            INSERT INTO cliente_pacotes (cliente_id, pacote_id, sessoes_restantes, observacoes, status)
+            VALUES ($1, $2, $3, $4, 'Ativo')
             RETURNING *
-        `, [id, pacoteId, dataInicio, dataFim, numeroSessoes, observacoes || null]);
+        `, [id, pacoteId, numeroSessoes, observacoes || null]);
         
         res.status(201).json(result.rows[0]);
     } catch (error) {
