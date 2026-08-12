@@ -2,6 +2,7 @@
 let currentStep = 1;
 const totalSteps = 5;
 let servicosDisponiveis = [];
+let pacotesDisponiveis = [];
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateProgressBar();
         setupFormValidation();
         carregarServicos();
+        carregarPacotes();
     }
 });
 
@@ -199,14 +201,16 @@ async function handleSubmit(e) {
     // Salvar no banco de dados ou localStorage
     await saveClientData(formData);
     
-    // Verificar se deve vincular plano
-    const vincularPlano = document.getElementById('vincularPlano').value;
-    if (vincularPlano === 'sim') {
-        const planoId = document.getElementById('planoSelecionado').value;
-        const dataInicio = document.getElementById('dataInicioPlano').value;
+    // Verificar se deve vincular pacote
+    const vincularPacote = document.getElementById('vincularPacote').value;
+    if (vincularPacote === 'sim') {
+        const pacoteId = document.getElementById('pacoteSelecionado').value;
+        const dataInicio = document.getElementById('dataInicioPacote').value;
+        const dataFim = document.getElementById('dataFimPacote').value;
+        const observacoes = document.getElementById('observacoesPacote').value;
         
-        if (planoId && dataInicio) {
-            vincularPlanoAoCliente(formData.id, planoId, dataInicio);
+        if (pacoteId && dataInicio && dataFim) {
+            await vincularPacoteAoCliente(formData.id, pacoteId, dataInicio, dataFim, observacoes);
         }
     }
     
@@ -216,53 +220,18 @@ async function handleSubmit(e) {
     window.location.href = 'index.html?reload=true';
 }
 
-// Função para vincular plano ao cliente
-function vincularPlanoAoCliente(clienteId, planoId, dataInicio) {
-    const planosInfo = {
-        'plano_limpeza': { duracao: 6, nome: 'Plano Limpeza de Pele' },
-        'plano_peeling': { duracao: 6, nome: 'Plano Peeling Químico' },
-        'plano_botox': { duracao: 6, nome: 'Plano Botox' },
-        'plano_preenchimento': { duracao: 6, nome: 'Plano Preenchimento Facial' },
-        'plano_laser': { duracao: 6, nome: 'Plano Laser' },
-        'plano_drenagem': { duracao: 6, nome: 'Plano Drenagem Linfática' },
-        'plano_massagem': { duracao: 6, nome: 'Plano Massagem' },
-        'plano_carboxiterapia': { duracao: 6, nome: 'Plano Carboxiterapia' },
-        'plano_microneedling': { duracao: 6, nome: 'Plano Microneedling' },
-        'plano_completo': { duracao: 6, nome: 'Plano Completo' }
-    };
-    
-    const planoInfo = planosInfo[planoId];
-    const dataInicioDate = new Date(dataInicio);
-    const dataFim = new Date(dataInicioDate);
-    dataFim.setMonth(dataFim.getMonth() + planoInfo.duracao);
-    
-    const plano = {
-        id: Date.now(),
-        clienteId: clienteId,
-        planoId: planoId,
-        dataInicio: dataInicio,
-        dataFim: dataFim.toISOString().split('T')[0],
-        observacoes: ''
-    };
-    
-    // Salvar no localStorage
-    const planos = JSON.parse(localStorage.getItem('planos') || '[]');
-    planos.push(plano);
-    localStorage.setItem('planos', JSON.stringify(planos));
-}
-
-// Função para mostrar/esconder opções de plano
-function togglePlanoOptions() {
-    const vincularPlano = document.getElementById('vincularPlano').value;
-    const planoOptions = document.getElementById('planoOptions');
-    
-    if (vincularPlano === 'sim') {
-        planoOptions.style.display = 'block';
-        // Definir data de início como hoje
-        const hoje = new Date().toISOString().split('T')[0];
-        document.getElementById('dataInicioPlano').value = hoje;
-    } else {
-        planoOptions.style.display = 'none';
+// Função para vincular pacote ao cliente
+async function vincularPacoteAoCliente(clienteId, pacoteId, dataInicio, dataFim, observacoes) {
+    try {
+        await pacotesAPI.vincularAoCliente(clienteId, {
+            pacoteId: parseInt(pacoteId),
+            dataInicio,
+            dataFim,
+            observacoes
+        });
+        console.log('Pacote vinculado com sucesso');
+    } catch (error) {
+        console.error('Erro ao vincular pacote:', error);
     }
 }
 
@@ -347,6 +316,48 @@ async function carregarServicos() {
         renderizarServicos();
     } catch (error) {
         console.error('Erro ao carregar serviços:', error);
+    }
+}
+
+// Função para carregar pacotes do banco de dados
+async function carregarPacotes() {
+    try {
+        const pacotes = await pacotesAPI.listar();
+        pacotesDisponiveis = pacotes;
+        renderizarPacotesSelect();
+    } catch (error) {
+        console.error('Erro ao carregar pacotes:', error);
+    }
+}
+
+// Função para renderizar pacotes no select
+function renderizarPacotesSelect() {
+    const select = document.getElementById('pacoteSelecionado');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Selecione um pacote</option>';
+    
+    pacotesDisponiveis.forEach(pacote => {
+        select.innerHTML += `
+            <option value="${pacote.id}">
+                ${pacote.nome} - ${pacote.numero_sessoes} sessões - R$ ${parseFloat(pacote.valor).toFixed(2)}
+            </option>
+        `;
+    });
+}
+
+// Função para mostrar/esconder opções de pacote
+function togglePacoteOptions() {
+    const vincularPacote = document.getElementById('vincularPacote').value;
+    const pacoteOptions = document.getElementById('pacoteOptions');
+    
+    if (vincularPacote === 'sim') {
+        pacoteOptions.style.display = 'block';
+        // Definir data de início como hoje
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataInicioPacote').value = hoje;
+    } else {
+        pacoteOptions.style.display = 'none';
     }
 }
 
@@ -435,7 +446,5 @@ document.addEventListener('DOMContentLoaded', () => {
 window.goBack = goBack;
 window.nextStep = nextStep;
 window.prevStep = prevStep;
-window.togglePlanoOptions = togglePlanoOptions;
-
-
-
+window.togglePacoteOptions = togglePacoteOptions;
+window.coletarServicosSelecionados = coletarServicosSelecionados;

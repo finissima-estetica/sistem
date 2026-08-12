@@ -211,6 +211,33 @@ async function runMigrations() {
             console.log('ℹ️ Tabela pacotes já existe');
         }
 
+        // Verificar se a tabela cliente_pacotes existe
+        const clientePacotesCheck = await pool.query(`
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_name = 'cliente_pacotes'
+        `);
+
+        if (clientePacotesCheck.rows.length === 0) {
+            console.log('➕ Criando tabela cliente_pacotes...');
+            await pool.query(`
+                CREATE TABLE cliente_pacotes (
+                    id SERIAL PRIMARY KEY,
+                    cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
+                    pacote_id INTEGER REFERENCES pacotes(id) ON DELETE CASCADE,
+                    data_inicio DATE NOT NULL,
+                    data_fim DATE NOT NULL,
+                    sessoes_restantes INTEGER NOT NULL,
+                    observacoes TEXT,
+                    status VARCHAR(20) DEFAULT 'Ativo',
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+            console.log('✅ Tabela cliente_pacotes criada');
+        } else {
+            console.log('ℹ️ Tabela cliente_pacotes já existe');
+        }
+
         // Verificar se a coluna tipo_atendimento pode ser NULL
         const tipoAtendimentoCheck = await pool.query(`
             SELECT column_name, is_nullable 
@@ -843,6 +870,56 @@ app.delete('/api/pacotes/:id', async (req, res) => {
     } catch (error) {
         console.error('Erro ao desativar pacote:', error);
         res.status(500).json({ error: 'Erro ao desativar pacote' });
+    }
+});
+
+// Endpoint para buscar pacotes de um cliente específico
+app.get('/api/clientes/:id/pacotes', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(`
+            SELECT cp.*, p.nome as pacote_nome, p.numero_sessoes as total_sessoes, p.valor as pacote_valor, s.nome as servico_nome
+            FROM cliente_pacotes cp
+            LEFT JOIN pacotes p ON cp.pacote_id = p.id
+            LEFT JOIN servicos s ON p.servico_id = s.id
+            WHERE cp.cliente_id = $1
+            ORDER BY cp.data_criacao DESC
+        `, [id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Erro ao buscar pacotes do cliente:', error);
+        res.status(500).json({ error: 'Erro ao buscar pacotes do cliente' });
+    }
+});
+
+// Endpoint para vincular pacote a um cliente
+app.post('/api/clientes/:id/pacotes', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { pacoteId, dataInicio, dataFim, observacoes } = req.body;
+        
+        // Buscar informações do pacote para obter número de sessões
+        const pacoteResult = await pool.query(
+            'SELECT numero_sessoes FROM pacotes WHERE id = $1',
+            [pacoteId]
+        );
+        
+        if (pacoteResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Pacote não encontrado' });
+        }
+        
+        const numeroSessoes = pacoteResult.rows[0].numero_sessoes;
+        
+        const result = await pool.query(`
+            INSERT INTO cliente_pacotes (cliente_id, pacote_id, data_inicio, data_fim, sessoes_restantes, observacoes, status)
+            VALUES ($1, $2, $3, $4, $5, $6, 'Ativo')
+            RETURNING *
+        `, [id, pacoteId, dataInicio, dataFim, numeroSessoes, observacoes || null]);
+        
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao vincular pacote ao cliente:', error);
+        res.status(500).json({ error: 'Erro ao vincular pacote ao cliente' });
     }
 });
 

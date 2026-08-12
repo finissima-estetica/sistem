@@ -147,6 +147,17 @@ const pacotesAPI = {
         return apiRequest(`/pacotes/${id}`, {
             method: 'DELETE'
         });
+    },
+    
+    async buscarPorCliente(clienteId) {
+        return apiRequest(`/clientes/${clientId}/pacotes`);
+    },
+    
+    async vincularAoCliente(clienteId, pacoteData) {
+        return apiRequest(`/clientes/${clientId}/pacotes`, {
+            method: 'POST',
+            body: JSON.stringify(pacoteData)
+        });
     }
 };
 

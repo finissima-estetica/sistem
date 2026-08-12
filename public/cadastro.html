@@ -262,34 +262,32 @@
                         </div>
 
                         <div class="form-section">
-                            <h3>Vincular Plano (Opcional)</h3>
+                            <h3>Vincular Pacote (Opcional)</h3>
                             <div class="form-group">
-                                <label for="vincularPlano">Deseja vincular um plano ao cadastro?</label>
-                                <select id="vincularPlano" name="vincularPlano" onchange="togglePlanoOptions()">
-                                    <option value="">Não vincular plano agora</option>
-                                    <option value="sim">Sim, vincular plano</option>
+                                <label for="vincularPacote">Deseja vincular um pacote ao cadastro?</label>
+                                <select id="vincularPacote" name="vincularPacote" onchange="togglePacoteOptions()">
+                                    <option value="">Não vincular pacote agora</option>
+                                    <option value="sim">Sim, vincular pacote</option>
                                 </select>
                             </div>
-                            <div id="planoOptions" style="display: none;">
+                            <div id="pacoteOptions" style="display: none;">
                                 <div class="form-group">
-                                    <label for="planoSelecionado">Selecione o plano:</label>
-                                    <select id="planoSelecionado" name="planoSelecionado">
-                                        <option value="">Selecione um plano</option>
-                                        <option value="plano_limpeza">Plano Limpeza de Pele (6 meses)</option>
-                                        <option value="plano_peeling">Plano Peeling Químico (6 meses)</option>
-                                        <option value="plano_botox">Plano Botox (6 meses)</option>
-                                        <option value="plano_preenchimento">Plano Preenchimento Facial (6 meses)</option>
-                                        <option value="plano_laser">Plano Laser (6 meses)</option>
-                                        <option value="plano_drenagem">Plano Drenagem Linfática (6 meses)</option>
-                                        <option value="plano_massagem">Plano Massagem (6 meses)</option>
-                                        <option value="plano_carboxiterapia">Plano Carboxiterapia (6 meses)</option>
-                                        <option value="plano_microneedling">Plano Microneedling (6 meses)</option>
-                                        <option value="plano_completo">Plano Completo (6 meses)</option>
+                                    <label for="pacoteSelecionado">Selecione o pacote:</label>
+                                    <select id="pacoteSelecionado" name="pacoteSelecionado">
+                                        <option value="">Selecione um pacote</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="dataInicioPlano">Data de início do plano:</label>
-                                    <input type="date" id="dataInicioPlano" name="dataInicioPlano">
+                                    <label for="dataInicioPacote">Data de início do pacote:</label>
+                                    <input type="date" id="dataInicioPacote" name="dataInicioPacote">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dataFimPacote">Data de fim do pacote:</label>
+                                    <input type="date" id="dataFimPacote" name="dataFimPacote">
+                                </div>
+                                <div class="form-group">
+                                    <label for="observacoesPacote">Observações do pacote:</label>
+                                    <textarea id="observacoesPacote" name="observacoesPacote" rows="3"></textarea>
                                 </div>
                             </div>
                         </div>

@@ -168,31 +168,21 @@ async function loadClients() {
         return;
     }
     
-    // Carregar planos para verificar status
-    let planos = [];
-    if (useLocalStorage) {
-        planos = JSON.parse(localStorage.getItem('planos') || '[]');
-    } else {
+    // Carregar pacotes para verificar status
+    let pacotes = [];
+    if (!useLocalStorage) {
         try {
-            // Tenta carregar planos da API
-            // Por enquanto, vamos usar localStorage para planos
-            planos = JSON.parse(localStorage.getItem('planos') || '[]');
+            // Tenta carregar pacotes da API
+            pacotes = await pacotesAPI.listar();
         } catch (error) {
-            console.log('Erro ao carregar planos da API:', error);
-            planos = JSON.parse(localStorage.getItem('planos') || '[]');
+            console.log('Erro ao carregar pacotes da API:', error);
         }
     }
     
     clientsList.innerHTML = clients.map(client => {
-        const clientePlanos = planos.filter(p => p.clienteId == client.id);
-        const planosAtivos = clientePlanos.filter(p => {
-            const dataFim = new Date(p.dataFim);
-            return dataFim >= new Date();
-        });
-        
-        const planoBadge = planosAtivos.length > 0 
-            ? `<span class="plano-badge">Plano Ativo</span>` 
-            : `<span class="no-plano-badge">Sem Plano</span>`;
+        // Para mostrar se tem pacote ativo, precisamos buscar pacotes do cliente
+        // Por enquanto, vamos mostrar sem badge de pacote
+        const pacoteBadge = ''; // Será implementado depois com API de pacotes do cliente
         
         return `
             <div class="client-card">
@@ -203,7 +193,7 @@ async function loadClients() {
                     <p><strong>Cadastro:</strong> ${formatDate(client.dataCadastro)}</p>
                     <div class="client-badges">
                         <span class="status-badge ${client.status ? client.status.toLowerCase() : 'ativo'}">${client.status || 'Ativo'}</span>
-                        ${planoBadge}
+                        ${pacoteBadge}
                     </div>
                 </div>
                 <div class="client-actions">
