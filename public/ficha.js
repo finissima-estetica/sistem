@@ -12,7 +12,7 @@ if (typeof servicosAPI === 'undefined') {
     console.error('servicosAPI não está disponível. Verifique se api.js foi carregado.');
 }
 
-// Verificar se pacotesAPI está disponível globalmente
+// Verificar if pacotesAPI está disponível globalmente
 if (typeof pacotesAPI === 'undefined') {
     console.error('pacotesAPI não está disponível. Verifique se api.js foi carregado.');
 }
@@ -319,11 +319,21 @@ function loadAtendimentos() {
 // Carregar pacotes
 async function loadPacotes() {
     try {
+        console.log('🔌 Carregando pacotes do cliente:', currentClientId);
         currentClientPacotes = await pacotesAPI.buscarPorCliente(currentClientId);
+        console.log('📊 Pacotes carregados:', currentClientPacotes);
         renderPacotes();
         updatePacotesBadge();
     } catch (error) {
-        console.error('Erro ao carregar pacotes:', error);
+        console.error('❌ Erro ao carregar pacotes:', error);
+        const pacotesList = document.getElementById('pacotesList');
+        if (pacotesList) {
+            pacotesList.innerHTML = `
+                <div class="empty-state">
+                    <p>Erro ao carregar pacotes: ${error.message}</p>
+                </div>
+            `;
+        }
     }
 }
 
@@ -619,9 +629,16 @@ async function openNovoPacote() {
 // Carregar pacotes disponíveis para adicionar ao cliente
 async function carregarPacotesDisponiveis() {
     try {
+        console.log('🔌 Carregando pacotes disponíveis...');
         pacotesDisponiveis = await pacotesAPI.listar();
+        console.log('📊 Pacotes disponíveis:', pacotesDisponiveis);
         
         const select = document.getElementById('pacoteSelecionado');
+        if (!select) {
+            console.error('❌ Elemento pacoteSelecionado não encontrado');
+            return;
+        }
+        
         select.innerHTML = '<option value="">Selecione um pacote</option>';
         
         pacotesDisponiveis.forEach(pacote => {
@@ -632,7 +649,8 @@ async function carregarPacotesDisponiveis() {
             `;
         });
     } catch (error) {
-        console.error('Erro ao carregar pacotes:', error);
+        console.error('❌ Erro ao carregar pacotes:', error);
+        alert('Erro ao carregar pacotes: ' + error.message);
     }
 }
 
@@ -650,18 +668,25 @@ async function handlePacoteSubmit(e) {
     }
     
     try {
+        console.log('🔌 Vinculando pacote ao cliente:', currentClientId);
+        console.log('📦 Pacote ID:', pacoteId);
+        console.log('📝 Observações:', observacoes);
+        
         await pacotesAPI.vincularAoCliente(currentClientId, {
             pacoteId: parseInt(pacoteId),
             observacoes
         });
+        
+        console.log('✅ Pacote vinculado com sucesso');
         
         closeModal('modalPacote');
         e.target.reset();
         await loadPacotes();
         alert('Pacote vinculado com sucesso!');
     } catch (error) {
-        console.error('Erro ao vincular pacote:', error);
-        alert('Erro ao vincular pacote. Tente novamente.');
+        console.error('❌ Erro ao vincular pacote:', error);
+        console.error('Detalhes do erro:', error.message);
+        alert('Erro ao vincular pacote: ' + error.message);
     }
 }
 
