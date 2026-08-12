@@ -790,15 +790,23 @@ app.post('/api/servicos', async (req, res) => {
     try {
         const servico = req.body;
         
+        // Normalizar camelCase para snake_case
+        const normalizado = {
+            nome: servico.nome,
+            valor_medio: servico.valor_medio || servico.valorMedio,
+            descricao: servico.descricao || null,
+            ativo: servico.ativo !== false
+        };
+        
         const result = await pool.query(`
             INSERT INTO servicos (nome, valor_medio, descricao, ativo)
             VALUES ($1, $2, $3, $4)
             RETURNING *
         `, [
-            servico.nome,
-            servico.valorMedio,
-            servico.descricao || null,
-            servico.ativo !== false
+            normalizado.nome,
+            normalizado.valor_medio,
+            normalizado.descricao,
+            normalizado.ativo
         ]);
         
         res.status(201).json(result.rows[0]);
