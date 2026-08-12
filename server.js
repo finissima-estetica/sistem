@@ -583,6 +583,7 @@ app.post('/api/atendimentos', async (req, res) => {
         const camelToSnake = {
             clienteId: 'cliente_id',
             planoId: 'plano_id',
+            clientePacoteId: 'cliente_pacote_id',
             data: 'data_atendimento',
             observacoes: 'observacoes',
             bracoDireito: 'braco_direito',
