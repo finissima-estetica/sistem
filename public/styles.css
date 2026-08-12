@@ -1735,8 +1735,8 @@ body {
     gap: 10px;
 }
 
-.btn-use-sessao {
-    background: #28a745;
+.btn-detalhes {
+    background: #667eea;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -1747,13 +1747,8 @@ body {
     transition: background 0.3s;
 }
 
-.btn-use-sessao:hover {
-    background: #218838;
-}
-
-.btn-use-sessao:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
+.btn-detalhes:hover {
+    background: #5568d3;
 }
 
 /* Desktop Layout - preencher tela horizontalmente */
