@@ -41,6 +41,7 @@
                 <h2>Clientes Cadastrados</h2>
                 <div class="header-buttons">
                     <button class="btn-servicos" onclick="openServicosModal()">⚙️ Serviços</button>
+                    <button class="btn-pacotes" onclick="openPacotesModal()">📦 Pacotes</button>
                     <button class="btn-new-client" onclick="goToCadastro()">+ Novo Cliente</button>
                 </div>
             </div>
@@ -75,6 +76,67 @@
                         <p>Clique em "Novo Serviço" para começar.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pacotes -->
+    <div class="modal" id="modalPacotes">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Gerenciar Pacotes</h3>
+                <button class="btn-close" onclick="closeModal('modalPacotes')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="pacotes-header">
+                    <button class="btn-add-pacote" onclick="openNovoPacote()">+ Novo Pacote</button>
+                </div>
+                <div class="pacotes-list" id="pacotesList">
+                    <div class="empty-state">
+                        <p>Nenhum pacote cadastrado ainda.</p>
+                        <p>Clique em "Novo Pacote" para começar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Novo/Editar Pacote -->
+    <div class="modal" id="modalPacote">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="pacoteModalTitle">Novo Pacote</h3>
+                <button class="btn-close" onclick="closeModal('modalPacote')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="pacoteForm">
+                    <div class="form-group">
+                        <label for="pacoteNome">Nome do Pacote *</label>
+                        <input type="text" id="pacoteNome" name="pacoteNome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pacoteServico">Serviço Base *</label>
+                        <select id="pacoteServico" name="pacoteServico" required>
+                            <option value="">Selecione um serviço</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pacoteSessoes">Número de Sessões *</label>
+                        <input type="number" id="pacoteSessoes" name="pacoteSessoes" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pacoteValor">Valor do Pacote (R$) *</label>
+                        <input type="number" id="pacoteValor" name="pacoteValor" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pacoteDescricao">Descrição</label>
+                        <textarea id="pacoteDescricao" name="pacoteDescricao" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeModal('modalPacote')">Cancelar</button>
+                        <button type="submit" class="btn-submit">Salvar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -121,5 +183,6 @@
         });
     </script>
     <script src="servicos.js" defer></script>
+    <script src="pacotes.js" defer></script>
 </body>
 </html>

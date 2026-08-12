@@ -279,6 +279,19 @@ function editClient(id) {
     alert('Funcionalidade de edição será implementada em breve.');
 }
 
+// Função para abrir modal de pacotes
+function openPacotesModal() {
+    document.getElementById('modalPacotes').classList.add('active');
+}
+
+// Função para fechar modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 // Tornar funções globais
 window.logout = logout;
 window.goToCadastro = goToCadastro;
@@ -286,3 +299,5 @@ window.searchClients = searchClients;
 window.viewClient = viewClient;
 window.editClient = editClient;
 window.updateClientsList = updateClientsList;
+window.openPacotesModal = openPacotesModal;
+window.closeModal = closeModal;

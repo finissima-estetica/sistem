@@ -1454,6 +1454,110 @@ body {
     padding: 20px;
     font-style: italic;
 }
+
+/* Botão Pacotes */
+.btn-pacotes {
+    background: #667eea;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-pacotes:hover {
+    background: #5568d3;
+}
+
+/* Pacotes Cards */
+.pacotes-list {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pacote-card {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.pacote-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.pacote-info h4 {
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.pacote-servico {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.pacote-sessoes {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.pacote-valor {
+    color: #28a745;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.pacote-descricao {
+    color: #666;
+    font-size: 13px;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.pacote-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.pacotes-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.btn-add-pacote {
+    background: #667eea;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-add-pacote:hover {
+    background: #5568d3;
+}
+
+.plano-option {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
     border-radius: 8px;
     padding: 15px;
     cursor: pointer;

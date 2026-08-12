@@ -103,6 +103,18 @@ CREATE TABLE IF NOT EXISTS servicos (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela de Pacotes (baseados em serviços)
+CREATE TABLE IF NOT EXISTS pacotes (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    servico_id INTEGER REFERENCES servicos(id) ON DELETE CASCADE,
+    numero_sessoes INTEGER NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    descricao TEXT,
+    ativo BOOLEAN DEFAULT true,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Tabela de Cliente_Serviços (relacionamento many-to-many)
 CREATE TABLE IF NOT EXISTS cliente_servicos (
     id SERIAL PRIMARY KEY,

@@ -119,6 +119,37 @@ const planosAPI = {
     }
 };
 
+// API de Pacotes
+const pacotesAPI = {
+    async listar() {
+        return apiRequest('/pacotes');
+    },
+    
+    async buscar(id) {
+        return apiRequest(`/pacotes/${id}`);
+    },
+    
+    async criar(pacote) {
+        return apiRequest('/pacotes', {
+            method: 'POST',
+            body: JSON.stringify(pacote)
+        });
+    },
+    
+    async atualizar(id, pacote) {
+        return apiRequest(`/pacotes/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(pacote)
+        });
+    },
+    
+    async excluir(id) {
+        return apiRequest(`/pacotes/${id}`, {
+            method: 'DELETE'
+        });
+    }
+};
+
 // API de Serviços
 const servicosAPI = {
     async listar() {
@@ -201,6 +232,7 @@ window.authAPI = authAPI;
 window.clientesAPI = clientesAPI;
 window.atendimentosAPI = atendimentosAPI;
 window.planosAPI = planosAPI;
+window.pacotesAPI = pacotesAPI;
 window.servicosAPI = servicosAPI;
 window.databaseAPI = databaseAPI;
 window.isApiAvailable = isApiAvailable;

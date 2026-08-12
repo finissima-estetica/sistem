@@ -185,6 +185,32 @@ async function runMigrations() {
             console.log('ℹ️ Tabela atendimento_servicos já existe');
         }
 
+        // Verificar se a tabela pacotes existe
+        const pacotesCheck = await pool.query(`
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_name = 'pacotes'
+        `);
+
+        if (pacotesCheck.rows.length === 0) {
+            console.log('➕ Criando tabela pacotes...');
+            await pool.query(`
+                CREATE TABLE pacotes (
+                    id SERIAL PRIMARY KEY,
+                    nome VARCHAR(255) NOT NULL,
+                    servico_id INTEGER REFERENCES servicos(id) ON DELETE CASCADE,
+                    numero_sessoes INTEGER NOT NULL,
+                    valor DECIMAL(10,2) NOT NULL,
+                    descricao TEXT,
+                    ativo BOOLEAN DEFAULT true,
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+            console.log('✅ Tabela pacotes criada');
+        } else {
+            console.log('ℹ️ Tabela pacotes já existe');
+        }
+
         // Verificar se a coluna tipo_atendimento pode ser NULL
         const tipoAtendimentoCheck = await pool.query(`
             SELECT column_name, is_nullable 
@@ -725,6 +751,98 @@ app.delete('/api/servicos/:id', async (req, res) => {
     } catch (error) {
         console.error('Erro ao desativar serviço:', error);
         res.status(500).json({ error: 'Erro ao desativar serviço' });
+    }
+});
+
+// Rotas de Pacotes
+app.get('/api/pacotes', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT p.*, s.nome as servico_nome, s.valor_medio as servico_valor 
+            FROM pacotes p
+            LEFT JOIN servicos s ON p.servico_id = s.id
+            WHERE p.ativo = true
+            ORDER BY p.nome ASC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Erro ao buscar pacotes:', error);
+        res.status(500).json({ error: 'Erro ao buscar pacotes' });
+    }
+});
+
+app.post('/api/pacotes', async (req, res) => {
+    try {
+        const pacote = req.body;
+        
+        const result = await pool.query(`
+            INSERT INTO pacotes (nome, servico_id, numero_sessoes, valor, descricao, ativo)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *
+        `, [
+            pacote.nome,
+            pacote.servicoId,
+            pacote.numeroSessoes,
+            pacote.valor,
+            pacote.descricao || null,
+            pacote.ativo !== false
+        ]);
+        
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao criar pacote:', error);
+        res.status(500).json({ error: 'Erro ao criar pacote' });
+    }
+});
+
+app.put('/api/pacotes/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const pacote = req.body;
+        
+        const result = await pool.query(`
+            UPDATE pacotes 
+            SET nome = $1, servico_id = $2, numero_sessoes = $3, valor = $4, descricao = $5, ativo = $6
+            WHERE id = $7
+            RETURNING *
+        `, [
+            pacote.nome,
+            pacote.servicoId,
+            pacote.numeroSessoes,
+            pacote.valor,
+            pacote.descricao || null,
+            pacote.ativo !== false,
+            id
+        ]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Pacote não encontrado' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao atualizar pacote:', error);
+        res.status(500).json({ error: 'Erro ao atualizar pacote' });
+    }
+});
+
+app.delete('/api/pacotes/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await pool.query(
+            'UPDATE pacotes SET ativo = false WHERE id = $1 RETURNING *',
+            [id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Pacote não encontrado' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao desativar pacote:', error);
+        res.status(500).json({ error: 'Erro ao desativar pacote' });
     }
 });
 
