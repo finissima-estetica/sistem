@@ -1366,5 +1366,4 @@ window.setZoneColor = setZoneColor;
 window.resetZones = resetZones;
 window.coletarServicosAtendimento = coletarServicosAtendimento;
 window.abrirDetalhesPacote = abrirDetalhesPacote;
-window.usarSessao = usarSessao;
 
