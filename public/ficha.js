@@ -373,7 +373,7 @@ function renderPacotes() {
                     ${pacote.observacoes ? `<p><strong>Observações:</strong> ${pacote.observacoes}</p>` : ''}
                 </div>
                 <div class="pacote-actions">
-                    <button class="btn-use-sessao" onclick="usarSessao(${pacote.id})">Usar Sessão</button>
+                    <button class="btn-detalhes" onclick="abrirDetalhesPacote(${pacote.id})">📋 Detalhes</button>
                 </div>
             </div>
         `;
@@ -396,7 +396,62 @@ function updatePacotesBadge() {
     }
 }
 
-// Usar uma sessão do pacote
+// Abrir detalhes do pacote
+async function abrirDetalhesPacote(clientePacoteId) {
+    const pacote = currentClientPacotes.find(p => p.id === clientePacoteId);
+    if (!pacote) {
+        alert('Pacote não encontrado');
+        return;
+    }
+    
+    document.getElementById('modalDetalhesPacote').classList.add('active');
+    
+    const content = document.getElementById('detalhesPacoteContent');
+    content.innerHTML = '<p>Carregando detalhes...</p>';
+    
+    try {
+        const atendimentos = await clientesAPI.buscarAtendimentosPacote(clientePacoteId);
+        
+        const sessoesFeitas = pacote.total_sessoes - pacote.sessoes_restantes;
+        
+        content.innerHTML = `
+            <div class="pacote-detalhes">
+                <h4>${pacote.pacote_nome}</h4>
+                <p><strong>Serviço:</strong> ${pacote.servico_nome || 'N/A'}</p>
+                <p><strong>Status:</strong> ${pacote.status}</p>
+                <p><strong>Sessões feitas:</strong> ${sessoesFeitas}/${pacote.total_sessoes}</p>
+                <p><strong>Sessões restantes:</strong> ${pacote.sessoes_restantes}</p>
+                <p><strong>Valor:</strong> R$ ${parseFloat(pacote.pacote_valor).toFixed(2)}</p>
+                ${pacote.observacoes ? `<p><strong>Observações:</strong> ${pacote.observacoes}</p>` : ''}
+                
+                <h5>Histórico de Atendimentos (${atendimentos.length})</h5>
+                ${atendimentos.length === 0 ? '<p>Nenhum atendimento registrado para este pacote.</p>' : `
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Data</th>
+                                <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Observações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${atendimentos.map(a => `
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${formatarDataBrasil(a.data_atendimento)}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${a.observacoes || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `}
+            </div>
+        `;
+    } catch (error) {
+        console.error('Erro ao carregar detalhes do pacote:', error);
+        content.innerHTML = '<p>Erro ao carregar detalhes.</p>';
+    }
+}
+
+// Usar uma sessão do pacote (mantida para compatibilidade)
 async function usarSessao(clientePacoteId) {
     if (!confirm('Deseja usar uma sessão deste pacote?')) return;
     
@@ -749,8 +804,9 @@ async function handleAtendimentoSubmit(e) {
     const pacoteVinculado = formData.get('pacoteVinculado');
     
     // Se for pacote, validar sessões disponíveis
+    let clientePacoteId = null;
     if (pacoteVinculado && pacoteVinculado.startsWith('pacote_')) {
-        const clientePacoteId = parseInt(pacoteVinculado.replace('pacote_', ''));
+        clientePacoteId = parseInt(pacoteVinculado.replace('pacote_', ''));
         const pacote = currentClientPacotes.find(p => p.id === clientePacoteId);
         
         if (!pacote || pacote.sessoes_restantes <= 0) {
@@ -763,6 +819,7 @@ async function handleAtendimentoSubmit(e) {
         id: Date.now(),
         clienteId: currentClientId,
         data: formData.get('dataAtendimento'),
+        clientePacoteId: clientePacoteId,
         observacoes: formData.get('observacoes'),
         peso: formData.get('pesoAtual') || null,
         bracoDireito: formData.get('bracoDireitoAtual') || null,
@@ -786,8 +843,7 @@ async function handleAtendimentoSubmit(e) {
         currentClientAtendimentos.push(atendimento);
         
         // Se for pacote, abater uma sessão
-        if (pacoteVinculado && pacoteVinculado.startsWith('pacote_')) {
-            const clientePacoteId = parseInt(pacoteVinculado.replace('pacote_', ''));
+        if (clientePacoteId) {
             await pacotesAPI.atualizarSessoes(clientePacoteId, true);
             console.log('✅ Sessão abatida do pacote:', clientePacoteId);
             
@@ -1309,5 +1365,6 @@ window.selectZone = selectZone;
 window.setZoneColor = setZoneColor;
 window.resetZones = resetZones;
 window.coletarServicosAtendimento = coletarServicosAtendimento;
+window.abrirDetalhesPacote = abrirDetalhesPacote;
 window.usarSessao = usarSessao;
 

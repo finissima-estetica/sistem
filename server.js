@@ -302,6 +302,25 @@ async function runMigrations() {
             console.log('ℹ️ Coluna panturrilha_esquerda já existe');
         }
 
+        // Verificar se a coluna cliente_pacote_id existe em atendimentos
+        const clientePacoteCheck = await pool.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'atendimentos' 
+            AND column_name = 'cliente_pacote_id'
+        `);
+
+        if (clientePacoteCheck.rows.length === 0) {
+            console.log('➕ Adicionando coluna cliente_pacote_id...');
+            await pool.query(`
+                ALTER TABLE atendimentos 
+                ADD COLUMN cliente_pacote_id INTEGER REFERENCES cliente_pacotes(id) ON DELETE SET NULL
+            `);
+            console.log('✅ Coluna cliente_pacote_id adicionada');
+        } else {
+            console.log('ℹ️ Coluna cliente_pacote_id já existe');
+        }
+
         console.log('✅ Migração concluída com sucesso!');
     } catch (error) {
         console.error('❌ Erro na migração:', error);
@@ -606,13 +625,13 @@ app.post('/api/atendimentos', async (req, res) => {
         
         const result = await pool.query(`
             INSERT INTO atendimentos (
-                cliente_id, plano_id, data_atendimento, observacoes,
+                cliente_id, plano_id, cliente_pacote_id, data_atendimento, observacoes,
                 peso, braco_direito, braco_esquerdo, torax, cintura, abdomen,
                 quadril, coxa_direita, coxa_esquerda, panturrilha_direita, panturrilha_esquerda
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
             RETURNING *
         `, [
-            normalizado.cliente_id, normalizado.plano_id, dataAtendimento,
+            normalizado.cliente_id, normalizado.plano_id, normalizado.cliente_pacote_id, dataAtendimento,
             normalizado.observacoes, normalizado.peso,
             normalizado.braco_direito, normalizado.braco_esquerdo, normalizado.torax,
             normalizado.cintura, normalizado.abdomen, normalizado.quadril,
@@ -624,6 +643,46 @@ app.post('/api/atendimentos', async (req, res) => {
     } catch (error) {
         console.error('Erro ao criar atendimento:', error);
         res.status(500).json({ error: 'Erro ao criar atendimento' });
+    }
+});
+
+// Endpoint para vincular atendimento a pacote
+app.put('/api/atendimentos/:id/pacote', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { clientePacoteId } = req.body;
+        
+        const result = await pool.query(
+            'UPDATE atendimentos SET cliente_pacote_id = $1 WHERE id = $2 RETURNING *',
+            [clientePacoteId, id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Atendimento não encontrado' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Erro ao vincular atendimento ao pacote:', error);
+        res.status(500).json({ error: 'Erro ao vincular atendimento ao pacote' });
+    }
+});
+
+// Endpoint para buscar atendimentos de um pacote
+app.get('/api/cliente_pacotes/:id/atendimentos', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(`
+            SELECT a.*, c.nome as cliente_nome
+            FROM atendimentos a
+            LEFT JOIN clientes c ON a.cliente_id = c.id
+            WHERE a.cliente_pacote_id = $1
+            ORDER BY a.data_atendimento DESC
+        `, [id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Erro ao buscar atendimentos do pacote:', error);
+        res.status(500).json({ error: 'Erro ao buscar atendimentos do pacote' });
     }
 });
 
@@ -898,7 +957,7 @@ app.get('/api/clientes/:id/pacotes', async (req, res) => {
             FROM cliente_pacotes cp
             LEFT JOIN pacotes p ON cp.pacote_id = p.id
             LEFT JOIN servicos s ON p.servico_id = s.id
-            WHERE cp.cliente_id = $1 AND cp.status = 'Ativo'
+            WHERE cp.cliente_id = $1
             ORDER BY cp.data_criacao DESC
         `, [id]);
         res.json(result.rows);

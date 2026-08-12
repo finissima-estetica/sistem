@@ -96,6 +96,17 @@ const clientesAPI = {
             method: 'POST',
             body: JSON.stringify(plano)
         });
+    },
+    
+    async vincularAtendimentoPacote(atendimentoId, clientePacoteId) {
+        return apiRequest('/atendimentos/' + atendimentoId + '/pacote', {
+            method: 'PUT',
+            body: JSON.stringify({ clientePacoteId })
+        });
+    },
+    
+    async buscarAtendimentosPacote(clientePacoteId) {
+        return apiRequest('/cliente_pacotes/' + clientePacoteId + '/atendimentos');
     }
 };
 

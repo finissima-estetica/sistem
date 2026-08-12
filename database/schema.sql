@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS atendimentos (
     id SERIAL PRIMARY KEY,
     cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
     plano_id INTEGER REFERENCES planos(id) ON DELETE SET NULL,
+    cliente_pacote_id INTEGER REFERENCES cliente_pacotes(id) ON DELETE SET NULL,
     data_atendimento DATE NOT NULL,
     tipo_atendimento VARCHAR(50),
     observacoes TEXT,
@@ -76,7 +77,7 @@ CREATE TABLE IF NOT EXISTS atendimentos (
     abdomen DECIMAL(5,2),
     quadril DECIMAL(5,2),
     coxa_direita DECIMAL(5,2),
-    coxa_esquerda DECIMAL(5,2),
+    coxa_esquerdo DECIMAL(5,2),
     panturrilha_direita DECIMAL(5,2),
     panturrilha_esquerda DECIMAL(5,2),
     
