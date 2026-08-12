@@ -1,33 +1,5 @@
-// API de Serviços
-const servicosAPI = {
-    // Buscar todos os serviços
-    buscarTodos: async () => {
-        return await apiRequest('/servicos');
-    },
-    
-    // Criar novo serviço
-    criar: async (servico) => {
-        return await apiRequest('/servicos', {
-            method: 'POST',
-            body: JSON.stringify(servico)
-        });
-    },
-    
-    // Atualizar serviço
-    atualizar: async (id, servico) => {
-        return await apiRequest(`/servicos/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(servico)
-        });
-    },
-    
-    // Desativar serviço (soft delete)
-    desativar: async (id) => {
-        return await apiRequest(`/servicos/${id}`, {
-            method: 'DELETE'
-        });
-    }
-};
+// API de Serviços - usar a API já definida em api.js
+// Apenas funções de UI específicas para o dashboard
 
 // Variáveis globais
 let servicos = [];
@@ -43,7 +15,7 @@ function openServicosModal() {
 async function loadServicos() {
     try {
         console.log('🔌 Carregando serviços...');
-        servicos = await servicosAPI.buscarTodos();
+        servicos = await servicosAPI.listar();
         console.log('📊 Serviços carregados:', servicos);
         renderServicos();
     } catch (error) {
@@ -111,7 +83,7 @@ async function desativarServico(id) {
     if (!confirm('Tem certeza que deseja desativar este serviço?')) return;
     
     try {
-        await servicosAPI.desativar(id);
+        await servicosAPI.excluir(id);
         await loadServicos();
     } catch (error) {
         console.error('Erro ao desativar serviço:', error);
@@ -126,7 +98,7 @@ async function handleServicoSubmit(e) {
     const formData = new FormData(e.target);
     const servico = {
         nome: formData.get('servicoNome'),
-        valorMedio: parseFloat(formData.get('servicoValor')),
+        valor_medio: parseFloat(formData.get('servicoValor')),
         descricao: formData.get('servicoDescricao') || null
     };
     
@@ -152,3 +124,19 @@ function closeModal(modalId) {
         modal.classList.remove('active');
     }
 }
+
+// Tornar funções globais
+window.openServicosModal = openServicosModal;
+window.openNovoServico = openNovoServico;
+window.editarServico = editarServico;
+window.desativarServico = desativarServico;
+window.handleServicoSubmit = handleServicoSubmit;
+window.closeModal = closeModal;
+
+// Configurar formulário ao carregar
+document.addEventListener('DOMContentLoaded', () => {
+    const servicoForm = document.getElementById('servicoForm');
+    if (servicoForm) {
+        servicoForm.addEventListener('submit', handleServicoSubmit);
+    }
+});
