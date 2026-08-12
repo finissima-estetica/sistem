@@ -185,6 +185,25 @@ async function runMigrations() {
             console.log('ℹ️ Tabela atendimento_servicos já existe');
         }
 
+        // Verificar se a coluna tipo_atendimento pode ser NULL
+        const tipoAtendimentoCheck = await pool.query(`
+            SELECT column_name, is_nullable 
+            FROM information_schema.columns 
+            WHERE table_name = 'atendimentos' 
+            AND column_name = 'tipo_atendimento'
+        `);
+
+        if (tipoAtendimentoCheck.rows.length > 0 && tipoAtendimentoCheck.rows[0].is_nullable === 'NO') {
+            console.log('➕ Alterando coluna tipo_atendimento para permitir NULL...');
+            await pool.query(`
+                ALTER TABLE atendimentos 
+                ALTER COLUMN tipo_atendimento DROP NOT NULL
+            `);
+            console.log('✅ Coluna tipo_atendimento alterada');
+        } else {
+            console.log('ℹ️ Coluna tipo_atendimento já permite NULL');
+        }
+
         // Verificar se as colunas de panturrilha existem em atendimentos
         const checkResult = await pool.query(`
             SELECT column_name 
@@ -477,7 +496,6 @@ app.post('/api/atendimentos', async (req, res) => {
             clienteId: 'cliente_id',
             planoId: 'plano_id',
             data: 'data_atendimento',
-            tipo: 'tipo_atendimento',
             observacoes: 'observacoes',
             bracoDireito: 'braco_direito',
             bracoEsquerdo: 'braco_esquerdo',
@@ -519,14 +537,14 @@ app.post('/api/atendimentos', async (req, res) => {
         
         const result = await pool.query(`
             INSERT INTO atendimentos (
-                cliente_id, plano_id, data_atendimento, tipo_atendimento, observacoes,
+                cliente_id, plano_id, data_atendimento, observacoes,
                 peso, braco_direito, braco_esquerdo, torax, cintura, abdomen,
                 quadril, coxa_direita, coxa_esquerda, panturrilha_direita, panturrilha_esquerda
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
             RETURNING *
         `, [
             normalizado.cliente_id, normalizado.plano_id, dataAtendimento,
-            normalizado.tipo_atendimento, normalizado.observacoes, normalizado.peso,
+            normalizado.observacoes, normalizado.peso,
             normalizado.braco_direito, normalizado.braco_esquerdo, normalizado.torax,
             normalizado.cintura, normalizado.abdomen, normalizado.quadril,
             normalizado.coxa_direita, normalizado.coxa_esquerda,

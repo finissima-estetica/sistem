@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS atendimentos (
     cliente_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
     plano_id INTEGER REFERENCES planos(id) ON DELETE SET NULL,
     data_atendimento DATE NOT NULL,
-    tipo_atendimento VARCHAR(50) NOT NULL,
+    tipo_atendimento VARCHAR(50),
     observacoes TEXT,
     
     -- Medidas do Atendimento
