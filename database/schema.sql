@@ -4,10 +4,10 @@
 CREATE TABLE IF NOT EXISTS clientes (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
-    cpf VARCHAR(14) UNIQUE,
+    cpf VARCHAR(14),
     data_nascimento DATE,
     telefone VARCHAR(20),
-    email VARCHAR(255) UNIQUE,
+    email VARCHAR(255),
     endereco TEXT,
     cidade VARCHAR(100),
     estado VARCHAR(2),

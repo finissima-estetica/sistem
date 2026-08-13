@@ -321,6 +321,42 @@ async function runMigrations() {
             console.log('ℹ️ Coluna cliente_pacote_id já existe');
         }
 
+        // Verificar se há constraints UNIQUE em cpf e email
+        const constraintsCheck = await pool.query(`
+            SELECT constraint_name 
+            FROM information_schema.table_constraints 
+            WHERE table_name = 'clientes' 
+            AND constraint_type = 'UNIQUE'
+        `);
+
+        const existingConstraints = constraintsCheck.rows.map(row => row.constraint_name);
+        console.log('Constraints existentes em clientes:', existingConstraints);
+
+        // Remover constraint UNIQUE de cpf se existir
+        if (existingConstraints.includes('clientes_cpf_key') || existingConstraints.includes('clientes_cpf_unique')) {
+            console.log('➕ Removendo constraint UNIQUE de cpf...');
+            try {
+                await pool.query('ALTER TABLE clientes DROP CONSTRAINT IF EXISTS clientes_cpf_key');
+                await pool.query('ALTER TABLE clientes DROP CONSTRAINT IF EXISTS clientes_cpf_unique');
+                console.log('✅ Constraint UNIQUE de cpf removida');
+            } catch (error) {
+                console.log('ℹ️ Não foi possível remover constraint de cpf (pode não existir)');
+            }
+        }
+
+        // Remover constraint UNIQUE de email se existir
+        if (existingConstraints.includes('clientes_email_key') || existingConstraints.includes('clientes_email_unique')) {
+            console.log('➕ Removendo constraint UNIQUE de email...');
+            try {
+                await pool.query('ALTER TABLE clientes DROP CONSTRAINT IF EXISTS clientes_email_key');
+                await pool.query('ALTER TABLE clientes DROP CONSTRAINT IF EXISTS clientes_email_unique');
+                console.log('✅ Constraint UNIQUE de email removida');
+            } catch (error) {
+                console.log('ℹ️ Não foi possível remover constraint de email (pode não existir)');
+            }
+        }
+
+
         console.log('✅ Migração concluída com sucesso!');
     } catch (error) {
         console.error('❌ Erro na migração:', error);
